@@ -88,11 +88,10 @@ function renderTable(){
   $('#cntShown').textContent = `${rows.length}명` + (SEL.size?` (선택 ${SEL.size})`:'');
   $('#emptyMsg').hidden = rows.length>0;
   const yn = v => v ? '<span class="pill p-ok">이수</span>' : '<span class="pill p-bad">미이수</span>';
-  $('#tbody').innerHTML = rows.map(p=>{
-    const [lab,cls]=STAT_LABEL[statOf(p)];
+  $('#tbody').innerHTML = rows.map((p,i)=>{
     const jt = p.job==='mgr'?'<span class="pill tag-mgr" style="margin-left:4px">관리</span>':p.job==='lead'?'<span class="pill tag-lead" style="margin-left:4px">직책</span>':'';
     return `<tr><td><input type="checkbox" data-e="${p.emp}" ${SEL.has(p.emp)?'checked':''}></td>
-      <td><span class="pill ${cls}">${lab}</span></td>
+      <td class="num">${i+1}</td>
       <td><b>${esc(p.name)}</b></td><td class="num">${esc(p.emp)}</td>
       <td>${esc(p.pos)}${jt}</td><td>${esc(p.up)}</td><td>${esc(p.dept)}</td>
       <td class="num">${esc(p.email)}</td><td class="num">${esc(p.tel)}</td>
@@ -136,7 +135,7 @@ function renderDept(){
       <td class="num">${g.both||'-'}</td><td class="num">${g.done}</td>
       <td class="num">${g.rate.toFixed(0)}%</td>
       <td>${ow.name?esc(ow.name):'<span class="pill p-mute">미지정</span>'}</td>
-      <td>${r.to.length?r.to.map(x=>esc(x.name)+'('+esc(x.pos)+')').join(', '):'<span class="pill p-warn">수신자 없음</span>'}</td></tr>`;
+      <td>${r.to.length?r.to.map(x=>esc(x.name)+'('+esc(x.pos)+')').join(', ')+(r.via?` <span class="pill p-warn">${esc(r.via)}</span>`:''):'<span class="pill p-warn">수신자 없음</span>'}</td></tr>`;
   }).join('');
   $$('#deptBody tr').forEach(tr=>tr.onclick=()=>{
     F={stat:'notdone',up:tr.dataset.up,dept:tr.dataset.dept,pos:'',job:'',q:''};
@@ -160,20 +159,35 @@ function ownerOf(up){
   const c=seed||ownerCands(up).find(p=>['매니저','책임매니저'].includes(p.pos));
   return c?{emp:String(c.emp),name:c.name,email:c.email,auto:true}:{name:'',email:'',auto:true};
 }
+/* 해당 팀장 = ① 같은 부서의 팀장 ② 상위부서명과 같은 부서(팀 사무실)의 팀장.
+   그 위(실/전사) 팀장을 끌어오면 무관한 사람에게 가므로 여기서 멈춥니다. */
+function teamLeadOf(p){
+  return PEOPLE.find(x=>x.dept===p.dept && x.pos==='팀장' && String(x.emp)!==String(p.emp))
+      || PEOPLE.find(x=>x.dept===p.up  && x.pos==='팀장')
+      || null;
+}
+/* Ⓑ 부서 독려메일의 받는사람: 그 부서의 조장·반장·주임.
+   없으면 팀장, 팀장도 없으면 담당 서무로 대체합니다. */
 function rcptOf(k){
   const [up,dept]=k.split('§');
   const R=ST.rules;
   const mem=PEOPLE.filter(p=>key(p)===k);
-  let to=mem.filter(p=> (R.mgr&&p.job==='mgr') || (R.lead&&p.job==='lead') || (R.tech&&p.job==='tech'));
+  const sample=mem[0]||{dept,up};
+  let to=mem.filter(p=> p.job==='lead' || (R.tech&&p.job==='tech'));
   (ST.extra[k]||[]).forEach(x=>to.push({...x,job:jobOf(x.pos),extra:true}));
+  let via='';
+  if(!to.length){
+    const tl=teamLeadOf(sample);
+    if(tl){ to=[tl]; via='팀장 대체'; }
+    else { const o=ownerOf(up); if(o.email){ to=[{name:o.name,email:o.email,pos:'담당(서무)'}]; via='담당 서무 대체'; } }
+  }
   const cc=[];
-  if(R.teamcc){ PEOPLE.filter(p=>p.dept===up&&p.pos==='팀장').forEach(p=>cc.push(p));
-                PEOPLE.filter(p=>p.up===up&&p.dept===dept&&p.pos==='팀장').forEach(p=>{if(!cc.includes(p))cc.push(p);}); }
-  if(R.ownercc){ const o=ownerOf(up); if(o.email) cc.push({name:o.name,email:o.email,pos:'담당'}); }
+  if(R.teamcc){ const tl=teamLeadOf(sample); if(tl && !to.some(x=>x.email===tl.email)) cc.push(tl); }
+  if(R.ownercc){ const o=ownerOf(up); if(o.email) cc.push({name:o.name,email:o.email,pos:'담당(서무)'}); }
   const seen=new Set(to.map(x=>x.email));
   const ccOut=[];
   cc.forEach(c=>{ if(c.email && !seen.has(c.email)){ seen.add(c.email); ccOut.push(c); } });
-  return {to, cc:ccOut, up, dept};
+  return {to, cc:ccOut, up, dept, via};
 }
 function renderMap(){
   const R=ST.rules;

@@ -126,6 +126,6 @@ function dl(blob,name){
   setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},800);
 }
 const HEAD=['구분','이름','사번','직급','상위부서','부서','이메일','연락처','성희롱 이수여부','장애인 이수여부'];
-const toRow=p=>[STAT_LABEL[statOf(p)][0],p.name,String(p.emp),p.pos,p.up,p.dept,p.email,p.tel,p.h?'이수':'미이수',p.d?'이수':'미이수'];
+const toRow=(p,i)=>[i+1,p.name,String(p.emp),p.pos,p.up,p.dept,p.email,p.tel,p.h?'이수':'미이수',p.d?'이수':'미이수'];
 const today=()=>new Date().toISOString().slice(0,10).replace(/-/g,'');
 const safe=s=>String(s).replace(/[\\\/:*?"<>|§]/g,'_');

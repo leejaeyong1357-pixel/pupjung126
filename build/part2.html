@@ -35,7 +35,7 @@
     </div>
     <div class="card-b">
       <div class="filters">
-        <label>구분
+        <label>이수상태
           <select id="fStat">
             <option value="notdone">미이수(1과목 이상)</option>
             <option value="both">둘 다 미이수</option>
@@ -59,7 +59,7 @@
       <table id="tbl">
         <thead><tr>
           <th style="width:34px"><input type="checkbox" id="chkAll"></th>
-          <th data-s="stat">구분</th><th data-s="name">이름</th><th data-s="emp">사번</th>
+          <th style="width:52px">구분</th><th data-s="name">이름</th><th data-s="emp">사번</th>
           <th data-s="pos">직급</th><th data-s="up">상위부서</th><th data-s="dept">부서</th>
           <th data-s="email">이메일</th><th data-s="tel">연락처</th>
           <th data-s="h">성희롱 이수여부</th><th data-s="d">장애인 이수여부</th>
@@ -83,7 +83,7 @@
       <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyRemain" checked> 미이수 남은 곳만</label>
       <span class="spacer"></span><span class="hint">클릭 → 현황판에서 해당 부서만 보기</span></div>
     <div class="tablewrap" style="max-height:none">
-      <table><thead><tr><th>상위부서</th><th>부서</th><th>인원</th><th>성희롱 미이수</th><th>장애인 미이수</th><th>둘다 미이수</th><th>완료</th><th>이수율</th><th>담당(서무)</th><th>수신 직책자</th></tr></thead>
+      <table><thead><tr><th>상위부서</th><th>부서</th><th>인원</th><th>성희롱 미이수</th><th>장애인 미이수</th><th>둘다 미이수</th><th>완료</th><th>이수율</th><th>담당(서무)</th><th>Ⓑ 현장 수신자</th></tr></thead>
       <tbody id="deptBody"></tbody></table>
     </div>
   </div>
@@ -91,9 +91,16 @@
 
 <!-- ================= UPDATE ================= -->
 <section id="tab-update" hidden>
+  <div class="warnbox" style="margin-bottom:14px;display:flex;gap:12px;align-items:flex-start">
+    <span style="font-size:20px;line-height:1">🔒</span>
+    <div><b style="font-size:13.5px">이 탭은 관리자 전용입니다 — 서무 담당자는 입력하지 마세요.</b><br>
+    이수자 데이터 반영은 <b>미래성장팀 이재용 매니저</b>(jason@teczen.kr)가 일괄 수행합니다.<br>
+    서무 담당자는 <b>월요일에 갱신된 현황을 확인</b>하고 <b>⑤ 독려메일 발송</b>만 진행하시면 됩니다.<br>
+    누락·오류를 발견하면 직접 고치지 말고 관리자에게 전달해 주세요.</div>
+  </div>
   <div class="split">
     <div class="card">
-      <div class="card-h"><h2>주 1회 이수자 반영</h2></div>
+      <div class="card-h"><h2>주 1회 이수자 반영</h2><span class="pill p-warn">관리자 전용</span></div>
       <div class="card-b">
         <div class="stepbox">
           <h4>붙여넣기 방법</h4>
@@ -143,16 +150,19 @@
       <button class="btn sec mini" id="btnRebuild">규칙대로 다시 계산</button></div>
     <div class="card-b">
       <div class="okbox" style="margin-bottom:10px">
-        <b>관리직</b>(실장·팀장·책임매니저·매니저·상무·대표이사) → <b>본인 이메일 전원 수신</b><br>
-        <b>현장직</b> → <b>조장·반장·주임만</b> 수신, <b>기술사원은 제외</b>(메일 확인 불가)<br>
-        미이수자가 있는 <b>부서 단위</b>로 해당 부서의 직책자에게 발송, <b>상위부서 담당(서무)</b>과 <b>팀장</b>은 참조(CC)
+        <b>Ⓐ 관리직 미이수자</b>(실장·팀장·책임매니저·매니저·상무·대표이사) — <b>1인 1통</b><br>
+        &nbsp;&nbsp;&nbsp;받는사람 = <b>본인</b> &nbsp;/&nbsp; 참조 = <b>해당 팀장</b><br><br>
+        <b>Ⓑ 현장직 미이수자</b>(기술사원·조장·반장·주임) — <b>부서 1통</b><br>
+        &nbsp;&nbsp;&nbsp;받는사람 = <b>해당 부서 조장·반장·주임</b> &nbsp;/&nbsp; 참조 = <b>해당 팀장</b><br>
+        &nbsp;&nbsp;&nbsp;<b>기술사원 본인에게는 보내지 않습니다</b>(메일 확인 불가) — 명단은 첨부·본문으로 전달<br>
+        &nbsp;&nbsp;&nbsp;조장·반장이 없으면 → <b>팀장</b>, 팀장도 없으면 → <b>담당 서무</b>로 자동 대체
       </div>
       <div class="row">
-        <label class="hint"><input type="checkbox" id="rMgr" checked> 관리직 전원 포함</label>
-        <label class="hint"><input type="checkbox" id="rLead" checked> 조장·반장·주임 포함</label>
-        <label class="hint"><input type="checkbox" id="rTech"> 기술사원 포함(비권장)</label>
-        <label class="hint"><input type="checkbox" id="rTeamCC" checked> 상위 팀장 CC</label>
-        <label class="hint"><input type="checkbox" id="rOwnerCC" checked> 상위부서 담당(서무) CC</label>
+        <label class="hint"><input type="checkbox" id="rMgr" checked> Ⓐ 관리직 개인메일 사용</label>
+        <label class="hint"><input type="checkbox" id="rLead" checked> Ⓑ 부서 독려메일 사용</label>
+        <label class="hint"><input type="checkbox" id="rTech"> Ⓑ에 기술사원 본인도 수신 추가(비권장)</label>
+        <label class="hint"><input type="checkbox" id="rTeamCC" checked> 팀장 CC</label>
+        <label class="hint"><input type="checkbox" id="rOwnerCC" checked> 담당(서무) CC</label>
       </div>
     </div>
   </div>
@@ -167,7 +177,7 @@
   </div>
 
   <div class="card">
-    <div class="card-h"><h2>부서별 수신자 명단</h2>
+    <div class="card-h"><h2>Ⓑ 부서별 현장 수신자 (조장·반장·주임)</h2>
       <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyNoRcpt"> 수신자 없는 부서만</label>
       <span class="spacer"></span><span class="hint">＋로 외부 인원(이미 이수해 명단에 없는 조·반장 등)을 직접 추가할 수 있습니다.</span></div>
     <div class="card-b" id="rcptBox"></div>
@@ -176,26 +186,36 @@
 
 <!-- ================= MAIL ================= -->
 <section id="tab-mail" hidden>
+  <div class="okbox" style="margin-bottom:14px;display:flex;gap:12px;align-items:flex-start">
+    <span style="font-size:20px;line-height:1">📅</span>
+    <div><b style="font-size:13.5px">매주 월요일 루틴 — 서무 담당자</b><br>
+    ① 관리자가 갱신한 현황 확인 → ② 아래에서 내 담당 부서 선택 → ③ 발송 패키지 내려받기 → ④ 압축 풀고 <code>보내기.bat</code> 더블클릭 → ⑤ Outlook 창 확인 후 보내기</div>
+  </div>
+
   <div class="split" style="margin-bottom:14px">
     <div class="card">
       <div class="card-h"><h2>1. 발송 범위</h2></div>
       <div class="card-b">
         <div class="filters" style="margin-bottom:10px">
           <label>발송 담당(서무)<select id="mOwner"></select></label>
-          <label>발송 단위
-            <select id="mUnit"><option value="dept">부서(반/조)별로 각각 발송</option><option value="up">상위부서별 1통</option></select>
-          </label>
           <label>대상 과목
             <select id="mSubj"><option value="any">미이수 1과목 이상 전원</option><option value="h">성희롱 미이수자</option><option value="d">장애인 미이수자</option><option value="both">둘 다 미이수자</option></select>
           </label>
         </div>
+        <div class="row" style="margin-bottom:9px">
+          <label class="hint"><input type="checkbox" id="mJobMgr" checked> <b>Ⓐ 관리직 개인메일</b> (본인 + 팀장 CC)</label>
+          <label class="hint"><input type="checkbox" id="mJobField" checked> <b>Ⓑ 부서 독려메일</b> (조장·반장 + 팀장 CC)</label>
+        </div>
         <div class="row">
-          <label class="hint"><input type="checkbox" id="mAttach" checked> 대상자 엑셀 첨부</label>
+          <label class="hint"><input type="checkbox" id="mAttach" checked> 부서메일에 대상자 엑셀 첨부</label>
           <label class="hint"><input type="checkbox" id="mInline" checked> 본문에 명단 표 삽입</label>
-          <label class="hint"><input type="checkbox" id="mAutoSend"> 검토 없이 즉시 발송(체크 해제 시 Outlook 창만 열림)</label>
+          <label class="hint"><input type="checkbox" id="mAutoSend"> 검토 없이 즉시 발송</label>
         </div>
         <div class="row" style="margin-top:9px">
-          <label style="flex:1">제목 템플릿<input id="mSubject" style="width:100%" value="[법정의무교육] {부서} 미이수자 {N}명 - 10/30까지 이수 요청"></label>
+          <label style="flex:1">Ⓐ 개인메일 제목<input id="mSubjectA" style="width:100%" value="[법정의무교육] {이름}님 미이수 안내 - 10/30까지 이수 요청"></label>
+        </div>
+        <div class="row" style="margin-top:9px">
+          <label style="flex:1">Ⓑ 부서메일 제목<input id="mSubject" style="width:100%" value="[법정의무교육] {부서} 미이수자 {N}명 - 10/30까지 이수 요청"></label>
         </div>
         <div class="row" style="margin-top:9px">
           <label style="flex:1">추가 안내문(선택)<input id="mNote" style="width:100%" placeholder="예) 이번 주 금요일까지 완료 부탁드립니다."></label>
@@ -204,36 +224,46 @@
     </div>
     <div class="card">
       <div class="card-h"><h2>2. 발송 목록</h2><span class="spacer"></span><span class="pill p-brand" id="mCount">0건</span></div>
-      <div class="card-b" style="max-height:340px;overflow:auto" id="mList"></div>
+      <div class="card-b" style="max-height:400px;overflow:auto" id="mList"></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-h"><h2>3. 실행</h2></div>
+    <div class="card-h"><h2>3. 실행 (CMD 방식 · PowerShell 불필요)</h2></div>
     <div class="card-b">
       <div class="warnbox" style="margin-bottom:12px">
-        브라우저는 보안상 <b>첨부파일을 붙인 메일을 직접 보낼 수 없습니다.</b> 그래서 Outlook을 직접 조종하는
-        <b>발송 스크립트(.ps1)</b>와 <b>첨부 엑셀</b>을 함께 내려받아 실행하는 방식입니다. (사내 Outlook 설치 PC / Windows 기준)
+        브라우저는 보안상 <b>첨부파일을 붙인 메일을 직접 보낼 수 없습니다.</b> 그래서 Outlook을 대신 조종하는
+        <b>배치파일(.bat)</b>을 만들어 실행하는 방식입니다. <b>PowerShell을 쓰지 않고 CMD 기본 기능만</b> 사용하며,
+        관리자 권한도 필요 없습니다. (Outlook 설치된 Windows PC)
       </div>
       <div class="stepbox">
-        <h4>STEP 1 — 파일 내려받기</h4>
+        <h4>STEP 1 — 발송 패키지 내려받기</h4>
         <div class="row" style="margin-top:7px">
           <button class="btn" id="btnPack">⤓ 발송 패키지(ZIP) 내려받기</button>
-          <span class="hint"><code>법정의무교육_독려메일_날짜.zip</code> 1개가 저장됩니다. 안에 <code>메일첨부_*.xlsx</code>와 <code>보내기_법정의무교육.ps1</code>이 들어 있습니다.</span>
+          <span class="hint"><code>법정의무교육_독려메일_날짜.zip</code> 1개가 저장됩니다.</span>
         </div>
       </div>
       <div class="stepbox">
-        <h4>STEP 2 — 스크립트 실행</h4>
-        <div class="hint">ZIP을 <b>압축 해제</b>한 뒤(바로 실행 말고 반드시 풀어야 함) <code>보내기_법정의무교육.ps1</code> 우클릭 → <b>PowerShell에서 실행</b>.<br>
-        차단되면 PowerShell 창에서: <code>powershell -ExecutionPolicy Bypass -File .\보내기_법정의무교육.ps1</code><br>
-        Outlook 새 메일 창이 순서대로 뜹니다 → 내용 확인 후 <b>보내기</b>. (즉시 발송 옵션을 켰다면 자동 전송)</div>
+        <h4>STEP 2 — 압축 풀기</h4>
+        <div class="hint">ZIP을 <b>우클릭 → 압축 풀기</b>. ZIP 안에서 바로 실행하면 동작하지 않으니 <b>반드시 풀어주세요.</b></div>
       </div>
+      <div class="stepbox">
+        <h4>STEP 3 — <code>보내기.bat</code> 더블클릭</h4>
+        <div class="hint">검은 창이 뜨고 Outlook 새 메일 창이 순서대로 열립니다 → 내용 확인 후 <b>보내기</b>.<br>
+        「Windows의 PC 보호」 창이 뜨면 <b>추가 정보 → 실행</b>을 누르세요.<br>
+        즉시 발송을 원하면 위에서 <b>검토 없이 즉시 발송</b>을 체크한 뒤 다시 내려받으세요.</div>
+      </div>
+      <details class="acc" style="margin-top:4px"><summary>bat 실행이 막혀 있을 때</summary><div class="body hint">
+        시작 → <code>cmd</code> 입력 → 검은 창에서 압축 푼 폴더로 이동한 뒤 아래를 입력하세요.<br>
+        <code>cscript //nologo send_mail.vbs</code><br><br>
+        Windows Script Host 자체가 차단된 PC라면 아래 <b>대안</b>을 쓰세요.
+      </div></details>
       <div class="stepbox">
         <h4>대안 — 첨부 없이 바로 보내기</h4>
         <div class="row" style="margin-top:7px">
           <button class="btn sec" id="btnMailto">✉ Outlook 메일 창 열기(첨부 없음, 본문 명단 포함)</button>
           <button class="btn sec" id="btnCopyAll">📋 수신자 주소 전체 복사</button>
-          <span class="hint">스크립트 실행이 막힌 PC용. 본문에 명단이 들어가므로 첨부 없이도 전달 가능합니다.</span>
+          <span class="hint">본문에 명단이 들어가므로 첨부 없이도 전달 가능합니다.</span>
         </div>
       </div>
       <details class="acc" style="margin-top:12px"><summary>메일 본문 미리보기</summary><div class="body" id="mPreview"></div></details>
@@ -246,12 +276,38 @@
   <div class="split">
     <div>
       <div class="card" style="margin-bottom:14px">
-        <div class="card-h"><h2>매주 하는 일 (서무 기준 5분)</h2></div>
+        <div class="card-h"><h2>역할 분담</h2></div>
         <div class="card-b">
-          <div class="stepbox"><h4>① 이수자 반영</h4><div class="hint">교육원 이수자 명단의 <b>사번 열</b> 복사 → <b>③ 이수자 반영</b> 탭에 붙여넣기 → 과목 선택 → 반영</div></div>
-          <div class="stepbox"><h4>② 백업</h4><div class="hint">우측 상단 <b>⤓ 백업</b> 클릭 → JSON 파일 저장. 데이터는 이 브라우저에만 저장되므로 <b>매주 백업 필수</b>. PC 교체·캐시 삭제 시 초기화됩니다.</div></div>
-          <div class="stepbox"><h4>③ 독려메일</h4><div class="hint"><b>⑤ 독려메일 발송</b> 탭 → 담당 선택 → 파일 2종 내려받기 → ps1 실행 → Outlook 창 확인 후 발송</div></div>
-          <div class="stepbox"><h4>④ 공유</h4><div class="hint">백업 JSON을 팀 공유폴더에 두면 다른 서무가 <b>⤒ 복원</b>으로 같은 화면을 봅니다.</div></div>
+          <div class="stepbox" style="border-left-color:var(--bad)">
+            <h4>🔒 관리자 — 미래성장팀 이재용 매니저 (jason@teczen.kr)</h4>
+            <div class="hint">교육원 이수자 데이터를 <b>③탭에 반영</b>하고, <b>⤓백업</b>으로 배포합니다.<br>
+            신규입사자 등록·명단 보정도 관리자가 수행합니다. <b>서무는 ③탭을 건드리지 않습니다.</b></div>
+          </div>
+          <div class="stepbox">
+            <h4>📋 서무 담당자 — 매주 월요일</h4>
+            <div class="hint">① 관리자가 배포한 최신 파일(또는 백업 JSON <b>⤒복원</b>) 열기<br>
+            ② <b>①현황판</b>에서 내 담당 부서 미이수자 확인<br>
+            ③ <b>⑤독려메일 발송</b> → 담당 선택 → <b>ZIP 내려받기</b><br>
+            ④ 압축 풀고 <b>보내기.bat</b> 더블클릭 → Outlook 창 확인 후 발송</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-h"><h2>독려메일이 나가는 규칙</h2></div>
+        <div class="card-b">
+          <div class="stepbox" style="border-left-color:var(--brand)">
+            <h4>Ⓐ 관리직 미이수자 → 1인 1통</h4>
+            <div class="hint">실장·팀장·책임매니저·매니저·상무·대표이사<br>
+            <b>받는사람: 본인</b> / <b>참조: 해당 팀장</b><br>
+            메일을 직접 확인하는 인원이므로 본인에게 바로 보냅니다.</div>
+          </div>
+          <div class="stepbox" style="border-left-color:var(--warn)">
+            <h4>Ⓑ 현장직 미이수자 → 부서 1통</h4>
+            <div class="hint">기술사원·조장·반장·주임<br>
+            <b>받는사람: 해당 부서 조장·반장·주임</b> / <b>참조: 해당 팀장</b><br>
+            <b>기술사원 본인에게는 보내지 않습니다.</b> 메일 확인이 어려우므로 직책자가 명단을 받아 직접 독려합니다.<br>
+            조장·반장이 없으면 팀장, 팀장도 없으면 담당 서무에게 자동 대체됩니다.</div>
+          </div>
         </div>
       </div>
       <div class="card">
@@ -260,7 +316,9 @@
           이 파일은 <b>인터넷 없이 동작하는 단일 HTML</b>입니다. 원본 985명 명단은 파일 안에 들어 있고,
           이수 처리·담당자 매핑 등 <b>변경분만</b> 브라우저 저장소(localStorage)에 기록됩니다.<br><br>
           <b>공유폴더에 두고 여러 명이 열어도 서로의 입력은 자동으로 합쳐지지 않습니다.</b>
-          한 명이 입력 → 백업 JSON 배포 → 나머지가 복원, 이 순서를 지키세요.
+          관리자가 반영 → <b>⤓백업</b> JSON 배포 → 서무가 <b>⤒복원</b>, 이 순서를 지키세요.<br><br>
+          메일 발송은 <b>PowerShell을 쓰지 않습니다.</b> CMD 기본 기능(배치파일 + Windows Script Host)만으로
+          Outlook을 호출하므로 별도 권한이 필요 없습니다.
         </div>
       </div>
     </div>

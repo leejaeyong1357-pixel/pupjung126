@@ -5,7 +5,7 @@ function go(t){
   ['main','dept','update','map','mail','help'].forEach(x=>$('#tab-'+x).hidden = x!==t);
   if(t==='dept') renderDept();
   if(t==='map') renderMap();
-  if(t==='mail'){ fillMailOwner(); renderMail(); }
+  if(t==='mail'){ fillMailOwner(); $('#mJobMgr').checked=!!ST.rules.mgr; $('#mJobField').checked=!!ST.rules.lead; renderMail(); }
   if(t==='help') renderTodo();
   window.scrollTo(0,0);
 }
@@ -37,6 +37,9 @@ $('#btnCopyMail').onclick=()=>{
   navigator.clipboard.writeText(s).then(()=>toast(`${t.length}명 이메일 복사됨`),()=>toast('복사 실패'));
 };
 $('#btnGoMail').onclick=()=>{ if(F.up){go('mail');$('#mOwner').value=F.up;renderMail();} else go('mail'); };
+// ⑤탭의 Ⓐ/Ⓑ 체크박스는 ④탭 규칙과 같은 값을 공유합니다.
+$('#mJobMgr').onchange=e=>{ST.rules.mgr=e.target.checked?1:0;save();renderMail();};
+$('#mJobField').onchange=e=>{ST.rules.lead=e.target.checked?1:0;save();renderMail();};
 $('#onlyRemain').onchange=renderDept;
 $('#btnXlsxDept').onclick=()=>{
   const rows=[['상위부서','부서','인원','성희롱 미이수','장애인 미이수','둘다 미이수','이수완료','이수율(%)','담당(서무)','수신 직책자']];
@@ -78,8 +81,8 @@ $('#btnAddPeople').onclick=()=>{
 });
 $('#btnRebuild').onclick=()=>{renderMap();renderDept();toast('수신자 재계산 완료');};
 $('#onlyNoRcpt').onchange=renderMap;
-['mOwner','mUnit','mSubj','mAttach','mInline','mAutoSend'].forEach(id=>$('#'+id).onchange=renderMail);
-['mSubject','mNote'].forEach(id=>$('#'+id).oninput=()=>{clearTimeout(window._mt);window._mt=setTimeout(renderMail,250);});
+['mOwner','mSubj','mAttach','mInline','mAutoSend','mJobMgr','mJobField'].forEach(id=>$('#'+id).onchange=renderMail);
+['mSubject','mSubjectA','mNote'].forEach(id=>$('#'+id).oninput=()=>{clearTimeout(window._mt);window._mt=setTimeout(renderMail,250);});
 $('#btnPack').onclick=packDownload;
 $('#btnMailto').onclick=mailtoOpen;
 $('#btnCopyAll').onclick=()=>{
