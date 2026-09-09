@@ -166,8 +166,13 @@ function teamLeadOf(p){
       || PEOPLE.find(x=>x.dept===p.up  && x.pos==='팀장')
       || null;
 }
-/* Ⓑ 부서 독려메일의 받는사람: 그 부서의 조장·반장·주임.
-   없으면 팀장, 팀장도 없으면 담당 서무로 대체합니다. */
+/* Ⓑ 부서 독려메일의 받는사람.
+   이 명단은 "미이수자"만 담고 있어서, 이미 이수를 마친 조장·반장·팀장은
+   파일에 아예 존재하지 않습니다. 그래서 수신자를 못 찾는 부서가 생기는데
+   그렇다고 발송 건을 없애면 그 인원은 독려를 못 받습니다.
+   아래 순서로 반드시 누군가에게는 도달하도록 합니다.
+     조장·반장·주임 → 팀장 → 상위부서 내 관리직 → 담당 서무 → 관리자 */
+const ADMIN={name:'이재용',pos:'관리자',email:'jason@teczen.kr',dept:'미래성장팀'};
 function rcptOf(k){
   const [up,dept]=k.split('§');
   const R=ST.rules;
@@ -178,8 +183,13 @@ function rcptOf(k){
   let via='';
   if(!to.length){
     const tl=teamLeadOf(sample);
+    const mgrInUp=PEOPLE.filter(p=>p.up===up&&p.job==='mgr')
+      .sort((a,b)=>MGR.indexOf(a.pos)-MGR.indexOf(b.pos))[0];
+    const o=ownerOf(up);
     if(tl){ to=[tl]; via='팀장 대체'; }
-    else { const o=ownerOf(up); if(o.email){ to=[{name:o.name,email:o.email,pos:'담당(서무)'}]; via='담당 서무 대체'; } }
+    else if(mgrInUp){ to=[mgrInUp]; via='관리직 대체'; }
+    else if(o.email){ to=[{name:o.name,email:o.email,pos:'담당(서무)'}]; via='담당 서무 대체'; }
+    else { to=[ADMIN]; via='관리자 대체'; }
   }
   const cc=[];
   if(R.teamcc){ const tl=teamLeadOf(sample); if(tl && !to.some(x=>x.email===tl.email)) cc.push(tl); }
@@ -187,7 +197,8 @@ function rcptOf(k){
   const seen=new Set(to.map(x=>x.email));
   const ccOut=[];
   cc.forEach(c=>{ if(c.email && !seen.has(c.email)){ seen.add(c.email); ccOut.push(c); } });
-  return {to, cc:ccOut, up, dept, via};
+  const needsFix = via==='담당 서무 대체' || via==='관리자 대체';
+  return {to, cc:ccOut, up, dept, via, needsFix};
 }
 function renderMap(){
   const R=ST.rules;

@@ -4,7 +4,9 @@ function go(t){
   $$('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['main','dept','update','map','mail','help'].forEach(x=>$('#tab-'+x).hidden = x!==t);
   if(t==='dept') renderDept();
-  if(t==='map') renderMap();
+  if(t==='map'){ renderMap(); const nf=needFixList(); const b=$('#fixCount');
+    b.textContent = nf.length? `보완 필요 ${nf.length}곳` : '보완 필요 없음';
+    b.className = 'pill '+(nf.length?'p-warn':'p-ok'); }
   if(t==='mail'){ fillMailOwner(); $('#mJobMgr').checked=!!ST.rules.mgr; $('#mJobField').checked=!!ST.rules.lead; renderMail(); }
   if(t==='help') renderTodo();
   window.scrollTo(0,0);
@@ -80,6 +82,41 @@ $('#btnAddPeople').onclick=()=>{
   $('#'+id).onchange=e=>{ST.rules[kk]=e.target.checked?1:0;save();renderMap();renderDept();};
 });
 $('#btnRebuild').onclick=()=>{renderMap();renderDept();toast('수신자 재계산 완료');};
+// 조장·반장이 명단에 없어 대체 발송되는 부서 목록
+function needFixList(){
+  return agg(key).filter(g=>g.done<g.tot)
+    .map(g=>({g, r:rcptOf(g.k)})).filter(x=>x.r.needsFix);
+}
+$('#btnFixXlsx').onclick=()=>{
+  const rows=[['상위부서','부서','미이수 인원','현재 대체 수신자','← 여기에 조장/반장 이름','직위','이메일']];
+  needFixList().forEach(x=>rows.push([x.g.up,x.g.dept,x.g.tot-x.g.done,
+    x.r.to.map(t=>`${t.name}(${t.pos})`).join(', '),'','','']));
+  if(rows.length===1){toast('보완이 필요한 부서가 없습니다');return;}
+  dl(xlsxBlob([{name:'수신자 보완필요',rows}]),`수신자_보완필요_${today()}.xlsx`);
+  toast(`${rows.length-1}개 부서 엑셀 다운로드`);
+};
+$('#btnAddRcpt').onclick=()=>{
+  const lines=$('#taRcpt').value.split(/\n/).map(l=>l.trim()).filter(Boolean);
+  if(!lines.length){toast('입력이 없습니다');return;}
+  const valid=new Set(PEOPLE.map(key));
+  let n=0; const bad=[];
+  lines.forEach(l=>{
+    const c=l.split(/[,\t]/).map(x=>x.trim());
+    if(c.length<5){bad.push(`${l} → 항목이 5개가 아닙니다`);return;}
+    const [up,dept,name,pos,email]=c;
+    if(!/@/.test(email)){bad.push(`${l} → 이메일 형식 오류`);return;}
+    const k=up+'§'+dept;
+    if(!valid.has(k)){bad.push(`${l} → "${up} / ${dept}" 부서를 찾을 수 없습니다`);return;}
+    ST.extra[k]=ST.extra[k]||[];
+    if(ST.extra[k].some(x=>x.email===email)){bad.push(`${l} → 이미 등록됨`);return;}
+    ST.extra[k].push({name:name||email,pos:pos||'조장',email}); n++;
+  });
+  save(); renderMap(); renderDept();
+  $('#taRcpt').value = bad.length? lines.filter(l=>bad.some(b=>b.startsWith(l))).join('\n') : '';
+  $('#rcptResult').innerHTML = `<div class="${bad.length?'warnbox':'okbox'}">
+    <b>${n}명 등록${bad.length?` · ${bad.length}건 실패`:''}</b>${bad.length?'<br>'+bad.map(esc).join('<br>'):''}</div>`;
+  toast(`${n}명 등록${bad.length?` · ${bad.length}건 실패`:''}`);
+};
 $('#onlyNoRcpt').onchange=renderMap;
 ['mOwner','mSubj','mAttach','mInline','mAutoSend','mJobMgr','mJobField'].forEach(id=>$('#'+id).onchange=renderMail);
 ['mSubject','mSubjectA','mNote'].forEach(id=>$('#'+id).oninput=()=>{clearTimeout(window._mt);window._mt=setTimeout(renderMail,250);});

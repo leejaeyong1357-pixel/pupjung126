@@ -295,6 +295,24 @@ code{font-family:var(--mono);background:var(--line2);padding:1px 5px;border-radi
     </div>
   </div>
 
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-h"><h2>수신자 일괄 등록</h2><span class="pill p-warn" id="fixCount">—</span><span class="spacer"></span>
+      <button class="btn sec mini" id="btnFixXlsx">⤓ 보완 필요 부서 엑셀로 받기</button></div>
+    <div class="card-b">
+      <div class="hint" style="margin-bottom:9px">
+        이 명단은 <b>미이수자만</b> 담고 있어서, 이미 교육을 마친 조장·반장은 파일에 없습니다.
+        그런 부서는 담당자/관리자에게 <b>대체 발송</b>되며, 아래에 메일 주소를 등록하면 다음부터 해당 직책자에게 바로 나갑니다.<br>
+        형식: <code>상위부서,부서,이름,직위,이메일</code> (한 줄에 1명)
+      </div>
+      <textarea id="taRcpt" style="min-height:100px" placeholder="엔진생산3팀,엔진조립2반(평택),홍길동,반장,hong@teczen.kr&#10;엔진생산3팀,엔진조립2반(평택),김철수,조장,kim@teczen.kr"></textarea>
+      <div class="row" style="margin-top:9px">
+        <button class="btn ok" id="btnAddRcpt">＋ 수신자 등록</button>
+        <span class="hint">부서명은 위 표에 적힌 것과 <b>정확히 같아야</b> 합니다. 안 맞으면 등록되지 않고 알려드립니다.</span>
+      </div>
+      <div id="rcptResult" style="margin-top:9px"></div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-h"><h2>Ⓑ 부서별 현장 수신자 (조장·반장·주임)</h2>
       <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyNoRcpt"> 수신자 없는 부서만</label>
@@ -628,8 +646,13 @@ function teamLeadOf(p){
       || PEOPLE.find(x=>x.dept===p.up  && x.pos==='팀장')
       || null;
 }
-/* Ⓑ 부서 독려메일의 받는사람: 그 부서의 조장·반장·주임.
-   없으면 팀장, 팀장도 없으면 담당 서무로 대체합니다. */
+/* Ⓑ 부서 독려메일의 받는사람.
+   이 명단은 "미이수자"만 담고 있어서, 이미 이수를 마친 조장·반장·팀장은
+   파일에 아예 존재하지 않습니다. 그래서 수신자를 못 찾는 부서가 생기는데
+   그렇다고 발송 건을 없애면 그 인원은 독려를 못 받습니다.
+   아래 순서로 반드시 누군가에게는 도달하도록 합니다.
+     조장·반장·주임 → 팀장 → 상위부서 내 관리직 → 담당 서무 → 관리자 */
+const ADMIN={name:'이재용',pos:'관리자',email:'jason@teczen.kr',dept:'미래성장팀'};
 function rcptOf(k){
   const [up,dept]=k.split('§');
   const R=ST.rules;
@@ -640,8 +663,13 @@ function rcptOf(k){
   let via='';
   if(!to.length){
     const tl=teamLeadOf(sample);
+    const mgrInUp=PEOPLE.filter(p=>p.up===up&&p.job==='mgr')
+      .sort((a,b)=>MGR.indexOf(a.pos)-MGR.indexOf(b.pos))[0];
+    const o=ownerOf(up);
     if(tl){ to=[tl]; via='팀장 대체'; }
-    else { const o=ownerOf(up); if(o.email){ to=[{name:o.name,email:o.email,pos:'담당(서무)'}]; via='담당 서무 대체'; } }
+    else if(mgrInUp){ to=[mgrInUp]; via='관리직 대체'; }
+    else if(o.email){ to=[{name:o.name,email:o.email,pos:'담당(서무)'}]; via='담당 서무 대체'; }
+    else { to=[ADMIN]; via='관리자 대체'; }
   }
   const cc=[];
   if(R.teamcc){ const tl=teamLeadOf(sample); if(tl && !to.some(x=>x.email===tl.email)) cc.push(tl); }
@@ -649,7 +677,8 @@ function rcptOf(k){
   const seen=new Set(to.map(x=>x.email));
   const ccOut=[];
   cc.forEach(c=>{ if(c.email && !seen.has(c.email)){ seen.add(c.email); ccOut.push(c); } });
-  return {to, cc:ccOut, up, dept, via};
+  const needsFix = via==='담당 서무 대체' || via==='관리자 대체';
+  return {to, cc:ccOut, up, dept, via, needsFix};
 }
 function renderMap(){
   const R=ST.rules;
@@ -881,9 +910,10 @@ function buildJobs(){
     [...g.entries()].sort((a,b)=>b[1].length-a[1].length).forEach(([k,list])=>{
       const r=rcptOf(k);
       list.sort((a,b)=>a.pos.localeCompare(b.pos)||a.name.localeCompare(b.name));
-      jobs.push({type:'B', k, label:`${r.up} › ${r.dept}`, to:r.to, cc:r.cc, list, via:r.via,
+      const sub=fillSubject($('#mSubject').value,{dept:r.dept,up:r.up,n:list.length});
+      jobs.push({type:'B', k, label:`${r.up} › ${r.dept}`, to:r.to, cc:r.cc, list, via:r.via, needsFix:r.needsFix,
         attach:$('#mAttach').checked,
-        subject:fillSubject($('#mSubject').value,{dept:r.dept,up:r.up,n:list.length}),
+        subject:(r.needsFix?'[수신자 확인필요] ':'')+sub,
         file:`메일첨부_${safe(k.replace('§','_'))}_${today()}.xlsx`});
     });
   }
@@ -900,16 +930,22 @@ function bodyHtml(j){
     <tbody>${rows}</tbody></table>`:'';
   const p0=j.list[0];
   const missing=p=>!p.h&&!p.d?'성희롱 예방교육, 장애인 인식개선교육':(!p.h?'성희롱 예방교육':'장애인 인식개선교육');
+  const fixNote = j.needsFix ? `<p style="background:#FDECEB;padding:11px;border-left:4px solid #c0392f;font-size:13px">
+<b>⚠ 수신자 확인이 필요합니다.</b><br>
+<b>${esc(j.label)}</b>의 조장·반장 메일 주소가 시스템에 등록되어 있지 않아
+(해당 직책자가 이미 교육을 이수해 미이수자 명단에 없음) 부득이 담당자님께 보내드립니다.<br>
+아래 명단을 <b>해당 부서 조장·반장에게 전달</b>해 주시고, 직책자 메일 주소를
+<b>미래성장팀 이재용 매니저(jason@teczen.kr)</b>에게 알려주시면 다음 주부터 자동 발송됩니다.</p>` : '';
   const head = one
     ? `<p>안녕하세요, <b>${esc(p0.name)} ${esc(p0.pos)}</b>님.</p>
 <p>${new Date().toISOString().slice(0,10)} 기준 <b>법정의무교육</b> 중 아래 과목이 <b style="color:#c0392f">미이수</b> 상태입니다.</p>
 <p style="background:#FDECEB;padding:10px;border-left:3px solid #c0392f"><b>미이수 과목: ${esc(missing(p0))}</b></p>`
-    : `<p>안녕하세요, <b>${esc(j.label)}</b> 조장·반장님.</p>
+    : `<p>안녕하세요, ${j.needsFix&&j.to[0]?`<b>${esc(j.to[0].name)} ${esc(j.to[0].pos)}</b>님`:`<b>${esc(j.label)}</b> 조장·반장님`}.</p>
 <p>${new Date().toISOString().slice(0,10)} 기준 소속 인원 중 <b>법정의무교육 미이수자가
 <span style="color:#c0392f">${j.list.length}명</span></b> 남아 있어 안내드립니다.</p>
 <p>해당 인원이 기간 내 이수를 완료할 수 있도록 <b>직접 독려</b> 부탁드립니다.</p>`;
   return `<div style="font-family:맑은 고딕,Malgun Gothic,sans-serif;font-size:14px;line-height:1.7;color:#222">
-${head}
+${fixNote}${head}
 <p>교육기간은 <b>${START} ~ ${DEADLINE}</b>이며, <b>연내 전원 이수</b>가 법적 의무사항입니다.<br>
 미실시 시 성희롱 예방교육 500만원 이하, 장애인 인식개선교육 300만원 이하의 과태료가 부과될 수 있습니다.</p>
 ${note?`<p style="background:#FDF1DD;padding:10px;border-left:3px solid #b26a00"><b>${esc(note)}</b></p>`:''}
@@ -921,7 +957,7 @@ ${tbl}
 function renderMail(){
   const jobs=buildJobs();
   const a=jobs.filter(j=>j.type==='A'), b=jobs.filter(j=>j.type==='B');
-  const noRcpt=jobs.filter(j=>!j.to.length);
+  const noRcpt=jobs.filter(j=>j.needsFix);
   $('#mCount').textContent=`총 ${jobs.length}통 (Ⓐ${a.length} · Ⓑ${b.length}) · 대상 ${new Set(jobs.flatMap(j=>j.list.map(p=>p.emp))).size}명`;
   const card=j=>`<div style="padding:8px 0;border-bottom:1px solid var(--line2)">
     <div class="row"><span class="pill ${j.type==='A'?'p-brand':'p-warn'}">${j.type==='A'?'Ⓐ 개인':'Ⓑ 부서'}</span>
@@ -933,7 +969,9 @@ function renderMail(){
   const many = jobs.length>30 && !$('#mAutoSend').checked;
   $('#mList').innerHTML = jobs.length
     ? (many?`<div class="warnbox" style="margin-bottom:9px"><b>⚠ ${jobs.length}통은 한 번에 보내기 어렵습니다.</b><br>검토 모드에서는 Outlook 창이 <b>통수만큼</b> 열려 PC가 멈출 수 있습니다.<br>위에서 <b>발송 담당(서무)</b>을 본인 상위부서로 선택해 나눠 보내세요.</div>`:'')
-      + (noRcpt.length?`<div class="warnbox" style="margin-bottom:9px"><b>⚠ 수신자를 찾지 못한 부서 ${noRcpt.length}곳</b> — ${noRcpt.map(j=>esc(j.label)).join(', ')}<br>해당 조장·반장이 이미 이수해 명단에 없습니다. ④탭에서 직접 추가해 주세요.</div>`:'')
+      + (noRcpt.length?`<div class="warnbox" style="margin-bottom:9px"><b>⚠ 조장·반장을 못 찾아 대체 발송되는 부서 ${noRcpt.length}곳</b> — ${noRcpt.map(j=>esc(j.label)).join(', ')}<br>
+      해당 직책자가 이미 이수해 명단에 없습니다. <b>발송은 되지만</b> 담당자/관리자에게 대신 갑니다.
+      ④탭에서 직책자 메일을 등록하면 다음부터 바로 나갑니다.</div>`:'')
       + (b.length?`<div class="hint" style="font-weight:700;margin:4px 0">Ⓑ 부서 독려메일 ${b.length}통</div>`+b.map(card).join(''):'')
       + (a.length?`<div class="hint" style="font-weight:700;margin:10px 0 4px">Ⓐ 관리직 개인메일 ${a.length}통</div>`+a.map(card).join(''):'')
     : '<div class="empty">발송 대상이 없습니다.</div>';
@@ -1042,7 +1080,7 @@ function u8(str, bom){
 }
 function packDownload(){
   const jobs=renderMail().filter(j=>j.to.length);
-  if(!jobs.length){toast('발송 대상이 없습니다');return;}
+  if(!jobs.length){toast('발송할 미이수자가 없습니다 — 담당 부서/과목 조건을 확인하세요',3200);return;}
   const out=[], list=[];
   if($('#mAutoSend').checked) list.push('AUTOSEND');
   const blobs=[];
@@ -1111,7 +1149,7 @@ function mailtoOpen(){
 
 /* ---------- todo checklist ---------- */
 const TODO=[
- ['수신자 없는 부서 2곳 보완','엔진조립2반(평택) 10명, 노동조합 7명은 조장·반장이 이미 이수해 명단에 없습니다. ④탭에서 직접 추가해야 메일이 나갑니다.'],
+ ['조장·반장 메일 등록','엔진조립2반(평택) 10명은 조장·반장이 이미 이수해 명단에 없어 대체 발송됩니다. ④탭 &lt;수신자 일괄 등록&gt;에 등록하면 바로 나갑니다.'],
  ['집체교육 참석자 반영','4~6월 셧다운 집체교육 참석자는 온라인 데이터에 없을 수 있습니다. 참석자 사번 목록을 관리자에게 전달하세요.'],
  ['신규입사자·퇴사자 반영 주기','매주 인사팀 인원변동 명단을 받아 관리자가 ③탭 &lt;인원 추가&gt;로 등록. 퇴사자는 별도 제외 처리 필요.'],
  ['2주 연속 미이수 부서 보고','②탭 이수율 낮은 순 정렬 화면을 그대로 실장/팀장 보고에 사용할 수 있습니다.'],
@@ -1133,7 +1171,9 @@ function go(t){
   $$('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['main','dept','update','map','mail','help'].forEach(x=>$('#tab-'+x).hidden = x!==t);
   if(t==='dept') renderDept();
-  if(t==='map') renderMap();
+  if(t==='map'){ renderMap(); const nf=needFixList(); const b=$('#fixCount');
+    b.textContent = nf.length? `보완 필요 ${nf.length}곳` : '보완 필요 없음';
+    b.className = 'pill '+(nf.length?'p-warn':'p-ok'); }
   if(t==='mail'){ fillMailOwner(); $('#mJobMgr').checked=!!ST.rules.mgr; $('#mJobField').checked=!!ST.rules.lead; renderMail(); }
   if(t==='help') renderTodo();
   window.scrollTo(0,0);
@@ -1209,6 +1249,41 @@ $('#btnAddPeople').onclick=()=>{
   $('#'+id).onchange=e=>{ST.rules[kk]=e.target.checked?1:0;save();renderMap();renderDept();};
 });
 $('#btnRebuild').onclick=()=>{renderMap();renderDept();toast('수신자 재계산 완료');};
+// 조장·반장이 명단에 없어 대체 발송되는 부서 목록
+function needFixList(){
+  return agg(key).filter(g=>g.done<g.tot)
+    .map(g=>({g, r:rcptOf(g.k)})).filter(x=>x.r.needsFix);
+}
+$('#btnFixXlsx').onclick=()=>{
+  const rows=[['상위부서','부서','미이수 인원','현재 대체 수신자','← 여기에 조장/반장 이름','직위','이메일']];
+  needFixList().forEach(x=>rows.push([x.g.up,x.g.dept,x.g.tot-x.g.done,
+    x.r.to.map(t=>`${t.name}(${t.pos})`).join(', '),'','','']));
+  if(rows.length===1){toast('보완이 필요한 부서가 없습니다');return;}
+  dl(xlsxBlob([{name:'수신자 보완필요',rows}]),`수신자_보완필요_${today()}.xlsx`);
+  toast(`${rows.length-1}개 부서 엑셀 다운로드`);
+};
+$('#btnAddRcpt').onclick=()=>{
+  const lines=$('#taRcpt').value.split(/\n/).map(l=>l.trim()).filter(Boolean);
+  if(!lines.length){toast('입력이 없습니다');return;}
+  const valid=new Set(PEOPLE.map(key));
+  let n=0; const bad=[];
+  lines.forEach(l=>{
+    const c=l.split(/[,\t]/).map(x=>x.trim());
+    if(c.length<5){bad.push(`${l} → 항목이 5개가 아닙니다`);return;}
+    const [up,dept,name,pos,email]=c;
+    if(!/@/.test(email)){bad.push(`${l} → 이메일 형식 오류`);return;}
+    const k=up+'§'+dept;
+    if(!valid.has(k)){bad.push(`${l} → "${up} / ${dept}" 부서를 찾을 수 없습니다`);return;}
+    ST.extra[k]=ST.extra[k]||[];
+    if(ST.extra[k].some(x=>x.email===email)){bad.push(`${l} → 이미 등록됨`);return;}
+    ST.extra[k].push({name:name||email,pos:pos||'조장',email}); n++;
+  });
+  save(); renderMap(); renderDept();
+  $('#taRcpt').value = bad.length? lines.filter(l=>bad.some(b=>b.startsWith(l))).join('\n') : '';
+  $('#rcptResult').innerHTML = `<div class="${bad.length?'warnbox':'okbox'}">
+    <b>${n}명 등록${bad.length?` · ${bad.length}건 실패`:''}</b>${bad.length?'<br>'+bad.map(esc).join('<br>'):''}</div>`;
+  toast(`${n}명 등록${bad.length?` · ${bad.length}건 실패`:''}`);
+};
 $('#onlyNoRcpt').onchange=renderMap;
 ['mOwner','mSubj','mAttach','mInline','mAutoSend','mJobMgr','mJobField'].forEach(id=>$('#'+id).onchange=renderMail);
 ['mSubject','mSubjectA','mNote'].forEach(id=>$('#'+id).oninput=()=>{clearTimeout(window._mt);window._mt=setTimeout(renderMail,250);});

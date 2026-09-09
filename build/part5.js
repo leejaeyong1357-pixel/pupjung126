@@ -42,9 +42,10 @@ function buildJobs(){
     [...g.entries()].sort((a,b)=>b[1].length-a[1].length).forEach(([k,list])=>{
       const r=rcptOf(k);
       list.sort((a,b)=>a.pos.localeCompare(b.pos)||a.name.localeCompare(b.name));
-      jobs.push({type:'B', k, label:`${r.up} › ${r.dept}`, to:r.to, cc:r.cc, list, via:r.via,
+      const sub=fillSubject($('#mSubject').value,{dept:r.dept,up:r.up,n:list.length});
+      jobs.push({type:'B', k, label:`${r.up} › ${r.dept}`, to:r.to, cc:r.cc, list, via:r.via, needsFix:r.needsFix,
         attach:$('#mAttach').checked,
-        subject:fillSubject($('#mSubject').value,{dept:r.dept,up:r.up,n:list.length}),
+        subject:(r.needsFix?'[수신자 확인필요] ':'')+sub,
         file:`메일첨부_${safe(k.replace('§','_'))}_${today()}.xlsx`});
     });
   }
@@ -61,16 +62,22 @@ function bodyHtml(j){
     <tbody>${rows}</tbody></table>`:'';
   const p0=j.list[0];
   const missing=p=>!p.h&&!p.d?'성희롱 예방교육, 장애인 인식개선교육':(!p.h?'성희롱 예방교육':'장애인 인식개선교육');
+  const fixNote = j.needsFix ? `<p style="background:#FDECEB;padding:11px;border-left:4px solid #c0392f;font-size:13px">
+<b>⚠ 수신자 확인이 필요합니다.</b><br>
+<b>${esc(j.label)}</b>의 조장·반장 메일 주소가 시스템에 등록되어 있지 않아
+(해당 직책자가 이미 교육을 이수해 미이수자 명단에 없음) 부득이 담당자님께 보내드립니다.<br>
+아래 명단을 <b>해당 부서 조장·반장에게 전달</b>해 주시고, 직책자 메일 주소를
+<b>미래성장팀 이재용 매니저(jason@teczen.kr)</b>에게 알려주시면 다음 주부터 자동 발송됩니다.</p>` : '';
   const head = one
     ? `<p>안녕하세요, <b>${esc(p0.name)} ${esc(p0.pos)}</b>님.</p>
 <p>${new Date().toISOString().slice(0,10)} 기준 <b>법정의무교육</b> 중 아래 과목이 <b style="color:#c0392f">미이수</b> 상태입니다.</p>
 <p style="background:#FDECEB;padding:10px;border-left:3px solid #c0392f"><b>미이수 과목: ${esc(missing(p0))}</b></p>`
-    : `<p>안녕하세요, <b>${esc(j.label)}</b> 조장·반장님.</p>
+    : `<p>안녕하세요, ${j.needsFix&&j.to[0]?`<b>${esc(j.to[0].name)} ${esc(j.to[0].pos)}</b>님`:`<b>${esc(j.label)}</b> 조장·반장님`}.</p>
 <p>${new Date().toISOString().slice(0,10)} 기준 소속 인원 중 <b>법정의무교육 미이수자가
 <span style="color:#c0392f">${j.list.length}명</span></b> 남아 있어 안내드립니다.</p>
 <p>해당 인원이 기간 내 이수를 완료할 수 있도록 <b>직접 독려</b> 부탁드립니다.</p>`;
   return `<div style="font-family:맑은 고딕,Malgun Gothic,sans-serif;font-size:14px;line-height:1.7;color:#222">
-${head}
+${fixNote}${head}
 <p>교육기간은 <b>${START} ~ ${DEADLINE}</b>이며, <b>연내 전원 이수</b>가 법적 의무사항입니다.<br>
 미실시 시 성희롱 예방교육 500만원 이하, 장애인 인식개선교육 300만원 이하의 과태료가 부과될 수 있습니다.</p>
 ${note?`<p style="background:#FDF1DD;padding:10px;border-left:3px solid #b26a00"><b>${esc(note)}</b></p>`:''}
@@ -82,7 +89,7 @@ ${tbl}
 function renderMail(){
   const jobs=buildJobs();
   const a=jobs.filter(j=>j.type==='A'), b=jobs.filter(j=>j.type==='B');
-  const noRcpt=jobs.filter(j=>!j.to.length);
+  const noRcpt=jobs.filter(j=>j.needsFix);
   $('#mCount').textContent=`총 ${jobs.length}통 (Ⓐ${a.length} · Ⓑ${b.length}) · 대상 ${new Set(jobs.flatMap(j=>j.list.map(p=>p.emp))).size}명`;
   const card=j=>`<div style="padding:8px 0;border-bottom:1px solid var(--line2)">
     <div class="row"><span class="pill ${j.type==='A'?'p-brand':'p-warn'}">${j.type==='A'?'Ⓐ 개인':'Ⓑ 부서'}</span>
@@ -94,7 +101,9 @@ function renderMail(){
   const many = jobs.length>30 && !$('#mAutoSend').checked;
   $('#mList').innerHTML = jobs.length
     ? (many?`<div class="warnbox" style="margin-bottom:9px"><b>⚠ ${jobs.length}통은 한 번에 보내기 어렵습니다.</b><br>검토 모드에서는 Outlook 창이 <b>통수만큼</b> 열려 PC가 멈출 수 있습니다.<br>위에서 <b>발송 담당(서무)</b>을 본인 상위부서로 선택해 나눠 보내세요.</div>`:'')
-      + (noRcpt.length?`<div class="warnbox" style="margin-bottom:9px"><b>⚠ 수신자를 찾지 못한 부서 ${noRcpt.length}곳</b> — ${noRcpt.map(j=>esc(j.label)).join(', ')}<br>해당 조장·반장이 이미 이수해 명단에 없습니다. ④탭에서 직접 추가해 주세요.</div>`:'')
+      + (noRcpt.length?`<div class="warnbox" style="margin-bottom:9px"><b>⚠ 조장·반장을 못 찾아 대체 발송되는 부서 ${noRcpt.length}곳</b> — ${noRcpt.map(j=>esc(j.label)).join(', ')}<br>
+      해당 직책자가 이미 이수해 명단에 없습니다. <b>발송은 되지만</b> 담당자/관리자에게 대신 갑니다.
+      ④탭에서 직책자 메일을 등록하면 다음부터 바로 나갑니다.</div>`:'')
       + (b.length?`<div class="hint" style="font-weight:700;margin:4px 0">Ⓑ 부서 독려메일 ${b.length}통</div>`+b.map(card).join(''):'')
       + (a.length?`<div class="hint" style="font-weight:700;margin:10px 0 4px">Ⓐ 관리직 개인메일 ${a.length}통</div>`+a.map(card).join(''):'')
     : '<div class="empty">발송 대상이 없습니다.</div>';
@@ -203,7 +212,7 @@ function u8(str, bom){
 }
 function packDownload(){
   const jobs=renderMail().filter(j=>j.to.length);
-  if(!jobs.length){toast('발송 대상이 없습니다');return;}
+  if(!jobs.length){toast('발송할 미이수자가 없습니다 — 담당 부서/과목 조건을 확인하세요',3200);return;}
   const out=[], list=[];
   if($('#mAutoSend').checked) list.push('AUTOSEND');
   const blobs=[];
@@ -272,7 +281,7 @@ function mailtoOpen(){
 
 /* ---------- todo checklist ---------- */
 const TODO=[
- ['수신자 없는 부서 2곳 보완','엔진조립2반(평택) 10명, 노동조합 7명은 조장·반장이 이미 이수해 명단에 없습니다. ④탭에서 직접 추가해야 메일이 나갑니다.'],
+ ['조장·반장 메일 등록','엔진조립2반(평택) 10명은 조장·반장이 이미 이수해 명단에 없어 대체 발송됩니다. ④탭 &lt;수신자 일괄 등록&gt;에 등록하면 바로 나갑니다.'],
  ['집체교육 참석자 반영','4~6월 셧다운 집체교육 참석자는 온라인 데이터에 없을 수 있습니다. 참석자 사번 목록을 관리자에게 전달하세요.'],
  ['신규입사자·퇴사자 반영 주기','매주 인사팀 인원변동 명단을 받아 관리자가 ③탭 &lt;인원 추가&gt;로 등록. 퇴사자는 별도 제외 처리 필요.'],
  ['2주 연속 미이수 부서 보고','②탭 이수율 낮은 순 정렬 화면을 그대로 실장/팀장 보고에 사용할 수 있습니다.'],
