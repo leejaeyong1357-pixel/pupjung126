@@ -177,27 +177,46 @@
   </div>
 
   <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><h2>수신자 일괄 등록</h2><span class="pill p-warn" id="fixCount">—</span><span class="spacer"></span>
-      <button class="btn sec mini" id="btnFixXlsx">⤓ 보완 필요 부서 엑셀로 받기</button></div>
+    <div class="card-h"><h2>수신자 마스터 (팀장 · 조장 · 반장 명부)</h2>
+      <span class="pill p-mute" id="masterCount">미등록</span>
+      <span class="spacer"></span>
+      <button class="btn sec mini" id="btnMasterForm">⤓ 작성 양식 받기</button>
+      <button class="btn sec mini" id="btnMasterClear">마스터 비우기</button></div>
     <div class="card-b">
+      <div class="warnbox" style="margin-bottom:10px">
+        <b>이걸 등록하면 수신자 문제가 완전히 해결됩니다.</b><br>
+        지금은 <b>미이수자 명단</b>에서 조장·반장을 거꾸로 찾고 있어서, 그 직책자가 교육을 이수하면
+        명단에서 빠지고 <b>받을 사람이 사라집니다.</b> 팀장·조장·반장 명부를 한 번 넣어두면
+        이수 여부와 무관하게 항상 정확한 사람에게 발송됩니다.
+      </div>
       <div class="hint" style="margin-bottom:9px">
-        이 명단은 <b>미이수자만</b> 담고 있어서, 이미 교육을 마친 조장·반장은 파일에 없습니다.
-        그런 부서는 담당자/관리자에게 <b>대체 발송</b>되며, 아래에 메일 주소를 등록하면 다음부터 해당 직책자에게 바로 나갑니다.<br>
-        형식: <code>상위부서,부서,이름,직위,이메일</code> (한 줄에 1명)
+        엑셀에서 <b>해당 범위를 그대로 드래그해 복사한 뒤 붙여넣으세요.</b>
+        열 순서는 상관없습니다 — 이메일(@ 포함), 직위(팀장/조장/반장/주임), 부서명을 자동으로 알아냅니다.<br>
+        시트가 나뉘어 있으면(1시트 팀장 / 2시트 반장) <b>시트별로 나눠서</b> 붙여넣으면 됩니다.
       </div>
-      <textarea id="taRcpt" style="min-height:100px" placeholder="엔진생산3팀,엔진조립2반(평택),홍길동,반장,hong@teczen.kr&#10;엔진생산3팀,엔진조립2반(평택),김철수,조장,kim@teczen.kr"></textarea>
+      <div class="row" style="margin-bottom:8px">
+        <label class="hint">직위가 열에 없을 때 적용<select id="mPosDefault" style="min-width:130px">
+          <option value="">— 자동 감지만 사용 —</option>
+          <option value="팀장">전부 팀장</option>
+          <option value="반장">전부 반장</option>
+          <option value="조장">전부 조장</option>
+          <option value="주임">전부 주임</option>
+        </select></label>
+        <span class="hint">1시트(팀장) 붙여넣을 땐 <b>전부 팀장</b>, 2시트(반장) 붙여넣을 땐 <b>전부 반장</b>으로 두세요.</span>
+      </div>
+      <textarea id="taMaster" style="min-height:130px" placeholder="엑셀에서 복사한 내용을 그대로 붙여넣으세요.&#10;&#10;예)&#10;PT생산1팀&#9;강태흠&#9;팀장&#9;kangth@teczen.kr&#10;PT생산1팀&#9;조립반(1조)&#9;김태형&#9;반장&#9;82210364@teczen.kr&#10;엔진생산3팀&#9;엔진조립2반(평택)&#9;홍길동&#9;hong@teczen.kr"></textarea>
       <div class="row" style="margin-top:9px">
-        <button class="btn ok" id="btnAddRcpt">＋ 수신자 등록</button>
-        <span class="hint">부서명은 위 표에 적힌 것과 <b>정확히 같아야</b> 합니다. 안 맞으면 등록되지 않고 알려드립니다.</span>
+        <button class="btn ok" id="btnAddMaster">＋ 마스터 등록</button>
+        <label class="hint"><input type="checkbox" id="mMasterOnly"> 마스터에 등록된 사람에게만 발송(명단 추론 사용 안 함)</label>
       </div>
-      <div id="rcptResult" style="margin-top:9px"></div>
+      <div id="masterResult" style="margin-top:9px"></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-h"><h2>Ⓑ 부서별 현장 수신자 (조장·반장·주임)</h2>
-      <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyNoRcpt"> 수신자 없는 부서만</label>
-      <span class="spacer"></span><span class="hint">＋로 외부 인원(이미 이수해 명단에 없는 조·반장 등)을 직접 추가할 수 있습니다.</span></div>
+    <div class="card-h"><h2>상위부서별 수신자 확인</h2>
+      <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyNoRcpt"> 보완 필요한 곳만</label>
+      <span class="spacer"></span><span class="hint">상위부서를 펼치면 팀장(관리직 참조)과 부서별 조장·반장이 나옵니다.</span></div>
     <div class="card-b" id="rcptBox"></div>
   </div>
 </section>

@@ -296,27 +296,46 @@ code{font-family:var(--mono);background:var(--line2);padding:1px 5px;border-radi
   </div>
 
   <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><h2>수신자 일괄 등록</h2><span class="pill p-warn" id="fixCount">—</span><span class="spacer"></span>
-      <button class="btn sec mini" id="btnFixXlsx">⤓ 보완 필요 부서 엑셀로 받기</button></div>
+    <div class="card-h"><h2>수신자 마스터 (팀장 · 조장 · 반장 명부)</h2>
+      <span class="pill p-mute" id="masterCount">미등록</span>
+      <span class="spacer"></span>
+      <button class="btn sec mini" id="btnMasterForm">⤓ 작성 양식 받기</button>
+      <button class="btn sec mini" id="btnMasterClear">마스터 비우기</button></div>
     <div class="card-b">
+      <div class="warnbox" style="margin-bottom:10px">
+        <b>이걸 등록하면 수신자 문제가 완전히 해결됩니다.</b><br>
+        지금은 <b>미이수자 명단</b>에서 조장·반장을 거꾸로 찾고 있어서, 그 직책자가 교육을 이수하면
+        명단에서 빠지고 <b>받을 사람이 사라집니다.</b> 팀장·조장·반장 명부를 한 번 넣어두면
+        이수 여부와 무관하게 항상 정확한 사람에게 발송됩니다.
+      </div>
       <div class="hint" style="margin-bottom:9px">
-        이 명단은 <b>미이수자만</b> 담고 있어서, 이미 교육을 마친 조장·반장은 파일에 없습니다.
-        그런 부서는 담당자/관리자에게 <b>대체 발송</b>되며, 아래에 메일 주소를 등록하면 다음부터 해당 직책자에게 바로 나갑니다.<br>
-        형식: <code>상위부서,부서,이름,직위,이메일</code> (한 줄에 1명)
+        엑셀에서 <b>해당 범위를 그대로 드래그해 복사한 뒤 붙여넣으세요.</b>
+        열 순서는 상관없습니다 — 이메일(@ 포함), 직위(팀장/조장/반장/주임), 부서명을 자동으로 알아냅니다.<br>
+        시트가 나뉘어 있으면(1시트 팀장 / 2시트 반장) <b>시트별로 나눠서</b> 붙여넣으면 됩니다.
       </div>
-      <textarea id="taRcpt" style="min-height:100px" placeholder="엔진생산3팀,엔진조립2반(평택),홍길동,반장,hong@teczen.kr&#10;엔진생산3팀,엔진조립2반(평택),김철수,조장,kim@teczen.kr"></textarea>
+      <div class="row" style="margin-bottom:8px">
+        <label class="hint">직위가 열에 없을 때 적용<select id="mPosDefault" style="min-width:130px">
+          <option value="">— 자동 감지만 사용 —</option>
+          <option value="팀장">전부 팀장</option>
+          <option value="반장">전부 반장</option>
+          <option value="조장">전부 조장</option>
+          <option value="주임">전부 주임</option>
+        </select></label>
+        <span class="hint">1시트(팀장) 붙여넣을 땐 <b>전부 팀장</b>, 2시트(반장) 붙여넣을 땐 <b>전부 반장</b>으로 두세요.</span>
+      </div>
+      <textarea id="taMaster" style="min-height:130px" placeholder="엑셀에서 복사한 내용을 그대로 붙여넣으세요.&#10;&#10;예)&#10;PT생산1팀&#9;강태흠&#9;팀장&#9;kangth@teczen.kr&#10;PT생산1팀&#9;조립반(1조)&#9;김태형&#9;반장&#9;82210364@teczen.kr&#10;엔진생산3팀&#9;엔진조립2반(평택)&#9;홍길동&#9;hong@teczen.kr"></textarea>
       <div class="row" style="margin-top:9px">
-        <button class="btn ok" id="btnAddRcpt">＋ 수신자 등록</button>
-        <span class="hint">부서명은 위 표에 적힌 것과 <b>정확히 같아야</b> 합니다. 안 맞으면 등록되지 않고 알려드립니다.</span>
+        <button class="btn ok" id="btnAddMaster">＋ 마스터 등록</button>
+        <label class="hint"><input type="checkbox" id="mMasterOnly"> 마스터에 등록된 사람에게만 발송(명단 추론 사용 안 함)</label>
       </div>
-      <div id="rcptResult" style="margin-top:9px"></div>
+      <div id="masterResult" style="margin-top:9px"></div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-h"><h2>Ⓑ 부서별 현장 수신자 (조장·반장·주임)</h2>
-      <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyNoRcpt"> 수신자 없는 부서만</label>
-      <span class="spacer"></span><span class="hint">＋로 외부 인원(이미 이수해 명단에 없는 조·반장 등)을 직접 추가할 수 있습니다.</span></div>
+    <div class="card-h"><h2>상위부서별 수신자 확인</h2>
+      <label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="onlyNoRcpt"> 보완 필요한 곳만</label>
+      <span class="spacer"></span><span class="hint">상위부서를 펼치면 팀장(관리직 참조)과 부서별 조장·반장이 나옵니다.</span></div>
     <div class="card-b" id="rcptBox"></div>
   </div>
 </section>
@@ -497,7 +516,7 @@ const jobOf = pos => MGR.includes(pos) ? 'mgr' : (LEAD.includes(pos) ? 'lead' : 
 function toast(m,ms=2200){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms);}
 
 /* ---------- state ---------- */
-let ST = {done:{}, owners:{}, extra:{}, added:[], hist:[], rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1}, theme:''};
+let ST = {done:{}, owners:{}, extra:{}, added:[], hist:[], master:[], rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1,masterOnly:0}, theme:''};
 function load(){ try{const r=localStorage.getItem(LS); if(r) ST=Object.assign(ST,JSON.parse(r));}catch(e){} }
 function save(){ try{localStorage.setItem(LS,JSON.stringify(ST));}catch(e){toast('저장 실패: 브라우저 저장소를 사용할 수 없습니다');} }
 load();
@@ -639,10 +658,22 @@ function ownerOf(up){
   const c=seed||ownerCands(up).find(p=>['매니저','책임매니저'].includes(p.pos));
   return c?{emp:String(c.emp),name:c.name,email:c.email,auto:true}:{name:'',email:'',auto:true};
 }
-/* 해당 팀장 = ① 같은 부서의 팀장 ② 상위부서명과 같은 부서(팀 사무실)의 팀장.
+/* 수신자 마스터(팀장·조장·반장 명부)가 등록돼 있으면 항상 그쪽을 먼저 씁니다.
+   미이수자 명단에서 역산하는 방식은 직책자가 교육을 이수하는 순간 수신자가
+   사라지므로, 마스터가 있으면 그것이 정답입니다. */
+const master = () => ST.master||[];
+function masterLead(up){                       // 상위부서의 팀장
+  return master().find(m=>m.up===up && (!m.dept||m.dept===up) && m.pos==='팀장')
+      || master().find(m=>m.up===up && m.pos==='팀장') || null;
+}
+function masterFieldOf(up,dept){               // 부서의 조장·반장·주임
+  return master().filter(m=>m.up===up && m.dept===dept && LEAD.includes(m.pos));
+}
+/* 해당 팀장 = ⓪ 마스터 ① 같은 부서의 팀장 ② 상위부서명과 같은 부서(팀 사무실)의 팀장.
    그 위(실/전사) 팀장을 끌어오면 무관한 사람에게 가므로 여기서 멈춥니다. */
 function teamLeadOf(p){
-  return PEOPLE.find(x=>x.dept===p.dept && x.pos==='팀장' && String(x.emp)!==String(p.emp))
+  return masterLead(p.up)
+      || PEOPLE.find(x=>x.dept===p.dept && x.pos==='팀장' && String(x.emp)!==String(p.emp))
       || PEOPLE.find(x=>x.dept===p.up  && x.pos==='팀장')
       || null;
 }
@@ -658,8 +689,13 @@ function rcptOf(k){
   const R=ST.rules;
   const mem=PEOPLE.filter(p=>key(p)===k);
   const sample=mem[0]||{dept,up};
-  let to=mem.filter(p=> p.job==='lead' || (R.tech&&p.job==='tech'));
-  (ST.extra[k]||[]).forEach(x=>to.push({...x,job:jobOf(x.pos),extra:true}));
+  // 마스터 우선 → 명단 추론 → 수동 추가 순으로 모으고 중복 제거
+  let to=[];
+  const seenTo=new Set();
+  const push=x=>{ const id=(x.email||'').toLowerCase(); if(!id||seenTo.has(id))return; seenTo.add(id); to.push(x); };
+  masterFieldOf(up,dept).forEach(m=>push({...m,job:jobOf(m.pos),fromMaster:true}));
+  if(!R.masterOnly) mem.filter(p=> p.job==='lead' || (R.tech&&p.job==='tech')).forEach(push);
+  (ST.extra[k]||[]).forEach(x=>push({...x,job:jobOf(x.pos),extra:true}));
   let via='';
   if(!to.length){
     const tl=teamLeadOf(sample);
@@ -708,22 +744,46 @@ function renderMap(){
     } else ST.owners[u][i.dataset.f]=i.value.trim();
     save(); renderMap(); renderDept(); fillMailOwner();
   });
+  // 상위부서 단위로 접었다 펴는 구조: 팀장(관리직 참조) + 부서별 조장·반장
   const only=$('#onlyNoRcpt').checked;
-  const gs=agg(key).filter(g=>g.done<g.tot);
-  $('#rcptBox').innerHTML = gs.map(g=>{
-    const r=rcptOf(g.k); if(only&&r.to.length) return '';
-    const chips = r.to.length? r.to.map(x=>`<span class="chip"><b>${esc(x.name)}</b> ${esc(x.pos)} <span class="hint">${esc(x.email)}</span>${x.extra?`<span class="x" data-del="${esc(g.k)}" data-em="${esc(x.email)}">✕</span>`:''}</span>`).join('')
-      : '<span class="pill p-warn">수신자 없음 — 직접 추가 필요</span>';
-    const ccc = r.cc.map(x=>`<span class="chip" style="opacity:.75">CC ${esc(x.name)} ${esc(x.pos)}</span>`).join('');
-    return `<details class="acc"><summary>${esc(g.up)} › ${esc(g.dept)}
-      <span class="pill ${r.to.length?'p-brand':'p-warn'}">수신 ${r.to.length}</span>
-      <span class="pill p-bad">미이수 ${g.tot-g.done}</span></summary>
-      <div class="body"><div class="chips" style="margin-bottom:8px">${chips}${ccc}</div>
-      <div class="row"><input placeholder="이름" data-k="${esc(g.k)}" data-f="name" style="width:90px">
-      <input placeholder="직위(예: 조장)" data-k="${esc(g.k)}" data-f="pos" style="width:110px">
-      <input placeholder="이메일" data-k="${esc(g.k)}" data-f="email" style="width:220px">
-      <button class="btn sec mini" data-add="${esc(g.k)}">＋ 수신자 추가</button></div></div></details>`;
-  }).join('') || '<div class="empty">모든 부서가 이수 완료되었습니다 🎉</div>';
+  const ups2=[...new Set(PEOPLE.filter(p=>!p.h||!p.d).map(p=>p.up))].sort();
+  const chip=(x,extraKey)=>`<span class="chip"><b>${esc(x.name)}</b> ${esc(x.pos)}
+    <span class="hint">${esc(x.email)}</span>
+    ${x.fromMaster?'<span class="pill p-ok" style="font-size:10px">마스터</span>':''}
+    ${x.extra?`<span class="x" data-del="${esc(extraKey)}" data-em="${esc(x.email)}">✕</span>`:''}</span>`;
+  $('#rcptBox').innerHTML = ups2.map(up=>{
+    const gs=agg(key).filter(g=>g.up===up && g.done<g.tot);
+    const rs=gs.map(g=>({g,r:rcptOf(g.k)}));
+    const fix=rs.filter(x=>x.r.needsFix).length;
+    if(only && !fix) return '';
+    const tl=teamLeadOf({up,dept:up});
+    const ow=ownerOf(up);
+    const mgrCnt=PEOPLE.filter(p=>p.up===up&&p.job==='mgr'&&(!p.h||!p.d)).length;
+    const body = rs.map(({g,r})=>`<div style="padding:7px 0;border-top:1px solid var(--line2)">
+        <div class="row"><b style="min-width:190px">${esc(g.dept)}</b>
+          <span class="pill p-bad">미이수 ${g.tot-g.done}</span>
+          ${r.needsFix?`<span class="pill p-warn">${esc(r.via)} — 보완 필요</span>`:(r.via?`<span class="pill p-mute">${esc(r.via)}</span>`:'')}</div>
+        <div class="chips" style="margin-top:5px">${r.to.map(x=>chip(x,g.k)).join('')}</div>
+        <div class="row" style="margin-top:5px">
+          <input placeholder="이름" data-k="${esc(g.k)}" data-f="name" style="width:80px">
+          <input placeholder="직위" data-k="${esc(g.k)}" data-f="pos" style="width:80px">
+          <input placeholder="이메일" data-k="${esc(g.k)}" data-f="email" style="width:200px">
+          <button class="btn sec mini" data-add="${esc(g.k)}">＋ 추가</button></div>
+      </div>`).join('');
+    return `<details class="acc"${fix?' open':''}><summary>${esc(up)}
+      <span class="pill p-mute">부서 ${gs.length}</span>
+      ${mgrCnt?`<span class="pill tag-mgr">관리직 ${mgrCnt}</span>`:''}
+      ${fix?`<span class="pill p-warn">보완 필요 ${fix}</span>`:'<span class="pill p-ok">정상</span>'}</summary>
+      <div class="body">
+        <div class="row" style="padding-bottom:8px">
+          <span class="hint" style="min-width:190px;font-weight:700">Ⓐ 관리직 참조 — 팀장</span>
+          ${tl?chip(tl):'<span class="pill p-warn">팀장 미등록 — 마스터에 넣어주세요</span>'}
+          ${ow.email?`<span class="chip" style="opacity:.75">담당(서무) ${esc(ow.name)} <span class="hint">${esc(ow.email)}</span></span>`:''}
+        </div>
+        <div class="hint" style="font-weight:700;padding-top:4px;border-top:1px solid var(--line2)">Ⓑ 현장 수신자 — 부서별 조장·반장</div>
+        ${body||'<div class="hint" style="padding:8px 0">미이수 부서 없음</div>'}
+      </div></details>`;
+  }).join('') || '<div class="empty">보완이 필요한 곳이 없습니다 🎉</div>';
   $$('#rcptBox [data-add]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.add, g=[...$$(`#rcptBox [data-k="${CSS.escape(k)}"]`)];
     const v={}; g.forEach(i=>v[i.dataset.f]=i.value.trim());
@@ -1171,9 +1231,7 @@ function go(t){
   $$('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   ['main','dept','update','map','mail','help'].forEach(x=>$('#tab-'+x).hidden = x!==t);
   if(t==='dept') renderDept();
-  if(t==='map'){ renderMap(); const nf=needFixList(); const b=$('#fixCount');
-    b.textContent = nf.length? `보완 필요 ${nf.length}곳` : '보완 필요 없음';
-    b.className = 'pill '+(nf.length?'p-warn':'p-ok'); }
+  if(t==='map'){ renderMap(); renderMasterCount(); }
   if(t==='mail'){ fillMailOwner(); $('#mJobMgr').checked=!!ST.rules.mgr; $('#mJobField').checked=!!ST.rules.lead; renderMail(); }
   if(t==='help') renderTodo();
   window.scrollTo(0,0);
@@ -1254,37 +1312,90 @@ function needFixList(){
   return agg(key).filter(g=>g.done<g.tot)
     .map(g=>({g, r:rcptOf(g.k)})).filter(x=>x.r.needsFix);
 }
-$('#btnFixXlsx').onclick=()=>{
-  const rows=[['상위부서','부서','미이수 인원','현재 대체 수신자','← 여기에 조장/반장 이름','직위','이메일']];
-  needFixList().forEach(x=>rows.push([x.g.up,x.g.dept,x.g.tot-x.g.done,
-    x.r.to.map(t=>`${t.name}(${t.pos})`).join(', '),'','','']));
-  if(rows.length===1){toast('보완이 필요한 부서가 없습니다');return;}
-  dl(xlsxBlob([{name:'수신자 보완필요',rows}]),`수신자_보완필요_${today()}.xlsx`);
-  toast(`${rows.length-1}개 부서 엑셀 다운로드`);
-};
-$('#btnAddRcpt').onclick=()=>{
-  const lines=$('#taRcpt').value.split(/\n/).map(l=>l.trim()).filter(Boolean);
-  if(!lines.length){toast('입력이 없습니다');return;}
-  const valid=new Set(PEOPLE.map(key));
-  let n=0; const bad=[];
-  lines.forEach(l=>{
-    const c=l.split(/[,\t]/).map(x=>x.trim());
-    if(c.length<5){bad.push(`${l} → 항목이 5개가 아닙니다`);return;}
-    const [up,dept,name,pos,email]=c;
-    if(!/@/.test(email)){bad.push(`${l} → 이메일 형식 오류`);return;}
-    const k=up+'§'+dept;
-    if(!valid.has(k)){bad.push(`${l} → "${up} / ${dept}" 부서를 찾을 수 없습니다`);return;}
-    ST.extra[k]=ST.extra[k]||[];
-    if(ST.extra[k].some(x=>x.email===email)){bad.push(`${l} → 이미 등록됨`);return;}
-    ST.extra[k].push({name:name||email,pos:pos||'조장',email}); n++;
+function renderMasterCount(){
+  const m=ST.master||[], tl=m.filter(x=>x.pos==='팀장').length, b=$('#masterCount');
+  b.textContent = m.length? `팀장 ${tl}명 · 조장/반장 ${m.length-tl}명` : '미등록';
+  b.className='pill '+(m.length?'p-ok':'p-mute');
+  $('#mMasterOnly').checked=!!ST.rules.masterOnly;
+}
+$('#btnMasterForm').onclick=()=>{
+  // 지금 시스템이 아는 값을 미리 채워서 내보냅니다. 빈 칸만 채워 돌려주면 됩니다.
+  const rows=[['상위부서','부서','이름','직위','이메일','비고']];
+  const ups=[...new Set(PEOPLE.filter(p=>!p.h||!p.d).map(p=>p.up))].sort();
+  ups.forEach(up=>{
+    const tl=teamLeadOf({up,dept:up});
+    rows.push([up,'',tl?tl.name:'','팀장',tl?tl.email:'',tl?'':'← 팀장 정보 없음, 채워주세요']);
+    agg(key).filter(g=>g.up===up&&g.done<g.tot).forEach(g=>{
+      const leads=rcptOf(g.k).to.filter(x=>LEAD.includes(x.pos));
+      if(leads.length) leads.forEach(x=>rows.push([up,g.dept,x.name,x.pos,x.email,'']));
+      else rows.push([up,g.dept,'','조장','','← 조장/반장 정보 없음, 꼭 채워주세요']);
+    });
   });
-  save(); renderMap(); renderDept();
-  $('#taRcpt').value = bad.length? lines.filter(l=>bad.some(b=>b.startsWith(l))).join('\n') : '';
-  $('#rcptResult').innerHTML = `<div class="${bad.length?'warnbox':'okbox'}">
-    <b>${n}명 등록${bad.length?` · ${bad.length}건 실패`:''}</b>${bad.length?'<br>'+bad.map(esc).join('<br>'):''}</div>`;
-  toast(`${n}명 등록${bad.length?` · ${bad.length}건 실패`:''}`);
+  dl(xlsxBlob([{name:'수신자 마스터 양식',rows}]),`수신자마스터_양식_${today()}.xlsx`);
+  toast('양식 다운로드 — 빈 칸을 채워 다시 붙여넣으세요',3200);
 };
-$('#onlyNoRcpt').onchange=renderMap;
+$('#btnMasterClear').onclick=()=>{
+  if(!confirm('등록된 수신자 마스터를 전부 지웁니다. 계속할까요?')) return;
+  ST.master=[]; save(); renderMasterCount(); renderMap(); renderDept(); toast('마스터 비움');
+};
+$('#mMasterOnly').onchange=e=>{ST.rules.masterOnly=e.target.checked?1:0;save();renderMap();renderDept();};
+/* 붙여넣은 한 줄에서 상위부서/부서/이름/직위/이메일을 추론합니다.
+   사내 엑셀마다 열 순서가 달라서 위치가 아니라 값의 생김새로 판별합니다.
+     - 이메일: @ 가 들어간 토큰
+     - 직위  : 팀장/조장/반장/주임 중 하나와 일치하는 토큰 (없으면 일괄 지정값)
+     - 상위부서/부서: 실제 명단에 있는 이름과 일치하는 토큰
+     - 남은 토큰: 이름                                                    */
+const POSNAMES=['팀장','조장','반장','주임'];
+function parseMasterLine(raw, defPos, ups, deptsByUp, allDepts){
+  const t=raw.split(/\t|,|\s{2,}/).map(x=>x.trim()).filter(Boolean);
+  if(!t.length) return {err:'빈 줄'};
+  const emailIdx=t.findIndex(x=>/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x));
+  if(emailIdx<0) return {err:'이메일을 찾을 수 없습니다'};
+  const email=t.splice(emailIdx,1)[0];
+  let pos='';
+  const pi=t.findIndex(x=>POSNAMES.includes(x));
+  if(pi>=0) pos=t.splice(pi,1)[0]; else pos=defPos;
+  if(!pos) return {err:'직위(팀장/조장/반장/주임)를 찾을 수 없습니다 — 위에서 일괄 지정하세요'};
+  let up='', dept='';
+  const ui=t.findIndex(x=>ups.has(x));
+  if(ui>=0) up=t.splice(ui,1)[0];
+  const di=t.findIndex(x=>allDepts.has(x));
+  if(di>=0) dept=t.splice(di,1)[0];
+  if(!up && dept){                                  // 부서만 있으면 상위부서를 역추적
+    const owner=[...deptsByUp.entries()].filter(([u,ds])=>ds.has(dept));
+    if(owner.length===1) up=owner[0][0];
+    else if(owner.length>1) return {err:`부서 "${dept}"가 여러 상위부서에 있습니다 — 상위부서도 함께 넣어주세요`};
+  }
+  if(!up) return {err:'상위부서를 찾을 수 없습니다'};
+  if(pos==='팀장') dept='';
+  else if(!dept) return {err:'부서를 찾을 수 없습니다 (조장·반장은 부서가 필요합니다)'};
+  const name=t.filter(x=>!/^\d+$/.test(x)).join(' ').trim() || email.split('@')[0];
+  return {up,dept,name,pos,email};
+}
+$('#btnAddMaster').onclick=()=>{
+  const lines=$('#taMaster').value.split(/\n/).map(l=>l.trim()).filter(Boolean);
+  if(!lines.length){toast('입력이 없습니다');return;}
+  const defPos=$('#mPosDefault').value;
+  const ups=new Set(PEOPLE.map(p=>p.up));
+  const allDepts=new Set(PEOPLE.map(p=>p.dept));
+  const deptsByUp=new Map();
+  PEOPLE.forEach(p=>{ if(!deptsByUp.has(p.up)) deptsByUp.set(p.up,new Set()); deptsByUp.get(p.up).add(p.dept); });
+  ST.master=ST.master||[];
+  let n=0,upd=0; const bad=[];
+  lines.forEach(l=>{
+    if(/상위부서|이메일|메일주소/.test(l) && !/@/.test(l)) return;      // 헤더 줄
+    const r=parseMasterLine(l, defPos, ups, deptsByUp, allDepts);
+    if(r.err){ bad.push(`${l}  →  ${r.err}`); return; }
+    const i=ST.master.findIndex(m=>m.email.toLowerCase()===r.email.toLowerCase()&&m.up===r.up&&m.dept===r.dept);
+    if(i>=0){ ST.master[i]=r; upd++; } else { ST.master.push(r); n++; }
+  });
+  save(); renderMasterCount(); renderMap(); renderDept();
+  $('#taMaster').value = bad.length? bad.map(b=>b.split('  →  ')[0]).join('\n') : '';
+  $('#masterResult').innerHTML = `<div class="${bad.length?'warnbox':'okbox'}">
+    <b>신규 ${n}명 등록${upd?` · ${upd}명 갱신`:''}${bad.length?` · ${bad.length}줄 실패`:''}</b>
+    ${bad.length?'<br><span class="hint">실패한 줄만 입력창에 남겨뒀습니다.</span><br>'+bad.slice(0,30).map(esc).join('<br>')+(bad.length>30?`<br>… 외 ${bad.length-30}줄`:''):''}</div>`;
+  toast(`마스터 ${n+upd}건 반영${bad.length?` · ${bad.length}줄 실패`:''}`);
+};
 ['mOwner','mSubj','mAttach','mInline','mAutoSend','mJobMgr','mJobField'].forEach(id=>$('#'+id).onchange=renderMail);
 ['mSubject','mSubjectA','mNote'].forEach(id=>$('#'+id).oninput=()=>{clearTimeout(window._mt);window._mt=setTimeout(renderMail,250);});
 $('#btnPack').onclick=packDownload;
@@ -1304,7 +1415,7 @@ $('#fileIn').onchange=e=>{
   const r=new FileReader();
   r.onload=()=>{ try{ const j=JSON.parse(r.result); const s=j.state||j;
     if(!s.done) throw 0;
-    ST=Object.assign({done:{},owners:{},extra:{},added:[],hist:[],rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1}},s);
+    ST=Object.assign({done:{},owners:{},extra:{},added:[],hist:[],master:[],rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1,masterOnly:0}},s);
     save(); build(); refreshAll(); renderHist(); toast('복원 완료 — '+(j.at?j.at.slice(0,10):''));
   }catch(err){ toast('올바른 백업 파일이 아닙니다'); } e.target.value=''; };
   r.readAsText(f);
@@ -1312,7 +1423,7 @@ $('#fileIn').onchange=e=>{
 $('#btnHardReset').onclick=()=>{
   if(!confirm('모든 이수 처리·매핑·추가 인원을 삭제하고 원본 상태로 되돌립니다.\n되돌릴 수 없습니다. 계속할까요?')) return;
   localStorage.removeItem(LS);
-  ST={done:{},owners:{},extra:{},added:[],hist:[],rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1},theme:ST.theme};
+  ST={done:{},owners:{},extra:{},added:[],hist:[],master:[],rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1,masterOnly:0},theme:ST.theme};
   save(); build(); refreshAll(); renderHist(); renderTodo(); toast('초기화 완료');
 };
 $('#btnTheme').onclick=()=>{

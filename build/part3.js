@@ -17,7 +17,7 @@ const jobOf = pos => MGR.includes(pos) ? 'mgr' : (LEAD.includes(pos) ? 'lead' : 
 function toast(m,ms=2200){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),ms);}
 
 /* ---------- state ---------- */
-let ST = {done:{}, owners:{}, extra:{}, added:[], hist:[], rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1}, theme:''};
+let ST = {done:{}, owners:{}, extra:{}, added:[], hist:[], master:[], rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1,masterOnly:0}, theme:''};
 function load(){ try{const r=localStorage.getItem(LS); if(r) ST=Object.assign(ST,JSON.parse(r));}catch(e){} }
 function save(){ try{localStorage.setItem(LS,JSON.stringify(ST));}catch(e){toast('저장 실패: 브라우저 저장소를 사용할 수 없습니다');} }
 load();
@@ -159,10 +159,22 @@ function ownerOf(up){
   const c=seed||ownerCands(up).find(p=>['매니저','책임매니저'].includes(p.pos));
   return c?{emp:String(c.emp),name:c.name,email:c.email,auto:true}:{name:'',email:'',auto:true};
 }
-/* 해당 팀장 = ① 같은 부서의 팀장 ② 상위부서명과 같은 부서(팀 사무실)의 팀장.
+/* 수신자 마스터(팀장·조장·반장 명부)가 등록돼 있으면 항상 그쪽을 먼저 씁니다.
+   미이수자 명단에서 역산하는 방식은 직책자가 교육을 이수하는 순간 수신자가
+   사라지므로, 마스터가 있으면 그것이 정답입니다. */
+const master = () => ST.master||[];
+function masterLead(up){                       // 상위부서의 팀장
+  return master().find(m=>m.up===up && (!m.dept||m.dept===up) && m.pos==='팀장')
+      || master().find(m=>m.up===up && m.pos==='팀장') || null;
+}
+function masterFieldOf(up,dept){               // 부서의 조장·반장·주임
+  return master().filter(m=>m.up===up && m.dept===dept && LEAD.includes(m.pos));
+}
+/* 해당 팀장 = ⓪ 마스터 ① 같은 부서의 팀장 ② 상위부서명과 같은 부서(팀 사무실)의 팀장.
    그 위(실/전사) 팀장을 끌어오면 무관한 사람에게 가므로 여기서 멈춥니다. */
 function teamLeadOf(p){
-  return PEOPLE.find(x=>x.dept===p.dept && x.pos==='팀장' && String(x.emp)!==String(p.emp))
+  return masterLead(p.up)
+      || PEOPLE.find(x=>x.dept===p.dept && x.pos==='팀장' && String(x.emp)!==String(p.emp))
       || PEOPLE.find(x=>x.dept===p.up  && x.pos==='팀장')
       || null;
 }
@@ -178,8 +190,13 @@ function rcptOf(k){
   const R=ST.rules;
   const mem=PEOPLE.filter(p=>key(p)===k);
   const sample=mem[0]||{dept,up};
-  let to=mem.filter(p=> p.job==='lead' || (R.tech&&p.job==='tech'));
-  (ST.extra[k]||[]).forEach(x=>to.push({...x,job:jobOf(x.pos),extra:true}));
+  // 마스터 우선 → 명단 추론 → 수동 추가 순으로 모으고 중복 제거
+  let to=[];
+  const seenTo=new Set();
+  const push=x=>{ const id=(x.email||'').toLowerCase(); if(!id||seenTo.has(id))return; seenTo.add(id); to.push(x); };
+  masterFieldOf(up,dept).forEach(m=>push({...m,job:jobOf(m.pos),fromMaster:true}));
+  if(!R.masterOnly) mem.filter(p=> p.job==='lead' || (R.tech&&p.job==='tech')).forEach(push);
+  (ST.extra[k]||[]).forEach(x=>push({...x,job:jobOf(x.pos),extra:true}));
   let via='';
   if(!to.length){
     const tl=teamLeadOf(sample);
@@ -228,22 +245,46 @@ function renderMap(){
     } else ST.owners[u][i.dataset.f]=i.value.trim();
     save(); renderMap(); renderDept(); fillMailOwner();
   });
+  // 상위부서 단위로 접었다 펴는 구조: 팀장(관리직 참조) + 부서별 조장·반장
   const only=$('#onlyNoRcpt').checked;
-  const gs=agg(key).filter(g=>g.done<g.tot);
-  $('#rcptBox').innerHTML = gs.map(g=>{
-    const r=rcptOf(g.k); if(only&&r.to.length) return '';
-    const chips = r.to.length? r.to.map(x=>`<span class="chip"><b>${esc(x.name)}</b> ${esc(x.pos)} <span class="hint">${esc(x.email)}</span>${x.extra?`<span class="x" data-del="${esc(g.k)}" data-em="${esc(x.email)}">✕</span>`:''}</span>`).join('')
-      : '<span class="pill p-warn">수신자 없음 — 직접 추가 필요</span>';
-    const ccc = r.cc.map(x=>`<span class="chip" style="opacity:.75">CC ${esc(x.name)} ${esc(x.pos)}</span>`).join('');
-    return `<details class="acc"><summary>${esc(g.up)} › ${esc(g.dept)}
-      <span class="pill ${r.to.length?'p-brand':'p-warn'}">수신 ${r.to.length}</span>
-      <span class="pill p-bad">미이수 ${g.tot-g.done}</span></summary>
-      <div class="body"><div class="chips" style="margin-bottom:8px">${chips}${ccc}</div>
-      <div class="row"><input placeholder="이름" data-k="${esc(g.k)}" data-f="name" style="width:90px">
-      <input placeholder="직위(예: 조장)" data-k="${esc(g.k)}" data-f="pos" style="width:110px">
-      <input placeholder="이메일" data-k="${esc(g.k)}" data-f="email" style="width:220px">
-      <button class="btn sec mini" data-add="${esc(g.k)}">＋ 수신자 추가</button></div></div></details>`;
-  }).join('') || '<div class="empty">모든 부서가 이수 완료되었습니다 🎉</div>';
+  const ups2=[...new Set(PEOPLE.filter(p=>!p.h||!p.d).map(p=>p.up))].sort();
+  const chip=(x,extraKey)=>`<span class="chip"><b>${esc(x.name)}</b> ${esc(x.pos)}
+    <span class="hint">${esc(x.email)}</span>
+    ${x.fromMaster?'<span class="pill p-ok" style="font-size:10px">마스터</span>':''}
+    ${x.extra?`<span class="x" data-del="${esc(extraKey)}" data-em="${esc(x.email)}">✕</span>`:''}</span>`;
+  $('#rcptBox').innerHTML = ups2.map(up=>{
+    const gs=agg(key).filter(g=>g.up===up && g.done<g.tot);
+    const rs=gs.map(g=>({g,r:rcptOf(g.k)}));
+    const fix=rs.filter(x=>x.r.needsFix).length;
+    if(only && !fix) return '';
+    const tl=teamLeadOf({up,dept:up});
+    const ow=ownerOf(up);
+    const mgrCnt=PEOPLE.filter(p=>p.up===up&&p.job==='mgr'&&(!p.h||!p.d)).length;
+    const body = rs.map(({g,r})=>`<div style="padding:7px 0;border-top:1px solid var(--line2)">
+        <div class="row"><b style="min-width:190px">${esc(g.dept)}</b>
+          <span class="pill p-bad">미이수 ${g.tot-g.done}</span>
+          ${r.needsFix?`<span class="pill p-warn">${esc(r.via)} — 보완 필요</span>`:(r.via?`<span class="pill p-mute">${esc(r.via)}</span>`:'')}</div>
+        <div class="chips" style="margin-top:5px">${r.to.map(x=>chip(x,g.k)).join('')}</div>
+        <div class="row" style="margin-top:5px">
+          <input placeholder="이름" data-k="${esc(g.k)}" data-f="name" style="width:80px">
+          <input placeholder="직위" data-k="${esc(g.k)}" data-f="pos" style="width:80px">
+          <input placeholder="이메일" data-k="${esc(g.k)}" data-f="email" style="width:200px">
+          <button class="btn sec mini" data-add="${esc(g.k)}">＋ 추가</button></div>
+      </div>`).join('');
+    return `<details class="acc"${fix?' open':''}><summary>${esc(up)}
+      <span class="pill p-mute">부서 ${gs.length}</span>
+      ${mgrCnt?`<span class="pill tag-mgr">관리직 ${mgrCnt}</span>`:''}
+      ${fix?`<span class="pill p-warn">보완 필요 ${fix}</span>`:'<span class="pill p-ok">정상</span>'}</summary>
+      <div class="body">
+        <div class="row" style="padding-bottom:8px">
+          <span class="hint" style="min-width:190px;font-weight:700">Ⓐ 관리직 참조 — 팀장</span>
+          ${tl?chip(tl):'<span class="pill p-warn">팀장 미등록 — 마스터에 넣어주세요</span>'}
+          ${ow.email?`<span class="chip" style="opacity:.75">담당(서무) ${esc(ow.name)} <span class="hint">${esc(ow.email)}</span></span>`:''}
+        </div>
+        <div class="hint" style="font-weight:700;padding-top:4px;border-top:1px solid var(--line2)">Ⓑ 현장 수신자 — 부서별 조장·반장</div>
+        ${body||'<div class="hint" style="padding:8px 0">미이수 부서 없음</div>'}
+      </div></details>`;
+  }).join('') || '<div class="empty">보완이 필요한 곳이 없습니다 🎉</div>';
   $$('#rcptBox [data-add]').forEach(b=>b.onclick=()=>{
     const k=b.dataset.add, g=[...$$(`#rcptBox [data-k="${CSS.escape(k)}"]`)];
     const v={}; g.forEach(i=>v[i.dataset.f]=i.value.trim());
