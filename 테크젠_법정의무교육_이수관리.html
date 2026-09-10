@@ -287,10 +287,10 @@ code{font-family:var(--mono);background:var(--line2);padding:1px 5px;border-radi
   </div>
 
   <div class="card" style="margin-bottom:14px">
-    <div class="card-h"><h2>상위부서 담당(서무) 매핑</h2><span class="spacer"></span>
-      <span class="hint">담당자가 비어 있으면 자동 추천값이 회색으로 표시됩니다. 직접 수정하세요.</span></div>
+    <div class="card-h"><h2>담당 서무 매핑</h2><span class="spacer"></span>
+      <span class="hint">회사 「서무」 시트 기준으로 미리 채워져 있습니다. 부서 단위 담당이 상위부서보다 우선합니다.</span></div>
     <div class="tablewrap" style="max-height:none">
-      <table><thead><tr><th>상위부서</th><th>인원</th><th>담당(서무)</th><th>담당 이메일</th><th>비고</th></tr></thead>
+      <table><thead><tr><th>조직</th><th>담당 인원</th><th>담당(서무)</th><th>이메일</th><th>출처</th></tr></thead>
       <tbody id="ownerBody"></tbody></table>
     </div>
   </div>
@@ -634,7 +634,7 @@ function renderDept(){
   const ds=agg(key).filter(g=>!only||g.done<g.tot);
   $('#deptBody').innerHTML = ds.map(g=>{
     const r=rcptOf(g.k);
-    const ow=ownerOf(g.up);
+    const ow=ownerOf(g.up,g.dept);
     return `<tr style="cursor:pointer" data-up="${esc(g.up)}" data-dept="${esc(g.dept)}">
       <td>${esc(g.up)}</td><td><b>${esc(g.dept)}</b></td><td class="num">${g.tot}</td>
       <td class="num">${g.hNo?`<span class="pill p-bad">${g.hNo}</span>`:'<span class="pill p-ok">0</span>'}</td>
@@ -651,20 +651,55 @@ function renderDept(){
 }
 
 /* ---------- owners & recipients ---------- */
-const SEED_OWNER={'PT생산1팀':'82211601'};   // 사용자 확인분: PT생산1팀 담당 정은진
+/* 서무 매핑 — 회사 「서무」 시트 기준.
+   조직 이름은 데이터상 상위부서일 수도, 부서일 수도 있어서(예: PT생산1팀은 둘 다,
+   재경팀은 테크젠 아래 부서) 이름 하나로 잡고 부서 → 상위부서 순으로 찾습니다. */
+const SEED_OWNERS={
+  '재경팀':        {name:'김혜원', email:'82211616@teczen.kr'},
+  '사업기획팀':     {name:'이다영', email:'82211602@teczen.kr'},
+  '미래성장팀':     {name:'최선화', email:'82211253@teczen.kr'},
+  '경영지원실':     {name:'양아현', email:'82211580@teczen.kr'},
+  '비즈니스솔루션팀': {name:'양아현', email:'82211580@teczen.kr'},
+  'PT생산1팀':     {name:'정은진', email:'82211601@teczen.kr'},
+  'PT생산실':      {name:'양선미', email:'82210701@teczen.kr'},
+  'PT생산2팀':     {name:'양선미', email:'82210701@teczen.kr'},
+  'PT생산관리팀':   {name:'유현주', email:'82211603@teczen.kr'},
+  '품질관리실':     {name:'유현주', email:'82211603@teczen.kr'},
+  'PT품질관리팀':   {name:'유현주', email:'82211603@teczen.kr'},
+  // 아래 3명은 이미 교육을 이수해 미이수자 명단에 없어 이메일을 확인하지 못했습니다.
+  // 엔진생산3팀·엔진품질관리2팀 담당 이한솔은 명단의 동명이인(기술사원)과 다른 사람이라 비워둡니다.
+  '엔진생산실':     {name:'이새롬', email:''},
+  '엔진생산1팀':    {name:'이새롬', email:''},
+  '엔진생산관리팀':  {name:'이새롬', email:''},
+  '엔진품질관리1팀': {name:'이새롬', email:''},
+  '엔진생산2팀':    {name:'황나영', email:''},
+  '엔진생산3팀':    {name:'이한솔', email:''},
+  '엔진품질관리2팀': {name:'이한솔', email:''},
+};
+const ORG_NAMES = () => {
+  const set=new Set(Object.keys(SEED_OWNERS));
+  Object.keys(ST.owners||{}).forEach(k=>set.add(k));
+  PEOPLE.forEach(p=>set.add(p.up));
+  return [...set];
+};
 function ownerCands(up){
-  // 서무는 보통 상위부서와 같은 이름의 조직(팀 사무실)에 소속된 관리직입니다.
   const a=PEOPLE.filter(p=>p.dept===up && p.job==='mgr');
   const b=PEOPLE.filter(p=>p.up===up && p.job==='mgr' && !a.includes(p));
   const rank=p=>MGR.indexOf(p.pos);
   return a.concat(b).sort((x,y)=>rank(y)-rank(x)||x.name.localeCompare(y.name));
 }
-function ownerOf(up){
-  const o=ST.owners[up];
-  if(o&&(o.name||o.email)) return {...o, auto:false};
-  const seed=SEED_OWNER[up] && PEOPLE.find(p=>String(p.emp)===SEED_OWNER[up]);
-  const c=seed||ownerCands(up).find(p=>['매니저','책임매니저'].includes(p.pos));
-  return c?{emp:String(c.emp),name:c.name,email:c.email,auto:true}:{name:'',email:'',auto:true};
+/* 부서 이름으로 먼저 찾고, 없으면 상위부서 이름으로 찾습니다.
+   사용자가 직접 지정한 값(ST.owners)이 회사 시트 기본값(SEED_OWNERS)보다 우선합니다. */
+function ownerAt(org){
+  if(!org) return null;
+  const m=ST.owners[org];
+  if(m && (m.name||m.email)) return {...m, org, auto:false};
+  const sd=SEED_OWNERS[org];
+  if(sd) return {...sd, org, auto:true, seed:true};
+  return null;
+}
+function ownerOf(up, dept){
+  return ownerAt(dept) || ownerAt(up) || {name:'',email:'',org:up,auto:true,none:true};
 }
 /* 수신자 마스터(팀장·조장·반장 명부)가 등록돼 있으면 항상 그쪽을 먼저 씁니다.
    미이수자 명단에서 역산하는 방식은 직책자가 교육을 이수하는 순간 수신자가
@@ -685,12 +720,12 @@ function teamLeadOf(p){
       || PEOPLE.find(x=>x.dept===p.up  && x.pos==='팀장')
       || null;
 }
-/* Ⓑ 부서 독려메일의 받는사람.
-   이 명단은 "미이수자"만 담고 있어서, 이미 이수를 마친 조장·반장·팀장은
-   파일에 아예 존재하지 않습니다. 그래서 수신자를 못 찾는 부서가 생기는데
-   그렇다고 발송 건을 없애면 그 인원은 독려를 못 받습니다.
-   아래 순서로 반드시 누군가에게는 도달하도록 합니다.
-     조장·반장·주임 → 팀장 → 상위부서 내 관리직 → 담당 서무 → 관리자 */
+/* 이 사람의 서무가 어느 조직 행에서 결정되는지 */
+function ownerOrgOf(p){
+  if(ownerAt(p.dept)) return p.dept;
+  if(ownerAt(p.up))   return p.up;
+  return p.up;
+}
 const ADMIN={name:'이재용',pos:'관리자',email:'jason@teczen.kr',dept:'미래성장팀'};
 function rcptOf(k){
   const [up,dept]=k.split('§');
@@ -709,7 +744,7 @@ function rcptOf(k){
     const tl=teamLeadOf(sample);
     const mgrInUp=PEOPLE.filter(p=>p.up===up&&p.job==='mgr')
       .sort((a,b)=>MGR.indexOf(a.pos)-MGR.indexOf(b.pos))[0];
-    const o=ownerOf(up);
+    const o=ownerOf(up,dept);
     if(tl){ to=[tl]; via='팀장 대체'; }
     else if(mgrInUp){ to=[mgrInUp]; via='관리직 대체'; }
     else if(o.email){ to=[{name:o.name,email:o.email,pos:'담당(서무)'}]; via='담당 서무 대체'; }
@@ -717,7 +752,7 @@ function rcptOf(k){
   }
   const cc=[];
   if(R.teamcc){ const tl=teamLeadOf(sample); if(tl && !to.some(x=>x.email===tl.email)) cc.push(tl); }
-  if(R.ownercc){ const o=ownerOf(up); if(o.email) cc.push({name:o.name,email:o.email,pos:'담당(서무)'}); }
+  if(R.ownercc){ const o=ownerOf(up,dept); if(o.email) cc.push({name:o.name,email:o.email,pos:'담당(서무)'}); }
   const seen=new Set(to.map(x=>x.email));
   const ccOut=[];
   cc.forEach(c=>{ if(c.email && !seen.has(c.email)){ seen.add(c.email); ccOut.push(c); } });
@@ -728,28 +763,43 @@ function renderMap(){
   const R=ST.rules;
   $('#rMgr').checked=!!R.mgr; $('#rLead').checked=!!R.lead; $('#rTech').checked=!!R.tech;
   $('#rTeamCC').checked=!!R.teamcc; $('#rOwnerCC').checked=!!R.ownercc;
-  const ups=agg(p=>p.up);
-  $('#ownerBody').innerHTML = ups.sort((a,b)=>a.up.localeCompare(b.up)).map(g=>{
-    const o=ownerOf(g.up), st=ST.owners[g.up]||{}, cands=ownerCands(g.up);
-    const cur = st.emp || (o.auto?o.emp:'') || '';
+  // 서무는 팀 단위로 정해집니다. 조직 이름이 데이터상 부서인 경우(재경팀 등)도 있어서
+  // 상위부서 목록이 아니라 "조직 이름" 목록으로 행을 만듭니다.
+  const cnt=new Map();                       // 조직 -> 이 서무가 담당하는 미이수 인원
+  PEOPLE.filter(p=>!p.h||!p.d).forEach(p=>{ const o=ownerOrgOf(p); cnt.set(o,(cnt.get(o)||0)+1); });
+  const orgs=ORG_NAMES().filter(o=>cnt.get(o)).sort((a,b)=>(cnt.get(b)-cnt.get(a))||a.localeCompare(b));
+  const noOwner=[...cnt.entries()].filter(([o])=>!ownerAt(o)).reduce((a,[,n])=>a+n,0);
+  const noMail=orgs.filter(o=>{const w=ownerAt(o); return w&&w.name&&!w.email;});
+  $('#ownerBody').innerHTML =
+    (noMail.length?`<tr><td colspan="5" style="padding:0">
+      <div class="warnbox" style="margin:8px 0;border-radius:6px"><b>⚠ 이메일 확인 필요 ${noMail.length}곳</b> —
+      ${noMail.map(o=>`${esc(o)}(${esc(ownerAt(o).name)})`).join(', ')}<br>
+      해당 서무가 이미 교육을 이수해 명단에 없어 이메일을 찾지 못했습니다. 직접 입력해 주세요.</div></td></tr>`:'')
+    + orgs.map(org=>{
+    const w=ownerAt(org)||{name:'',email:''}, st=ST.owners[org]||{}, cands=ownerCands(org);
+    const cur = st.emp || '';
     const opts = cands.map(c=>`<option value="${esc(c.emp)}" ${String(c.emp)===String(cur)?'selected':''}>${esc(c.name)} · ${esc(c.pos)} · ${esc(c.dept)}</option>`).join('');
-    const manual = st.emp==='_manual';
-    return `<tr><td><b>${esc(g.up)}</b></td><td class="num">${g.tot}</td>
-      <td><select data-ow="${esc(g.up)}" data-f="emp" style="width:210px">
-        <option value="">— 미지정 —</option>${opts}
-        <option value="_manual" ${manual?'selected':''}>＋ 직접입력…</option></select>
-        ${manual?`<input data-ow="${esc(g.up)}" data-f="name" value="${esc(st.name||'')}" placeholder="이름" style="width:90px;margin-top:4px">`:''}</td>
-      <td><input data-ow="${esc(g.up)}" data-f="email" value="${esc(st.email||'')}" placeholder="${esc(o.auto?o.email:'이메일')}" style="width:230px"></td>
-      <td class="hint">${st.emp?(o.auto?'':'지정됨'):(o.name?'자동 추천: '+esc(o.name):'후보 없음 — 직접입력')}</td></tr>`;
-  }).join('');
+    const manual = st.emp==='_manual' || (!st.emp && w.seed);
+    const warn = w.name && !w.email;
+    return `<tr${warn?' style="background:var(--warn-soft)"':''}>
+      <td><b>${esc(org)}</b></td><td class="num">${cnt.get(org)}</td>
+      <td><input data-ow="${esc(org)}" data-f="name" value="${esc(st.name||w.name||'')}" placeholder="이름" style="width:90px">
+        <select data-ow="${esc(org)}" data-f="emp" style="width:170px;margin-top:4px">
+          <option value="">— 직접입력 —</option>${opts}</select></td>
+      <td><input data-ow="${esc(org)}" data-f="email" value="${esc(st.email||w.email||'')}" placeholder="이메일" style="width:230px"></td>
+      <td class="hint">${warn?'<b style="color:var(--warn)">이메일 없음</b>':(st.name||st.email?'직접 지정':(w.seed?'서무 시트':'—'))}</td></tr>`;
+  }).join('')
+  + (noOwner?`<tr><td colspan="5" style="padding:0"><div class="warnbox" style="margin:8px 0;border-radius:6px">
+      <b>담당 서무가 지정되지 않은 인원 ${noOwner}명</b> — ${[...cnt.entries()].filter(([o])=>!ownerAt(o)).map(([o,n])=>`${esc(o)} ${n}명`).join(', ')}
+      </div></td></tr>`:'');
   $$('#ownerBody select,#ownerBody input').forEach(i=>i.onchange=()=>{
-    const u=i.dataset.ow; ST.owners[u]=ST.owners[u]||{};
+    const org=i.dataset.ow, w=ownerAt(org)||{name:'',email:''};
+    const cur=ST.owners[org]||{name:w.name||'',email:w.email||''};
     if(i.dataset.f==='emp'){
       const v=i.value;
-      if(!v){ delete ST.owners[u]; }
-      else if(v==='_manual'){ ST.owners[u]={emp:'_manual',name:'',email:ST.owners[u].email||''}; }
-      else { const c=PEOPLE.find(p=>String(p.emp)===v); ST.owners[u]={emp:v,name:c.name,email:c.email}; }
-    } else ST.owners[u][i.dataset.f]=i.value.trim();
+      if(v){ const c=PEOPLE.find(p=>String(p.emp)===v); ST.owners[org]={emp:v,name:c.name,email:c.email}; }
+      else { ST.owners[org]={...cur,emp:'_manual'}; }
+    } else { ST.owners[org]={...cur, [i.dataset.f]:i.value.trim()}; }
     save(); renderMap(); renderDept(); fillMailOwner();
   });
   // 상위부서 단위로 접었다 펴는 구조: 팀장(관리직 참조) + 부서별 조장·반장
@@ -765,7 +815,7 @@ function renderMap(){
     const fix=rs.filter(x=>x.r.needsFix).length;
     if(only && !fix) return '';
     const tl=teamLeadOf({up,dept:up});
-    const ow=ownerOf(up);
+    const ow=ownerOf(up,up);
     const mgrCnt=PEOPLE.filter(p=>p.up===up&&p.job==='mgr'&&(!p.h||!p.d)).length;
     const body = rs.map(({g,r})=>`<div style="padding:7px 0;border-top:1px solid var(--line2)">
         <div class="row"><b style="min-width:190px">${esc(g.dept)}</b>
@@ -940,7 +990,7 @@ function fillMailOwner(){
   const ups=[...new Set(PEOPLE.map(p=>p.up))].sort();
   const cur=$('#mOwner').value;
   $('#mOwner').innerHTML='<option value="">전체 (모든 상위부서)</option>'+ups.map(u=>{
-    const o=ownerOf(u); return `<option value="${esc(u)}" ${u===cur?'selected':''}>${esc(u)}${o.name?' — '+esc(o.name):''}</option>`;
+    const o=ownerOf(u,u); return `<option value="${esc(u)}" ${u===cur?'selected':''}>${esc(u)}${o.name?' — '+esc(o.name):''}</option>`;
   }).join('');
 }
 function mailTargets(p){
@@ -964,7 +1014,7 @@ function buildJobs(){
 
   if(R.mgr) pool.filter(p=>p.job==='mgr').sort((a,b)=>a.up.localeCompare(b.up)||a.name.localeCompare(b.name))
     .forEach(p=>{
-      const tl=teamLeadOf(p), o=ownerOf(p.up), cc=[];
+      const tl=teamLeadOf(p), o=ownerOf(p.up,p.dept), cc=[];
       if(R.teamcc&&tl&&tl.email!==p.email) cc.push(tl);
       if(R.ownercc&&o.email&&o.email!==p.email&&!cc.some(c=>c.email===o.email)) cc.push({name:o.name,email:o.email,pos:'담당(서무)'});
       jobs.push({type:'A', k:'A§'+p.emp, label:`${p.name} ${p.pos} (${p.dept})`,
@@ -1331,10 +1381,10 @@ $('#mJobField').onchange=e=>setJobRule('lead',e.target.checked);
 $('#onlyRemain').onchange=renderDept;
 $('#btnXlsxDept').onclick=()=>{
   const rows=[['상위부서','부서','인원','성희롱 미이수','장애인 미이수','둘다 미이수','이수완료','이수율(%)','담당(서무)','수신 직책자']];
-  agg(key).forEach(g=>{const r=rcptOf(g.k),o=ownerOf(g.up);
+  agg(key).forEach(g=>{const r=rcptOf(g.k),o=ownerOf(g.up,g.dept);
     rows.push([g.up,g.dept,g.tot,g.hNo,g.dNo,g.both,g.done,Number(g.rate.toFixed(1)),o.name||'',r.to.map(x=>`${x.name}(${x.pos})`).join(', ')]);});
   const rows2=[['상위부서','인원','이수완료','이수율(%)','담당(서무)','담당 이메일']];
-  agg(p=>p.up).forEach(g=>{const o=ownerOf(g.up);rows2.push([g.up,g.tot,g.done,Number(g.rate.toFixed(1)),o.name||'',o.email||'']);});
+  agg(p=>p.up).forEach(g=>{const o=ownerOf(g.up,g.up);rows2.push([g.up,g.tot,g.done,Number(g.rate.toFixed(1)),o.name||'',o.email||'']);});
   dl(xlsxBlob([{name:'상위부서별',rows:rows2},{name:'부서별',rows},{name:'전체명단',rows:[HEAD,...PEOPLE.map(toRow)]}]),`법정의무교육_현황집계_${today()}.xlsx`);
   toast('집계 엑셀 다운로드');
 };

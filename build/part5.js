@@ -4,7 +4,7 @@ function fillMailOwner(){
   const ups=[...new Set(PEOPLE.map(p=>p.up))].sort();
   const cur=$('#mOwner').value;
   $('#mOwner').innerHTML='<option value="">전체 (모든 상위부서)</option>'+ups.map(u=>{
-    const o=ownerOf(u); return `<option value="${esc(u)}" ${u===cur?'selected':''}>${esc(u)}${o.name?' — '+esc(o.name):''}</option>`;
+    const o=ownerOf(u,u); return `<option value="${esc(u)}" ${u===cur?'selected':''}>${esc(u)}${o.name?' — '+esc(o.name):''}</option>`;
   }).join('');
 }
 function mailTargets(p){
@@ -28,7 +28,7 @@ function buildJobs(){
 
   if(R.mgr) pool.filter(p=>p.job==='mgr').sort((a,b)=>a.up.localeCompare(b.up)||a.name.localeCompare(b.name))
     .forEach(p=>{
-      const tl=teamLeadOf(p), o=ownerOf(p.up), cc=[];
+      const tl=teamLeadOf(p), o=ownerOf(p.up,p.dept), cc=[];
       if(R.teamcc&&tl&&tl.email!==p.email) cc.push(tl);
       if(R.ownercc&&o.email&&o.email!==p.email&&!cc.some(c=>c.email===o.email)) cc.push({name:o.name,email:o.email,pos:'담당(서무)'});
       jobs.push({type:'A', k:'A§'+p.emp, label:`${p.name} ${p.pos} (${p.dept})`,

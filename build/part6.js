@@ -54,10 +54,10 @@ $('#mJobField').onchange=e=>setJobRule('lead',e.target.checked);
 $('#onlyRemain').onchange=renderDept;
 $('#btnXlsxDept').onclick=()=>{
   const rows=[['상위부서','부서','인원','성희롱 미이수','장애인 미이수','둘다 미이수','이수완료','이수율(%)','담당(서무)','수신 직책자']];
-  agg(key).forEach(g=>{const r=rcptOf(g.k),o=ownerOf(g.up);
+  agg(key).forEach(g=>{const r=rcptOf(g.k),o=ownerOf(g.up,g.dept);
     rows.push([g.up,g.dept,g.tot,g.hNo,g.dNo,g.both,g.done,Number(g.rate.toFixed(1)),o.name||'',r.to.map(x=>`${x.name}(${x.pos})`).join(', ')]);});
   const rows2=[['상위부서','인원','이수완료','이수율(%)','담당(서무)','담당 이메일']];
-  agg(p=>p.up).forEach(g=>{const o=ownerOf(g.up);rows2.push([g.up,g.tot,g.done,Number(g.rate.toFixed(1)),o.name||'',o.email||'']);});
+  agg(p=>p.up).forEach(g=>{const o=ownerOf(g.up,g.up);rows2.push([g.up,g.tot,g.done,Number(g.rate.toFixed(1)),o.name||'',o.email||'']);});
   dl(xlsxBlob([{name:'상위부서별',rows:rows2},{name:'부서별',rows},{name:'전체명단',rows:[HEAD,...PEOPLE.map(toRow)]}]),`법정의무교육_현황집계_${today()}.xlsx`);
   toast('집계 엑셀 다운로드');
 };
