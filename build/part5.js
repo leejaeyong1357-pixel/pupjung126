@@ -86,7 +86,32 @@ ${tbl}
 <p style="margin-top:16px;color:#666;font-size:12px">※ 본 메일은 법정의무교육 이수관리 시스템에서 자동 생성되었습니다.<br>
 ※ 이수 데이터 관련 문의: 미래성장팀 이재용 매니저 (jason@teczen.kr)</p></div>`;
 }
+/* 발송 목록이 0건일 때, 어떤 조건 때문인지 정확히 짚어줍니다.
+   "없습니다"만 띄우면 사용자가 원인을 찾을 방법이 없습니다. */
+function emptyReason(){
+  const up=$('#mOwner').value, R=ST.rules;
+  const subjLabel=$('#mSubj').selectedOptions[0].textContent;
+  if(!R.mgr && !R.lead) return {why:'Ⓐ 관리직 개인메일과 Ⓑ 부서 독려메일이 <b>둘 다 꺼져 있습니다.</b>',
+    how:'위 체크박스 두 개를 켜면 바로 목록이 나옵니다.'};
+  const scope=PEOPLE.filter(p=>!up||p.up===up);
+  if(!scope.length) return {why:`<b>${esc(up)}</b> 소속 인원이 명단에 없습니다.`, how:'발송 담당(서무)을 다시 선택하세요.'};
+  const notDone=scope.filter(p=>!p.h||!p.d);
+  if(!notDone.length) return {done:true, why:`<b>${esc(up||'전체')}</b> 인원 ${scope.length}명이 <b>모두 이수를 마쳤습니다.</b>`,
+    how:'보낼 대상이 없는 것이 정상입니다. 수고하셨습니다.'};
+  const sub=notDone.filter(mailTargets);
+  if(!sub.length) return {why:`대상 과목이 <b>${esc(subjLabel)}</b>로 되어 있는데, 여기에 해당하는 미이수자가 없습니다.`,
+    how:'대상 과목을 <b>미이수 1과목 이상 전원</b>으로 바꿔보세요.'};
+  const mgrOnly=sub.every(p=>p.job==='mgr'), fieldOnly=sub.every(p=>p.job!=='mgr');
+  if(!R.mgr && mgrOnly) return {why:`남은 미이수자 ${sub.length}명이 <b>전원 관리직</b>인데 <b>Ⓐ 관리직 개인메일이 꺼져 있습니다.</b>`,
+    how:'Ⓐ 체크박스를 켜세요.'};
+  if(!R.lead && fieldOnly) return {why:`남은 미이수자 ${sub.length}명이 <b>전원 현장직</b>인데 <b>Ⓑ 부서 독려메일이 꺼져 있습니다.</b>`,
+    how:'Ⓑ 체크박스를 켜세요.'};
+  return {why:'조건에 맞는 발송 건이 없습니다.', how:'아래 <b>조건 초기화</b>를 눌러보세요.'};
+}
 function renderMail(){
+  // 화면의 체크박스는 항상 저장된 규칙을 따라갑니다(표시와 실제가 어긋나지 않도록).
+  $('#mJobMgr').checked=!!ST.rules.mgr;
+  $('#mJobField').checked=!!ST.rules.lead;
   const jobs=buildJobs();
   const a=jobs.filter(j=>j.type==='A'), b=jobs.filter(j=>j.type==='B');
   const noRcpt=jobs.filter(j=>j.needsFix);
@@ -106,7 +131,19 @@ function renderMail(){
       ④탭에서 직책자 메일을 등록하면 다음부터 바로 나갑니다.</div>`:'')
       + (b.length?`<div class="hint" style="font-weight:700;margin:4px 0">Ⓑ 부서 독려메일 ${b.length}통</div>`+b.map(card).join(''):'')
       + (a.length?`<div class="hint" style="font-weight:700;margin:10px 0 4px">Ⓐ 관리직 개인메일 ${a.length}통</div>`+a.map(card).join(''):'')
-    : '<div class="empty">발송 대상이 없습니다.</div>';
+    : (()=>{ const r=emptyReason();
+        return `<div class="${r.done?'okbox':'warnbox'}" style="line-height:1.75">
+          <b style="font-size:13.5px">${r.done?'✅ 발송할 대상이 없습니다':'⚠ 발송 목록이 비어 있는 이유'}</b><br>
+          ${r.why}<br><span class="hint">${r.how}</span>
+          ${r.done?'':'<div style="margin-top:10px"><button class="btn" id="btnMailReset">조건 초기화 — 전체 · 미이수 1과목 이상 · Ⓐ Ⓑ 모두 켜기</button></div>'}
+        </div>`; })();
+  const rst=$('#btnMailReset');
+  if(rst) rst.onclick=()=>{
+    ST.rules.mgr=1; ST.rules.lead=1; ST.rules.masterOnly=0; save();
+    $('#mOwner').value=''; $('#mSubj').value='any';
+    $('#mJobMgr').checked=true; $('#mJobField').checked=true;
+    renderMail(); toast('조건을 초기화했습니다');
+  };
   const j=b[0]||a[0];
   $('#mPreview').innerHTML = j? `<div class="hint" style="margin-bottom:8px"><b>제목:</b> ${esc(j.subject)}<br><b>받는사람:</b> ${esc(j.to.map(x=>x.email).join('; '))}<br><b>참조:</b> ${esc(j.cc.map(x=>x.email).join('; '))}</div>
     <div style="border:1px solid var(--line);border-radius:8px;padding:12px;background:#fff;color:#222;overflow:auto">${bodyHtml(j)}</div>` : '<div class="hint">대상 없음</div>';
@@ -212,7 +249,12 @@ function u8(str, bom){
 }
 function packDownload(){
   const jobs=renderMail().filter(j=>j.to.length);
-  if(!jobs.length){toast('발송할 미이수자가 없습니다 — 담당 부서/과목 조건을 확인하세요',3200);return;}
+  if(!jobs.length){
+    const r=emptyReason();
+    toast(r.done?'모두 이수 완료 — 보낼 대상이 없습니다':'발송 목록이 비어 있습니다 — 위 「2. 발송 목록」에 이유를 표시했습니다',4200);
+    $('#mList').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
   const out=[], list=[];
   if($('#mAutoSend').checked) list.push('AUTOSEND');
   const blobs=[];

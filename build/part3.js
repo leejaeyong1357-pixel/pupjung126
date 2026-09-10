@@ -18,7 +18,15 @@ function toast(m,ms=2200){const t=$('#toast');t.textContent=m;t.classList.add('s
 
 /* ---------- state ---------- */
 let ST = {done:{}, owners:{}, extra:{}, added:[], hist:[], master:[], rules:{mgr:1,lead:1,tech:0,teamcc:1,ownercc:1,masterOnly:0}, theme:''};
-function load(){ try{const r=localStorage.getItem(LS); if(r) ST=Object.assign(ST,JSON.parse(r));}catch(e){} }
+function load(){
+  try{
+    const r=localStorage.getItem(LS); if(!r) return;
+    const saved=JSON.parse(r);
+    const rules=Object.assign({}, ST.rules, saved.rules||{});   // 구버전 저장본에 없는 키는 기본값 유지
+    ST=Object.assign(ST, saved, {rules});
+    if(!ST.rules.mgr && !ST.rules.lead){ ST.rules.mgr=1; ST.rules.lead=1; }  // 둘 다 꺼진 상태는 복구
+  }catch(e){}
+}
 function save(){ try{localStorage.setItem(LS,JSON.stringify(ST));}catch(e){toast('저장 실패: 브라우저 저장소를 사용할 수 없습니다');} }
 load();
 

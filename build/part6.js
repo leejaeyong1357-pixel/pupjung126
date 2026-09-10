@@ -38,8 +38,19 @@ $('#btnCopyMail').onclick=()=>{
 };
 $('#btnGoMail').onclick=()=>{ if(F.up){go('mail');$('#mOwner').value=F.up;renderMail();} else go('mail'); };
 // ⑤탭의 Ⓐ/Ⓑ 체크박스는 ④탭 규칙과 같은 값을 공유합니다.
-$('#mJobMgr').onchange=e=>{ST.rules.mgr=e.target.checked?1:0;save();renderMail();};
-$('#mJobField').onchange=e=>{ST.rules.lead=e.target.checked?1:0;save();renderMail();};
+// Ⓐ·Ⓑ 를 둘 다 끄면 보낼 것이 아예 없어지므로 마지막 하나는 끄지 못하게 합니다.
+function setJobRule(which, on){
+  ST.rules[which] = on?1:0;
+  if(!ST.rules.mgr && !ST.rules.lead){
+    ST.rules[which]=1;
+    toast('Ⓐ와 Ⓑ 중 하나는 켜져 있어야 합니다',2600);
+  }
+  save();
+  $('#mJobMgr').checked=!!ST.rules.mgr; $('#mJobField').checked=!!ST.rules.lead;
+  renderMail();
+}
+$('#mJobMgr').onchange=e=>setJobRule('mgr',e.target.checked);
+$('#mJobField').onchange=e=>setJobRule('lead',e.target.checked);
 $('#onlyRemain').onchange=renderDept;
 $('#btnXlsxDept').onclick=()=>{
   const rows=[['상위부서','부서','인원','성희롱 미이수','장애인 미이수','둘다 미이수','이수완료','이수율(%)','담당(서무)','수신 직책자']];
@@ -77,7 +88,11 @@ $('#btnAddPeople').onclick=()=>{
 };
 ['rMgr','rLead','rTech','rTeamCC','rOwnerCC'].forEach((id,i)=>{
   const kk=['mgr','lead','tech','teamcc','ownercc'][i];
-  $('#'+id).onchange=e=>{ST.rules[kk]=e.target.checked?1:0;save();renderMap();renderDept();};
+  $('#'+id).onchange=e=>{
+    ST.rules[kk]=e.target.checked?1:0;
+    if(!ST.rules.mgr && !ST.rules.lead){ ST.rules[kk]=1; toast('Ⓐ와 Ⓑ 중 하나는 켜져 있어야 합니다',2600); }
+    save(); renderMap(); renderDept();
+  };
 });
 $('#btnRebuild').onclick=()=>{renderMap();renderDept();toast('수신자 재계산 완료');};
 // 조장·반장이 명단에 없어 대체 발송되는 부서 목록
@@ -169,7 +184,8 @@ $('#btnAddMaster').onclick=()=>{
     ${bad.length?'<br><span class="hint">실패한 줄만 입력창에 남겨뒀습니다.</span><br>'+bad.slice(0,30).map(esc).join('<br>')+(bad.length>30?`<br>… 외 ${bad.length-30}줄`:''):''}</div>`;
   toast(`마스터 ${n+upd}건 반영${bad.length?` · ${bad.length}줄 실패`:''}`);
 };
-['mOwner','mSubj','mAttach','mInline','mAutoSend','mJobMgr','mJobField'].forEach(id=>$('#'+id).onchange=renderMail);
+// mJobMgr / mJobField 는 아래 setJobRule 전용 핸들러가 따로 있으므로 여기 넣지 않습니다.
+['mOwner','mSubj','mAttach','mInline','mAutoSend'].forEach(id=>$('#'+id).onchange=renderMail);
 ['mSubject','mSubjectA','mNote'].forEach(id=>$('#'+id).oninput=()=>{clearTimeout(window._mt);window._mt=setTimeout(renderMail,250);});
 $('#btnPack').onclick=packDownload;
 $('#btnMailto').onclick=mailtoOpen;
