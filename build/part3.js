@@ -175,7 +175,10 @@ const SEED_OWNERS={
   '엔진품질관리1팀': {name:'이새롬', email:'82251000@teczen.kr'},
   '엔진생산3팀':    {name:'이한솔', email:'82251001@teczen.kr'},
   '엔진품질관리2팀': {name:'이한솔', email:'82251001@teczen.kr'},
-  '엔진생산2팀':    {name:'황나영', email:''},   // 이메일 미확보
+  '엔진생산2팀':    {name:'황나영', email:'82291025@teczen.kr'},
+  // 노동조합·대표이사는 서무 시트에 없는 조직이라 관리자가 직접 챙깁니다.
+  '노동조합':       {name:'이재용', email:'jason@teczen.kr'},
+  '테크젠':        {name:'이재용', email:'jason@teczen.kr'},
 };
 const ORG_NAMES = () => {
   const set=new Set(Object.keys(SEED_OWNERS));
