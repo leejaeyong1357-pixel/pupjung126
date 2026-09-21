@@ -4,7 +4,7 @@
    ============================================================ */
 const LOGO = "__LOGO__";
 const YEAR = 2027;
-const CATEGORIES = ["직무전문","리더십","직무자격","어학","기타"];
+const CATEGORIES = ["사외교육","사내교육"];
 const STATUS = {
   pending:  {label:"승인 대기", cls:"c-wait"},
   approved: {label:"승인 확정", cls:"c-ok"},
@@ -13,6 +13,7 @@ const STATUS = {
 
 /* ---------- 서버에서 받는 값 ---------- */
 let ORG={}, PEOPLE=[], BY_EMP=new Map(), TEAMS=[], SCOPE={teams:[],kind:"none"}, IS_ADMIN=false;
+let DEADLINE="", CLOSED=false, CAN_WRITE=true;
 
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];

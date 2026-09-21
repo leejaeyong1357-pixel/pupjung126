@@ -23,6 +23,7 @@ function applyBootstrap(d){
   if(!d || !d.me){ ME=null; ROWS=[]; return; }
   ME=d.me; ORG=d.org||{}; TEAMS=d.allTeams||[]; SCOPE=d.scope||{teams:[],kind:"member"};
   IS_ADMIN=!!d.isAdmin; PEOPLE=d.roster||[]; BY_EMP=new Map(PEOPLE.map(p=>[p.emp,p]));
+  DEADLINE=d.deadline||""; CLOSED=!!d.closed; CAN_WRITE=d.canWrite!==false;
   ROWS=d.plans||[];
 }
 async function boot(){
@@ -58,6 +59,18 @@ function filtered(rows){
   return out.slice().sort((a,b)=>(a.dept||"").localeCompare(b.dept)||String(a.start||"").localeCompare(String(b.start||""))||(a.name||"").localeCompare(b.name));
 }
 const sum = (rows,f) => rows.reduce((a,r)=>a+(Number(r[f])||0),0);
+
+/* 마감일까지 남은 날짜. 날짜만 비교하므로 마감 당일은 0. */
+function daysToDeadline(){
+  if(!DEADLINE) return null;
+  const d=new Date(), t=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  return Math.round((new Date(DEADLINE+"T00:00:00") - new Date(t+"T00:00:00"))/86400000);
+}
+const fmtDeadline = () => {
+  if(!DEADLINE) return "";
+  const d=new Date(DEADLINE+"T00:00:00");
+  return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`;
+};
 
 /* 같은 날이면 하루, 아니면 시작 ~ 종료(월-일만) */
 function schedule(r){

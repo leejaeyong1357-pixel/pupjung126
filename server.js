@@ -120,6 +120,7 @@ function bootstrap(me) {
   return {
     me: { emp: me.emp, name: me.name, dept: me.dept, position: me.position, grade: me.grade, role: me.role },
     scope, year: YEAR,
+    deadline: ORGLIB.DEADLINE, closed: ORGLIB.isClosed(), canWrite: ORGLIB.canWrite(me),
     isAdmin: ORGLIB.isAdmin(me),
     allTeams: ALL_TEAMS,
     org: ORGLIB.ORG,
@@ -198,6 +199,8 @@ async function api(req, res, url, me) {
     return json(res, 200, { plans: visibleFor(me) });
 
   if (p === "/api/plans" && req.method === "POST") {
+    if (!ORGLIB.canWrite(me))
+      return fail(res, 403, `취합이 ${ORGLIB.DEADLINE} 에 마감되었습니다. 추가 등록은 미래성장팀으로 문의해 주세요.`);
     const v = validate(await readBody(req), me);
     if (v.error) return fail(res, 400, v.error);
     const now = new Date().toISOString();
@@ -231,6 +234,8 @@ async function api(req, res, url, me) {
     }
     if (!m[2] && req.method === "PUT") {
       if (!ORGLIB.canEditRow(me, row)) return fail(res, 403, "본인이 등록한 계획만 수정할 수 있습니다.");
+      if (!ORGLIB.canWrite(me))
+        return fail(res, 403, `취합이 ${ORGLIB.DEADLINE} 에 마감되어 수정할 수 없습니다.`);
       const v = validate(await readBody(req), me);
       if (v.error) return fail(res, 400, v.error);
       Object.assign(row, v.value, { status: "pending", rejectReason: "",
@@ -239,6 +244,8 @@ async function api(req, res, url, me) {
     }
     if (!m[2] && req.method === "DELETE") {
       if (!ORGLIB.canEditRow(me, row)) return fail(res, 403, "본인이 등록한 계획만 삭제할 수 있습니다.");
+      if (!ORGLIB.canWrite(me))
+        return fail(res, 403, `취합이 ${ORGLIB.DEADLINE} 에 마감되어 삭제할 수 없습니다.`);
       PLANS = PLANS.filter(r => r.id !== row.id); await persist();
       return json(res, 200, { ok: true });
     }
@@ -285,6 +292,8 @@ server.listen(PORT, "0.0.0.0", () => {
   if (lan) console.log("  사내망       http://" + lan + ":" + PORT + "   ← 직원들에게 알려줄 주소");
   console.log("  명단        " + ROSTER.length + "명 / " + ALL_TEAMS.length + "개 부서");
   console.log("  등록된 계획  " + PLANS.filter(p => p.year === YEAR).length + "건  (data/plans.json)");
+  console.log("  취합 마감    " + ORGLIB.DEADLINE +
+    (ORGLIB.isClosed() ? "  (마감됨)" : "  (D-" + ORGLIB.daysLeft() + ")"));
   console.log("");
   console.log("  종료하려면 Ctrl+C");
   console.log("");

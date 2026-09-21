@@ -22,6 +22,20 @@
   /* 전사 조회 + 집계 + 엑셀 */
   const ADMINS = ["82211489", "82210465"];   // 이재용(미래성장팀), 박동중(미래성장팀장)
 
+  /* 취합 마감. 이 날 자정까지 등록·수정·삭제할 수 있습니다.
+     마감 뒤에도 팀장 승인·반려는 계속 되고, 관리자는 제한을 받지 않습니다. */
+  const DEADLINE = "2026-10-08";
+  const today = () => {                       // 로컬 시각 기준 YYYY-MM-DD
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  const isClosed = () => today() > DEADLINE;
+  /* 날짜만 비교합니다. 마감 당일은 0. */
+  const daysLeft = () =>
+    Math.round((new Date(DEADLINE + "T00:00:00") - new Date(today() + "T00:00:00")) / 86400000);
+  /* 등록·수정·삭제 가능 여부 */
+  const canWrite = me => !isClosed() || isAdmin(me);
+
   const SIL_OF = {};
   Object.entries(ORG).forEach(([sil, teams]) => {
     SIL_OF[sil] = sil;
@@ -61,5 +75,6 @@
   /* 등록 대상으로 지정할 수 있는 부서 */
   const writableTeams = (me, allTeams) => scopeOf(me, allTeams).teams;
 
-  return { ORG, APPROVER_FALLBACK, ADMINS, SIL_OF, isAdmin, scopeOf, canApprove, canEditRow, writableTeams };
+  return { ORG, APPROVER_FALLBACK, ADMINS, SIL_OF, DEADLINE, isAdmin, isClosed, daysLeft, canWrite,
+           scopeOf, canApprove, canEditRow, writableTeams };
 });

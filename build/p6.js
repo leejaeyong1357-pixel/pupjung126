@@ -85,6 +85,14 @@ function planForm(existing){
     <p>${YEAR}년에 참여할 사외직무교육을 등록합니다. 등록 후 팀장 승인을 받아야 참여가 확정됩니다.</p></div>
     <button data-close aria-label="닫기">&times;</button></div>
   <form class="modal-b" id="planForm">
+    <div class="exstrip">
+      <span class="extag">예시</span>
+      <div class="exbody">
+        <b>82211489 · 미래성장팀 · 매니저 · 이재용 · 사외교육</b><br>
+        한국생산성본부 「AX 엔지니어링 교육」<br>
+        2027-01-24 ~ 2027-01-26 (3일) · 서울 · 24시간 · 780,000원
+      </div>
+    </div>
     <div class="frow c1"><div>
       <span class="flabel">구분</span>
       <div class="seg" id="jobSeg">
@@ -101,9 +109,9 @@ function planForm(existing){
     </div>
     <div id="prdPick" ${r.jobType==="생산직"?"":"hidden"}>
       <div class="frow c3">
-        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="82210000"></div>
-        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="홍길동"></div>
-        <div><label for="pfGrade">직급</label><input id="pfGrade" value="${esc(r.jobType==="생산직"?(r.grade||""):"")}" placeholder="기술사원 / 조장 등"></div>
+        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="예) 82210588"></div>
+        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="예) 조효근"></div>
+        <div><label for="pfGrade">직급</label><input id="pfGrade" value="${esc(r.jobType==="생산직"?(r.grade||""):"")}" placeholder="예) 조장"></div>
       </div>
       <div class="frow c1"><div><label for="pfDept">부서</label>
         <select id="pfDept">${editable.map(t=>`<option ${t===r.dept?"selected":""}>${esc(t)}</option>`).join("")}</select></div></div>
@@ -111,20 +119,23 @@ function planForm(existing){
     <div class="frow">
       <div><label for="pfCat">교육구분</label><select id="pfCat">${CATEGORIES.map(c=>
         `<option ${c===r.category?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
-      <div><label for="pfOrg">교육기관</label><input id="pfOrg" value="${esc(r.org)}" placeholder="한국생산성본부" required></div>
+      <div><label for="pfOrg">교육기관</label><input id="pfOrg" value="${esc(r.org)}" placeholder="예) 한국생산성본부" required></div>
     </div>
     <div class="frow c1"><div><label for="pfCourse">교육과정</label>
-      <input id="pfCourse" value="${esc(r.course)}" placeholder="생성형 AI 업무자동화" required></div></div>
+      <input id="pfCourse" value="${esc(r.course)}" placeholder="예) AX 엔지니어링 교육" required>
+      <p class="hint">안내문에 적힌 과정명을 그대로 입력합니다.</p></div></div>
     <div class="frow c3">
       <div><label for="pfStart">시작일</label><input type="date" id="pfStart" value="${esc(r.start)}" min="${YEAR}-01-01" max="${YEAR}-12-31" required></div>
       <div><label for="pfEnd">종료일</label><input type="date" id="pfEnd" value="${esc(r.end)}" min="${YEAR}-01-01" max="${YEAR}-12-31" required></div>
-      <div><label for="pfPlace">교육장소</label><input id="pfPlace" value="${esc(r.place)}" placeholder="서울 / 온라인" required></div>
+      <div><label for="pfPlace">교육장소</label><input id="pfPlace" value="${esc(r.place)}" placeholder="예) 서울" required></div>
     </div>
     <div class="frow">
-      <div><label for="pfHours">교육시간 (시간)</label><input id="pfHours" class="num" inputmode="numeric" value="${esc(r.hours)}" placeholder="16" required></div>
-      <div><label for="pfCost">교육비 (원)</label><input id="pfCost" class="num" inputmode="numeric" value="${esc(r.cost)}" placeholder="480000" required></div>
+      <div><label for="pfHours">교육시간 (시간)</label><input id="pfHours" class="num" inputmode="numeric" value="${esc(r.hours)}" placeholder="예) 24" required>
+        <p class="hint">일수가 아니라 이수 시간입니다.</p></div>
+      <div><label for="pfCost">교육비 (원)</label><input id="pfCost" class="num" inputmode="numeric" value="${esc(r.cost)}" placeholder="예) 780000" required>
+        <p class="hint">1인 기준, 숫자만. 비용이 없으면 0.</p></div>
     </div>
-    <div class="calc"><span>교육일수는 시작일과 종료일로 자동 계산됩니다</span><span>교육일수 <b id="pfDays">${r.start?daysBetween(r.start,r.end):0}</b>일</span></div>
+    <div class="calc"><span>교육일수는 시작일과 종료일로 자동 계산됩니다 <b style="font-weight:600;color:var(--ink-3)">예) 2027-01-24 ~ 2027-01-26 → 3일</b></span><span>교육일수 <b id="pfDays">${r.start?daysBetween(r.start,r.end):0}</b>일</span></div>
     <div id="pfErr" style="margin-top:13px"></div>
   </form>
   <div class="modal-f">

@@ -94,7 +94,10 @@ input[type=date]{font-family:var(--num)}
 .pagehead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok);
   background:var(--ok-soft);border:1px solid var(--ok-line);padding:4px 11px;border-radius:20px;margin-bottom:9px}
-.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.eyebrow b{margin-left:2px;font-weight:800}
+.eyebrow.urgent{color:var(--wait);background:var(--wait-soft);border-color:var(--wait-line)}
+.eyebrow.closed{color:var(--no);background:var(--no-soft);border-color:var(--no-line)}
 .pagehead h1{font-size:26px;font-weight:900;letter-spacing:-.035em}
 .pagehead p{margin:5px 0 0;color:var(--ink-2);font-size:13.5px}
 .pagehead .acts{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
@@ -249,6 +252,12 @@ body.login-mode{background:var(--panel)}
 .seg button{flex:1;padding:9px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--panel)}
 .seg button.on{background:var(--blue);color:#fff}
 .seg button+button{border-left:1px solid var(--line)}
+.exstrip{display:flex;gap:11px;align-items:flex-start;background:var(--panel-3);border:1px dashed var(--line);
+  border-radius:9px;padding:12px 14px;margin-bottom:17px}
+.extag{flex-shrink:0;background:var(--ink-3);color:var(--panel);font-size:10.5px;font-weight:800;
+  padding:2px 7px;border-radius:4px;letter-spacing:.04em;margin-top:1px}
+.exbody{font-size:12.4px;color:var(--ink-2);line-height:1.75}
+.exbody b{color:var(--ink);font-weight:700}
 .exnote{background:var(--wait-soft);border:1px solid var(--wait-line);border-radius:8px;padding:11px 14px;
   font-size:12.5px;color:var(--ink);margin-bottom:16px;line-height:1.6}
 .calc{background:var(--panel-3);border-radius:8px;padding:10px 13px;font-size:12.5px;color:var(--ink-2);

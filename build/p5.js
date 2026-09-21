@@ -31,7 +31,17 @@ function topbar(sc,pend){
       </div>
       <button class="iconbtn" id="logoutBtn">${IC.out}<span>로그아웃</span></button>
     </div>
-  </div>${OFFLINE?`<div class="banner">서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</div>`:""}</header>`;
+  </div>${OFFLINE?`<div class="banner">서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</div>`
+    :CLOSED?`<div class="banner"><b>${esc(fmtDeadline())} 취합이 마감되었습니다.</b> 추가 등록이나 수정이 필요하면 미래성장팀 이재용 매니저에게 문의해 주세요.</div>`:""}</header>`;
+}
+
+/* 마감까지 남은 날짜를 눈에 띄게 */
+function deadlineChip(){
+  const n=daysToDeadline();
+  if(CLOSED) return `<div class="eyebrow closed"><span class="dot"></span>취합 마감 · ${esc(fmtDeadline())}</div>`;
+  const urgent = n!==null && n<=7;
+  return `<div class="eyebrow${urgent?" urgent":""}"><span class="dot"></span>계획 취합 중 · ${esc(fmtDeadline())}까지
+    <b class="num">${n===0?"오늘 마감":"D-"+n}</b></div>`;
 }
 
 function planView(sc,vis,rows){
@@ -46,13 +56,13 @@ function planView(sc,vis,rows){
   return `
   <div class="pagehead">
     <div>
-      <div class="eyebrow"><span class="dot"></span>계획 취합 중</div>
+      ${deadlineChip()}
       <h1><span class="num">${YEAR}</span>년 사외직무교육 계획</h1>
       <p>내년에 필요한 교육을 미리 등록하고, 소속 조직의 일정과 비용을 함께 확인하세요.</p>
     </div>
     <div class="acts">
       <button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
-      <button class="btn" id="addBtn">${IC.plus} 교육 계획 추가</button>
+      <button class="btn" id="addBtn" ${CAN_WRITE?"":"disabled title=\"취합이 마감되었습니다\""}>${IC.plus} 교육 계획 추가</button>
     </div>
   </div>
   <div class="note">${IC.info}<div>${
@@ -97,7 +107,7 @@ function planTable(rows,vis){
   if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
     <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"아직 등록된 교육계획이 없습니다"}</h3>
     <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 작성 방법은 예시 보기에서 확인할 수 있습니다."}</p>
-    ${vis.length?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
+    ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
   return `<div class="tw"><table><thead><tr>
       <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
       <th>교육구분</th><th>교육기관</th><th>교육과정</th>
@@ -109,7 +119,7 @@ function planTable(rows,vis){
       <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>
       <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade||"-")}</td>
       <td class="nm">${esc(r.name)}${r.emp===ME.emp?'<span class="me">나</span>':""}</td>
-      <td><span class="chip ${r.category==="리더십"?"c-ok":"c-blue"}">${esc(r.category)}</span></td>
+      <td><span class="chip ${r.category==="사내교육"?"c-mute":"c-blue"}">${esc(r.category)}</span></td>
       <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
       <td class="ctr num">${schedule(r)}</td>
       <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>

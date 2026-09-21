@@ -101,7 +101,10 @@ input[type=date]{font-family:var(--num)}
 .pagehead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok);
   background:var(--ok-soft);border:1px solid var(--ok-line);padding:4px 11px;border-radius:20px;margin-bottom:9px}
-.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.eyebrow b{margin-left:2px;font-weight:800}
+.eyebrow.urgent{color:var(--wait);background:var(--wait-soft);border-color:var(--wait-line)}
+.eyebrow.closed{color:var(--no);background:var(--no-soft);border-color:var(--no-line)}
 .pagehead h1{font-size:26px;font-weight:900;letter-spacing:-.035em}
 .pagehead p{margin:5px 0 0;color:var(--ink-2);font-size:13.5px}
 .pagehead .acts{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
@@ -256,6 +259,12 @@ body.login-mode{background:var(--panel)}
 .seg button{flex:1;padding:9px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--panel)}
 .seg button.on{background:var(--blue);color:#fff}
 .seg button+button{border-left:1px solid var(--line)}
+.exstrip{display:flex;gap:11px;align-items:flex-start;background:var(--panel-3);border:1px dashed var(--line);
+  border-radius:9px;padding:12px 14px;margin-bottom:17px}
+.extag{flex-shrink:0;background:var(--ink-3);color:var(--panel);font-size:10.5px;font-weight:800;
+  padding:2px 7px;border-radius:4px;letter-spacing:.04em;margin-top:1px}
+.exbody{font-size:12.4px;color:var(--ink-2);line-height:1.75}
+.exbody b{color:var(--ink);font-weight:700}
 .exnote{background:var(--wait-soft);border:1px solid var(--wait-line);border-radius:8px;padding:11px 14px;
   font-size:12.5px;color:var(--ink);margin-bottom:16px;line-height:1.6}
 .calc{background:var(--panel-3);border-radius:8px;padding:10px 13px;font-size:12.5px;color:var(--ink-2);
@@ -311,7 +320,7 @@ body.login-mode{background:var(--panel)}
    ============================================================ */
 const LOGO = "data:image/png;base64,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";
 const YEAR = 2027;
-const CATEGORIES = ["직무전문","리더십","직무자격","어학","기타"];
+const CATEGORIES = ["사외교육","사내교육"];
 const STATUS = {
   pending:  {label:"승인 대기", cls:"c-wait"},
   approved: {label:"승인 확정", cls:"c-ok"},
@@ -320,6 +329,7 @@ const STATUS = {
 
 /* ---------- 서버에서 받는 값 ---------- */
 let ORG={}, PEOPLE=[], BY_EMP=new Map(), TEAMS=[], SCOPE={teams:[],kind:"none"}, IS_ADMIN=false;
+let DEADLINE="", CLOSED=false, CAN_WRITE=true;
 
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -373,6 +383,7 @@ function applyBootstrap(d){
   if(!d || !d.me){ ME=null; ROWS=[]; return; }
   ME=d.me; ORG=d.org||{}; TEAMS=d.allTeams||[]; SCOPE=d.scope||{teams:[],kind:"member"};
   IS_ADMIN=!!d.isAdmin; PEOPLE=d.roster||[]; BY_EMP=new Map(PEOPLE.map(p=>[p.emp,p]));
+  DEADLINE=d.deadline||""; CLOSED=!!d.closed; CAN_WRITE=d.canWrite!==false;
   ROWS=d.plans||[];
 }
 async function boot(){
@@ -408,6 +419,18 @@ function filtered(rows){
   return out.slice().sort((a,b)=>(a.dept||"").localeCompare(b.dept)||String(a.start||"").localeCompare(String(b.start||""))||(a.name||"").localeCompare(b.name));
 }
 const sum = (rows,f) => rows.reduce((a,r)=>a+(Number(r[f])||0),0);
+
+/* 마감일까지 남은 날짜. 날짜만 비교하므로 마감 당일은 0. */
+function daysToDeadline(){
+  if(!DEADLINE) return null;
+  const d=new Date(), t=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  return Math.round((new Date(DEADLINE+"T00:00:00") - new Date(t+"T00:00:00"))/86400000);
+}
+const fmtDeadline = () => {
+  if(!DEADLINE) return "";
+  const d=new Date(DEADLINE+"T00:00:00");
+  return `${d.getMonth()+1}월 ${d.getDate()}일(${"일월화수목금토"[d.getDay()]})`;
+};
 
 /* 같은 날이면 하루, 아니면 시작 ~ 종료(월-일만) */
 function schedule(r){
@@ -468,7 +491,17 @@ function topbar(sc,pend){
       </div>
       <button class="iconbtn" id="logoutBtn">${IC.out}<span>로그아웃</span></button>
     </div>
-  </div>${OFFLINE?`<div class="banner">서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</div>`:""}</header>`;
+  </div>${OFFLINE?`<div class="banner">서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</div>`
+    :CLOSED?`<div class="banner"><b>${esc(fmtDeadline())} 취합이 마감되었습니다.</b> 추가 등록이나 수정이 필요하면 미래성장팀 이재용 매니저에게 문의해 주세요.</div>`:""}</header>`;
+}
+
+/* 마감까지 남은 날짜를 눈에 띄게 */
+function deadlineChip(){
+  const n=daysToDeadline();
+  if(CLOSED) return `<div class="eyebrow closed"><span class="dot"></span>취합 마감 · ${esc(fmtDeadline())}</div>`;
+  const urgent = n!==null && n<=7;
+  return `<div class="eyebrow${urgent?" urgent":""}"><span class="dot"></span>계획 취합 중 · ${esc(fmtDeadline())}까지
+    <b class="num">${n===0?"오늘 마감":"D-"+n}</b></div>`;
 }
 
 function planView(sc,vis,rows){
@@ -483,13 +516,13 @@ function planView(sc,vis,rows){
   return `
   <div class="pagehead">
     <div>
-      <div class="eyebrow"><span class="dot"></span>계획 취합 중</div>
+      ${deadlineChip()}
       <h1><span class="num">${YEAR}</span>년 사외직무교육 계획</h1>
       <p>내년에 필요한 교육을 미리 등록하고, 소속 조직의 일정과 비용을 함께 확인하세요.</p>
     </div>
     <div class="acts">
       <button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
-      <button class="btn" id="addBtn">${IC.plus} 교육 계획 추가</button>
+      <button class="btn" id="addBtn" ${CAN_WRITE?"":"disabled title=\"취합이 마감되었습니다\""}>${IC.plus} 교육 계획 추가</button>
     </div>
   </div>
   <div class="note">${IC.info}<div>${
@@ -534,7 +567,7 @@ function planTable(rows,vis){
   if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
     <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"아직 등록된 교육계획이 없습니다"}</h3>
     <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 작성 방법은 예시 보기에서 확인할 수 있습니다."}</p>
-    ${vis.length?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
+    ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
   return `<div class="tw"><table><thead><tr>
       <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
       <th>교육구분</th><th>교육기관</th><th>교육과정</th>
@@ -546,7 +579,7 @@ function planTable(rows,vis){
       <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>
       <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade||"-")}</td>
       <td class="nm">${esc(r.name)}${r.emp===ME.emp?'<span class="me">나</span>':""}</td>
-      <td><span class="chip ${r.category==="리더십"?"c-ok":"c-blue"}">${esc(r.category)}</span></td>
+      <td><span class="chip ${r.category==="사내교육"?"c-mute":"c-blue"}">${esc(r.category)}</span></td>
       <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
       <td class="ctr num">${schedule(r)}</td>
       <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
@@ -662,6 +695,14 @@ function planForm(existing){
     <p>${YEAR}년에 참여할 사외직무교육을 등록합니다. 등록 후 팀장 승인을 받아야 참여가 확정됩니다.</p></div>
     <button data-close aria-label="닫기">&times;</button></div>
   <form class="modal-b" id="planForm">
+    <div class="exstrip">
+      <span class="extag">예시</span>
+      <div class="exbody">
+        <b>82211489 · 미래성장팀 · 매니저 · 이재용 · 사외교육</b><br>
+        한국생산성본부 「AX 엔지니어링 교육」<br>
+        2027-01-24 ~ 2027-01-26 (3일) · 서울 · 24시간 · 780,000원
+      </div>
+    </div>
     <div class="frow c1"><div>
       <span class="flabel">구분</span>
       <div class="seg" id="jobSeg">
@@ -678,9 +719,9 @@ function planForm(existing){
     </div>
     <div id="prdPick" ${r.jobType==="생산직"?"":"hidden"}>
       <div class="frow c3">
-        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="82210000"></div>
-        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="홍길동"></div>
-        <div><label for="pfGrade">직급</label><input id="pfGrade" value="${esc(r.jobType==="생산직"?(r.grade||""):"")}" placeholder="기술사원 / 조장 등"></div>
+        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="예) 82210588"></div>
+        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="예) 조효근"></div>
+        <div><label for="pfGrade">직급</label><input id="pfGrade" value="${esc(r.jobType==="생산직"?(r.grade||""):"")}" placeholder="예) 조장"></div>
       </div>
       <div class="frow c1"><div><label for="pfDept">부서</label>
         <select id="pfDept">${editable.map(t=>`<option ${t===r.dept?"selected":""}>${esc(t)}</option>`).join("")}</select></div></div>
@@ -688,20 +729,23 @@ function planForm(existing){
     <div class="frow">
       <div><label for="pfCat">교육구분</label><select id="pfCat">${CATEGORIES.map(c=>
         `<option ${c===r.category?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
-      <div><label for="pfOrg">교육기관</label><input id="pfOrg" value="${esc(r.org)}" placeholder="한국생산성본부" required></div>
+      <div><label for="pfOrg">교육기관</label><input id="pfOrg" value="${esc(r.org)}" placeholder="예) 한국생산성본부" required></div>
     </div>
     <div class="frow c1"><div><label for="pfCourse">교육과정</label>
-      <input id="pfCourse" value="${esc(r.course)}" placeholder="생성형 AI 업무자동화" required></div></div>
+      <input id="pfCourse" value="${esc(r.course)}" placeholder="예) AX 엔지니어링 교육" required>
+      <p class="hint">안내문에 적힌 과정명을 그대로 입력합니다.</p></div></div>
     <div class="frow c3">
       <div><label for="pfStart">시작일</label><input type="date" id="pfStart" value="${esc(r.start)}" min="${YEAR}-01-01" max="${YEAR}-12-31" required></div>
       <div><label for="pfEnd">종료일</label><input type="date" id="pfEnd" value="${esc(r.end)}" min="${YEAR}-01-01" max="${YEAR}-12-31" required></div>
-      <div><label for="pfPlace">교육장소</label><input id="pfPlace" value="${esc(r.place)}" placeholder="서울 / 온라인" required></div>
+      <div><label for="pfPlace">교육장소</label><input id="pfPlace" value="${esc(r.place)}" placeholder="예) 서울" required></div>
     </div>
     <div class="frow">
-      <div><label for="pfHours">교육시간 (시간)</label><input id="pfHours" class="num" inputmode="numeric" value="${esc(r.hours)}" placeholder="16" required></div>
-      <div><label for="pfCost">교육비 (원)</label><input id="pfCost" class="num" inputmode="numeric" value="${esc(r.cost)}" placeholder="480000" required></div>
+      <div><label for="pfHours">교육시간 (시간)</label><input id="pfHours" class="num" inputmode="numeric" value="${esc(r.hours)}" placeholder="예) 24" required>
+        <p class="hint">일수가 아니라 이수 시간입니다.</p></div>
+      <div><label for="pfCost">교육비 (원)</label><input id="pfCost" class="num" inputmode="numeric" value="${esc(r.cost)}" placeholder="예) 780000" required>
+        <p class="hint">1인 기준, 숫자만. 비용이 없으면 0.</p></div>
     </div>
-    <div class="calc"><span>교육일수는 시작일과 종료일로 자동 계산됩니다</span><span>교육일수 <b id="pfDays">${r.start?daysBetween(r.start,r.end):0}</b>일</span></div>
+    <div class="calc"><span>교육일수는 시작일과 종료일로 자동 계산됩니다 <b style="font-weight:600;color:var(--ink-3)">예) 2027-01-24 ~ 2027-01-26 → 3일</b></span><span>교육일수 <b id="pfDays">${r.start?daysBetween(r.start,r.end):0}</b>일</span></div>
     <div id="pfErr" style="margin-top:13px"></div>
   </form>
   <div class="modal-f">
@@ -713,9 +757,9 @@ function planForm(existing){
 
 /* ---------- 예시 보기 ---------- */
 const SAMPLE=[
-  ["관리직","82210465","미래성장팀","M5","박동중","직무전문","한국생산성본부","생성형 AI 업무자동화","2027-03-11","2027-03-12",2,"서울",16,480000],
-  ["관리직","82211489","미래성장팀","M2","이재용","리더십","한국능률협회","프로젝트 리더십","2027-05-20","2027-05-21",2,"부산",16,550000],
-  ["생산직","82210588","PT생산1팀","조장","조효근","직무자격","동우열처리","분석기 사용법 및 가스 보정 실습","2027-03-16","2027-03-16",1,"본공장",4,0],
+  ["관리직","82211489","미래성장팀","매니저","이재용","사외교육","한국생산성본부","AX 엔지니어링 교육","2027-01-24","2027-01-26",3,"서울",24,780000],
+  ["관리직","82210465","미래성장팀","팀장","박동중","사외교육","한국능률협회","프로젝트 리더십","2027-05-20","2027-05-21",2,"부산",16,550000],
+  ["생산직","82210588","PT생산1팀","조장","조효근","사내교육","동우열처리","분석기 사용법 및 가스 보정 실습","2027-03-16","2027-03-16",1,"본공장",4,0],
 ];
 function exampleModal(){
   openModal(`
@@ -724,6 +768,11 @@ function exampleModal(){
     <button data-close aria-label="닫기">&times;</button></div>
   <div class="modal-b">
     <div class="exnote"><b>예시 데이터입니다.</b> 실제 등록 내용이 아니며, 입력 형식을 보여주기 위한 표본입니다.</div>
+    <p style="margin:0 0 14px;font-size:13px;color:var(--ink-2);line-height:1.8">
+      첫 줄을 말로 풀면 이렇습니다.<br>
+      <b style="color:var(--ink)">사번 82211489, 미래성장팀 매니저 이재용, 사외교육.
+      기관은 한국생산성본부, 과정은 AX 엔지니어링 교육.
+      2027년 1월 24일부터 26일까지 3일간, 서울에서 24시간, 비용 780,000원.</b></p>
     <div class="tw"><table><thead><tr><th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th>
       <th>직급</th><th>성명</th><th>교육구분</th><th>교육기관</th><th>교육과정</th>
       <th class="ctr">시작일</th><th class="ctr">종료일</th><th class="ctr">일수</th><th>교육장소</th>
@@ -731,15 +780,15 @@ function exampleModal(){
       ${SAMPLE.map((s,i)=>`<tr><td class="ctr num">${i+1}</td>
         <td class="ctr"><span class="chip ${s[0]==="생산직"?"c-mute":"c-blue"}">${s[0]}</span></td>
         <td class="num">${s[1]}</td><td>${s[2]}</td><td class="num">${s[3]}</td><td class="nm">${s[4]}</td>
-        <td><span class="chip ${s[5]==="리더십"?"c-ok":"c-blue"}">${s[5]}</span></td>
+        <td><span class="chip ${s[5]==="사내교육"?"c-mute":"c-blue"}">${s[5]}</span></td>
         <td>${s[6]}</td><td>${s[7]}</td><td class="ctr num">${s[8]}</td><td class="ctr num">${s[9]}</td>
         <td class="ctr num">${s[10]}일</td><td>${s[11]}</td><td class="rt num">${won(s[12])}시간</td>
         <td class="rt num">${won(s[13])}</td></tr>`).join("")}
     </tbody></table></div>
     <div style="margin-top:20px">
-      ${[["교육구분","직무전문 · 리더십 · 직무자격 · 어학 · 기타 중에서 고릅니다."],
+      ${[["교육구분","사외교육 또는 사내교육 중에서 고릅니다."],
          ["교육기관 · 교육과정","기관명과 과정명을 안내문에 적힌 그대로 입력합니다."],
-         ["교육일정","시작일과 종료일을 고르면 교육일수가 자동으로 계산됩니다. 하루짜리 교육은 두 날짜를 같게 두면 1일이 됩니다."],
+         ["교육일정","시작일과 종료일을 고르면 교육일수가 자동으로 계산됩니다. 예를 들어 2027-01-24 ~ 2027-01-26 이면 3일입니다. 하루짜리 교육은 두 날짜를 같게 둡니다."],
          ["교육시간","수료증에 기재되는 이수 시간입니다. 일수가 아니라 시간 단위로 적습니다."],
          ["교육비","1인 기준 금액을 원 단위 숫자로만 적습니다. 사내교육처럼 비용이 없으면 0을 입력합니다."],
          ["생산직 대리 등록","생산직 인원은 담당 관리직이 구분을 생산직으로 바꾼 뒤 사번·성명·직급을 직접 입력합니다."]
