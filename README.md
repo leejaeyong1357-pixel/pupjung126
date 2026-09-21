@@ -20,13 +20,15 @@ Windows는 `start.bat` 더블클릭, macOS·Linux는 `./start.sh` 로도 됩니�
 실행하면 주소 두 개가 표시됩니다.
 
 ```
-내 PC       http://localhost:6574
-사내망       http://192.168.x.x:6574   ← 직원들에게 알려줄 주소
+내 PC       http://localhost:711
+사내망       http://192.168.x.x:711   ← 직원들에게 알려줄 주소
 ```
 
 직원들은 **사내망 주소**로 접속합니다. 서버를 켜 둔 PC가 꺼지면 접속도 끊깁니다.
-포트를 바꾸려면 Windows 는 `set PORT=6575 && node server.js`,
-macOS·Linux 는 `PORT=6575 node server.js`.
+포트를 바꾸려면 Windows 는 `set PORT=712 && node server.js`,
+macOS·Linux 는 `PORT=712 node server.js`.
+
+> 711 은 1024 미만 포트라 macOS·Linux 에서는 관리자 권한이 필요합니다. Windows 는 그대로 됩니다.
 
 > 방화벽이 처음 실행 시 차단을 물으면 **허용**해야 다른 PC에서 접속됩니다.
 

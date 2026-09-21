@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* 테크젠 사외직무교육 계획 취합 — 로컬 서버
  *
- *   node server.js                     기본 6574 포트
+ *   node server.js                     기본 711 포트
  *   set PORT=6575 && node server.js    포트 변경 (Windows)
  *   PORT=6575 node server.js           포트 변경 (macOS / Linux)
  *
@@ -23,7 +23,7 @@ const DATA = path.join(ROOT, "data");
 const PLANS_FILE = path.join(DATA, "plans.json");
 const ROSTER_FILE = path.join(DATA, "roster.json");
 const SECRET_FILE = path.join(DATA, ".secret");
-const PORT = Number(process.env.PORT) || 6574;
+const PORT = Number(process.env.PORT) || 711;
 const YEAR = 2027;
 
 /* ---------- 저장소 ---------- */
