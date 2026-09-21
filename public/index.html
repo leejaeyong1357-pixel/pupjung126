@@ -334,17 +334,6 @@ body.login-mode{background:var(--panel)}
 .loginerr{background:var(--no-soft);border:1px solid var(--no-line);color:var(--no);border-radius:9px;
   padding:11px 14px;font-size:12.5px;font-weight:500;margin-bottom:16px;line-height:1.6}
 
-/* 세로가 짧은 노트북(1366×768 등)에서도 스크롤 없이 한 화면에 들어오게 */
-@media (min-width:981px) and (max-height:830px){
-  .login-panel{padding:20px}
-  .form-logo{margin-bottom:16px}
-  .form-sub{margin:8px 0 20px}
-  .login-form .field{margin-bottom:13px}
-  .login-note{margin-top:13px}
-  .login-foot{margin-top:22px;padding-top:18px}
-  .copyright{margin-top:16px}
-}
-
 @media (max-width:980px){
   .login{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:16px;gap:16px;min-height:100dvh}
   .login-art{min-height:170px;padding:20px 22px}
@@ -368,6 +357,11 @@ body.login-mode{background:var(--panel)}
 .modal-f{padding:15px 22px;border-top:1px solid var(--line-2);display:flex;gap:9px;justify-content:flex-end;
   background:var(--panel-2);border-radius:0 0 14px 14px;flex-wrap:wrap}
 .modal-f .left{margin-right:auto}
+/* 팀장·실장 본인 확인 창 */
+.bibox label{display:block;font-size:12.5px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+.binum{letter-spacing:.16em;font-size:18px;text-align:center;padding:12px 11px}
+.bihint{margin:10px 0 0;font-size:12px;color:var(--ink-3)}
+
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
 .frow.c3{grid-template-columns:1fr 1fr 1fr}
 .frow.c1{grid-template-columns:1fr}
@@ -439,15 +433,7 @@ body.login-mode{background:var(--panel)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.4"/><circle cx="8.6" cy="11" r="1.9"/><path d="M5.6 16.2a3.4 3.4 0 0 1 6 0M14 10h4.2M14 13.6h3"/></svg>
             <input id="liEmp" name="liEmp" class="num" inputmode="numeric" autocomplete="off" placeholder="사원번호를 입력해 주세요" required>
           </div>
-        </div>
-
-        <div class="field">
-          <label for="liBirth">주민번호 앞 6자리</label>
-          <div class="inp">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2.4"/><path d="M8 3.2v3.6M16 3.2v3.6M4 10h16M8.4 14h2.2M13.4 14h2.2M8.4 17h2.2"/></svg>
-            <input id="liBirth" name="liBirth" class="num" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="예) 800101">
-          </div>
-          <p class="field-hint">승인 권한이 있는 팀장 · 실장만 입력합니다. 팀원은 비워 두세요.</p>
+          <p class="field-hint">이름과 사원번호로 로그인할 수 있습니다.</p>
         </div>
 
         <button class="btn login-btn" type="submit">로그인
@@ -1088,20 +1074,58 @@ async function exportXlsx(){
 }
 
 /* ---------- 이벤트 ---------- */
+/* 로그인 성공 처리 */
+function enterApp(d){
+  applyBootstrap(d);
+  VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
+  toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
+}
+
+/* 팀장 · 실장은 이름 · 사번을 맞힌 뒤 생년월일 앞 6자리를 한 번 더 확인합니다.
+   서버가 앞 6자리까지 받아야 로그인을 내주므로 이 창을 닫으면 들어갈 수 없습니다. */
+function birthModal(name,emp){
+  openModal(`
+  <div class="modal-h"><div><h2>본인 확인</h2>
+    <p>${esc(name)}님은 승인 권한이 있어 한 번 더 확인합니다.</p></div>
+    <button data-close aria-label="닫기">&times;</button></div>
+  <form class="modal-b bibox" id="birthForm">
+    <div id="birthErr"></div>
+    <label for="biNum">생년월일 앞 6자리</label>
+    <input id="biNum" class="num binum" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="800101">
+    <p class="bihint">주민등록번호 앞 6자리입니다. 뒷자리는 묻지 않습니다.</p>
+  </form>
+  <div class="modal-f">
+    <button class="btn ghost" data-close type="button">취소</button>
+    <button class="btn" id="biOk" type="button">확인</button>
+  </div>`,"narrow");
+
+  const err=m=>{ $("#birthErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; $("#biOk").disabled=false; };
+  const go=async()=>{
+    const birth=$("#biNum").value.trim().replace(/\D/g,"");
+    if(birth.length!==6) return err("생년월일 앞 6자리를 여섯 자리로 입력해 주세요.");
+    $("#biOk").disabled=true;
+    try{
+      const d=await apiCall("/api/login",{method:"POST",body:{name,emp,birth}});
+      closeModal(); enterApp(d);
+    }catch(ex){ err(ex.message); $("#biNum").select(); }
+  };
+  $("#biOk").onclick=go;
+  $("#birthForm").addEventListener("submit",e=>{ e.preventDefault(); go(); });
+  setTimeout(()=>$("#biNum") && $("#biNum").focus(),70);   // 닫기(×)가 아니라 입력칸에 커서
+}
+
 function bindLogin(){
   $("#loginForm").addEventListener("submit",async e=>{
     e.preventDefault();
     const btn=$("#loginForm button[type=submit]");
     const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
-    const birth=$("#liBirth").value.trim().replace(/\D/g,"");
     const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; btn.disabled=false; };
     if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
-    if(birth&&birth.length!==6) return err("주민번호 앞 6자리를 여섯 자리로 입력해 주세요.");
     btn.disabled=true;
     try{
-      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp,birth}}));
-      VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
-      toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
+      const d=await apiCall("/api/login",{method:"POST",body:{name,emp}});
+      if(d.needBirth){ btn.disabled=false; return birthModal(d.name,emp); }
+      enterApp(d);
     }catch(ex){ err(ex.message); }
   });
 }

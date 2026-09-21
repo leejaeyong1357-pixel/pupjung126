@@ -1,19 +1,57 @@
 
 /* ---------- 이벤트 ---------- */
+/* 로그인 성공 처리 */
+function enterApp(d){
+  applyBootstrap(d);
+  VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
+  toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
+}
+
+/* 팀장 · 실장은 이름 · 사번을 맞힌 뒤 생년월일 앞 6자리를 한 번 더 확인합니다.
+   서버가 앞 6자리까지 받아야 로그인을 내주므로 이 창을 닫으면 들어갈 수 없습니다. */
+function birthModal(name,emp){
+  openModal(`
+  <div class="modal-h"><div><h2>본인 확인</h2>
+    <p>${esc(name)}님은 승인 권한이 있어 한 번 더 확인합니다.</p></div>
+    <button data-close aria-label="닫기">&times;</button></div>
+  <form class="modal-b bibox" id="birthForm">
+    <div id="birthErr"></div>
+    <label for="biNum">생년월일 앞 6자리</label>
+    <input id="biNum" class="num binum" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="800101">
+    <p class="bihint">주민등록번호 앞 6자리입니다. 뒷자리는 묻지 않습니다.</p>
+  </form>
+  <div class="modal-f">
+    <button class="btn ghost" data-close type="button">취소</button>
+    <button class="btn" id="biOk" type="button">확인</button>
+  </div>`,"narrow");
+
+  const err=m=>{ $("#birthErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; $("#biOk").disabled=false; };
+  const go=async()=>{
+    const birth=$("#biNum").value.trim().replace(/\D/g,"");
+    if(birth.length!==6) return err("생년월일 앞 6자리를 여섯 자리로 입력해 주세요.");
+    $("#biOk").disabled=true;
+    try{
+      const d=await apiCall("/api/login",{method:"POST",body:{name,emp,birth}});
+      closeModal(); enterApp(d);
+    }catch(ex){ err(ex.message); $("#biNum").select(); }
+  };
+  $("#biOk").onclick=go;
+  $("#birthForm").addEventListener("submit",e=>{ e.preventDefault(); go(); });
+  setTimeout(()=>$("#biNum") && $("#biNum").focus(),70);   // 닫기(×)가 아니라 입력칸에 커서
+}
+
 function bindLogin(){
   $("#loginForm").addEventListener("submit",async e=>{
     e.preventDefault();
     const btn=$("#loginForm button[type=submit]");
     const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
-    const birth=$("#liBirth").value.trim().replace(/\D/g,"");
     const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; btn.disabled=false; };
     if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
-    if(birth&&birth.length!==6) return err("주민번호 앞 6자리를 여섯 자리로 입력해 주세요.");
     btn.disabled=true;
     try{
-      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp,birth}}));
-      VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
-      toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
+      const d=await apiCall("/api/login",{method:"POST",body:{name,emp}});
+      if(d.needBirth){ btn.disabled=false; return birthModal(d.name,emp); }
+      enterApp(d);
     }catch(ex){ err(ex.message); }
   });
 }

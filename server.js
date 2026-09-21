@@ -191,11 +191,12 @@ async function api(req, res, url, me) {
     const person = BY_EMP.get(emp);
     if (!person) return fail(res, 401, `사번 ${emp} 을(를) 명단에서 찾을 수 없습니다.`);
     if (person.name !== name) return fail(res, 401, "사번과 성명이 일치하지 않습니다.");
-    /* 팀장 · 실장은 승인 · 반려 권한이 있어 주민번호 앞 6자리를 한 번 더 확인합니다.
-       명단(data/roster.json)에 birth 가 적힌 사람에게만 적용됩니다. */
+    /* 팀장 · 실장은 승인 · 반려 권한이 있어 생년월일 앞 6자리를 한 번 더 확인합니다.
+       명단(data/roster.json)에 birth 가 적힌 사람에게만 적용됩니다.
+       앞 6자리를 받기 전에는 쿠키를 주지 않으므로 이 단계를 건너뛸 수 없습니다. */
     if (person.birth) {
-      if (!birth) return fail(res, 401, "팀장 · 실장은 주민번호 앞 6자리도 입력해 주세요.");
-      if (!safeEq(birth, person.birth)) return fail(res, 401, "주민번호 앞 6자리가 일치하지 않습니다.");
+      if (!birth) return json(res, 200, { needBirth: true, name: person.name });
+      if (!safeEq(birth, person.birth)) return fail(res, 401, "생년월일 앞 6자리가 일치하지 않습니다.");
     }
     return json(res, 200, bootstrap(person), {
       "Set-Cookie": `tz=${makeToken(emp)}; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax`,
