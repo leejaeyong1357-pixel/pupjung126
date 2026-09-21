@@ -1,43 +1,50 @@
 
-/* ---------- db ---------- */
-async function initDb(){
-  try{ DB = await claude.use("db"); }catch(e){ DB=null; }
-  try{ DL = await claude.use("downloads"); }catch(e){ DL=null; }
-  if(!DB){ READY=true; render(); return; }
-  DB.collection("plans").onSnapshot(
-    snap=>{ ROWS = snap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.year===YEAR);
-            DBOK=true; READY=true; render(); },
-    err=>{ DBOK=false; READY=true; render();
-           toast(err.code==="revoked" ? "접근 권한이 해제되었습니다. 새로고침해 주세요."
-                                      : "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",5000); }
-  );
-}
-async function saveRow(row){
-  if(!DB){ toast("저장 공간에 연결되지 않아 등록할 수 없습니다."); return false; }
-  try{ await DB.doc("plans/"+row.id).set(row); return true; }
-  catch(e){
-    toast(e.code==="quota_exceeded" ? "저장 한도가 가득 찼습니다. 관리자에게 알려주세요."
-        : e.code==="invalid_argument" ? "이 계정에는 등록 권한이 없습니다."
-        : "저장하지 못했습니다. 다시 시도해 주세요.",4500);
-    return false;
+/* ---------- 서버 통신 ---------- */
+async function apiCall(path, opts={}){
+  let res;
+  try{
+    res = await fetch(path, {credentials:"same-origin",
+      headers:{"Content-Type":"application/json"}, ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined});
+  }catch(e){
+    OFFLINE=true;
+    throw new Error("서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인해 주세요.");
   }
+  OFFLINE=false;
+  let data={};
+  try{ data = await res.json(); }catch(e){}
+  if(!res.ok){
+    if(res.status===401 && ME){ ME=null; render(); }
+    throw new Error(data.error || "처리하지 못했습니다. 다시 시도해 주세요.");
+  }
+  return data;
 }
-async function patchRow(id,patch){
-  if(!DB) return false;
-  try{ await DB.doc("plans/"+id).update(patch); return true; }
-  catch(e){ toast("변경하지 못했습니다. 다시 시도해 주세요.",4000); return false; }
+function applyBootstrap(d){
+  if(!d || !d.me){ ME=null; ROWS=[]; return; }
+  ME=d.me; ORG=d.org||{}; TEAMS=d.allTeams||[]; SCOPE=d.scope||{teams:[],kind:"member"};
+  IS_ADMIN=!!d.isAdmin; PEOPLE=d.roster||[]; BY_EMP=new Map(PEOPLE.map(p=>[p.emp,p]));
+  ROWS=d.plans||[];
 }
-async function removeRow(id){
-  if(!DB) return false;
-  try{ await DB.doc("plans/"+id).delete(); return true; }
-  catch(e){ toast("삭제하지 못했습니다. 다시 시도해 주세요.",4000); return false; }
+async function boot(){
+  try{ applyBootstrap(await apiCall("/api/bootstrap")); }
+  catch(e){ toast(e.message,5000); }
+  BOOTED=true; render();
 }
+async function refresh(){
+  try{ const d=await apiCall("/api/plans"); ROWS=d.plans||[]; render(); }
+  catch(e){ /* 주기 갱신 실패는 조용히 넘어갑니다 */ }
+}
+/* 다른 사람이 등록한 내용을 주기적으로 받아옵니다.
+   화면이 가려져 있거나 입력창이 열려 있으면 건너뜁니다. */
+setInterval(()=>{
+  if(!ME || document.hidden || $("#modalRoot").firstChild) return;
+  refresh();
+}, 20000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && ME) refresh(); });
 
 /* ---------- 조회 대상 ---------- */
-function visibleRows(){
-  const sc=scopeOf(ME), set=new Set(sc.teams);
-  return ROWS.filter(r=>set.has(r.dept));
-}
+/* 서버가 조회 범위를 걸러서 내려주므로 그대로 씁니다. */
+const visibleRows = () => ROWS;
 function filtered(rows){
   let out=rows;
   if(SUB==="mine")     out=out.filter(r=>r.createdBy===ME.emp);

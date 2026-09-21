@@ -1,22 +1,27 @@
 
 /* ---------- 이벤트 ---------- */
 function bindLogin(){
-  $("#loginForm").addEventListener("submit",e=>{
+  $("#loginForm").addEventListener("submit",async e=>{
     e.preventDefault();
+    const btn=$("#loginForm button[type=submit]");
     const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
-    const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${m}</div>`; };
+    const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; btn.disabled=false; };
     if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
-    const p=BY_EMP.get(emp);
-    if(!p) return err("사번 "+emp+" 을(를) 명단에서 찾을 수 없습니다. 사번을 다시 확인해 주세요.");
-    if(p.name!==name) return err("사번과 성명이 일치하지 않습니다. 다시 확인해 주세요.");
-    ME=p; saveMe(p); VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
-    toast(p.name+"님, 환영합니다. "+p.dept+"으로 등록되었습니다.");
+    btn.disabled=true;
+    try{
+      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp}}));
+      VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
+      toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
+    }catch(ex){ err(ex.message); }
   });
 }
 function bindAll(){
   $$(".mainnav button").forEach(b=>b.onclick=()=>{VIEW=b.dataset.view;SUB="all";Q="";render();});
   $$("[data-sub]").forEach(b=>b.onclick=()=>{SUB=b.dataset.sub;render();});
-  const lo=$("#logoutBtn"); if(lo) lo.onclick=()=>{ME=null;saveMe(null);render();};
+  const lo=$("#logoutBtn"); if(lo) lo.onclick=async()=>{
+    try{ await apiCall("/api/logout",{method:"POST"}); }catch(e){}
+    ME=null; ROWS=[]; render();
+  };
   const th=$("#themeBtn"); if(th) th.onclick=toggleTheme;
   const gt=$("#guideToggle"); if(gt) gt.onclick=()=>{
     const m=localStorage.getItem("teczen_guide_min")==="1";
@@ -41,20 +46,23 @@ function bindAll(){
     confirmModal("교육 계획 승인",
       `<b>${esc(r.name)}</b>님의 <b>${esc(r.course)}</b> 계획을 승인합니다.<br>승인하면 등록자에게 승인 확정으로 표시됩니다.`,
       "승인 확정", async()=>{
-        const ok=await patchRow(r.id,{status:"approved",rejectReason:"",
-          decidedBy:ME.name,decidedByEmp:ME.emp,decidedAt:new Date().toISOString()});
-        if(ok) toast("승인 확정했습니다.");
+        try{ await apiCall("/api/plans/"+r.id+"/approve",{method:"POST"});
+             toast("승인 확정했습니다."); await refresh(); }
+        catch(e){ toast(e.message,4000); }
       });
   });
   $$("[data-del]").forEach(b=>b.onclick=()=>{
     const r=byId(b.dataset.del);
     confirmModal("교육 계획 삭제",
       `<b>${esc(r.course)}</b> 계획을 삭제합니다.<br>삭제하면 되돌릴 수 없습니다.`,
-      "삭제", async()=>{ if(await removeRow(r.id)) toast("삭제했습니다."); }, true);
+      "삭제", async()=>{
+        try{ await apiCall("/api/plans/"+r.id,{method:"DELETE"});
+             toast("삭제했습니다."); await refresh(); }
+        catch(e){ toast(e.message,4000); }
+      }, true);
   });
 }
 function bindPlanForm(existing){
-  $$("[data-close]").forEach(b=>b.onclick=closeModal);
   const seg=$("#jobSeg"); let job=existing?existing.jobType:"관리직";
   $$("#jobSeg button").forEach(b=>b.onclick=()=>{
     job=b.dataset.job;
@@ -90,19 +98,16 @@ function bindPlanForm(existing){
     const cost =Number(g("#pfCost").replace(/[^\d]/g,""));
     if(!(hours>0)) return err("교육시간을 시간 단위 숫자로 입력해 주세요.");
     if(!isFinite(cost)||cost<0) return err("교육비를 원 단위 숫자로 입력해 주세요. 비용이 없으면 0을 적습니다.");
-    const now=new Date().toISOString();
-    const row={ id: existing?existing.id:uid(), year:YEAR, jobType:job,
-      emp:person.emp, name:person.name, dept:person.dept, grade:person.grade,
-      category:$("#pfCat").value, org, course, start, end, days:daysBetween(start,end),
-      place, hours, cost, status:"pending", rejectReason:"",
-      decidedBy:"", decidedByEmp:"", decidedAt:"",
-      createdBy: existing?existing.createdBy:ME.emp,
-      createdByName: existing?existing.createdByName:ME.name,
-      createdAt: existing?existing.createdAt:now, updatedAt:now };
+    const payload={ jobType:job, emp:person.emp, name:person.name, dept:person.dept, grade:person.grade,
+      category:$("#pfCat").value, org, course, start, end, place, hours, cost };
     $("#pfSave").disabled=true;
-    const ok=await saveRow(row);
-    if(ok){ closeModal(); toast(existing?"수정했습니다. 다시 승인 대기 상태가 됩니다.":"교육 계획을 등록했습니다. 팀장 승인을 기다려 주세요.",3400); }
-    else $("#pfSave").disabled=false;
+    try{
+      if(existing) await apiCall("/api/plans/"+existing.id,{method:"PUT",body:payload});
+      else         await apiCall("/api/plans",{method:"POST",body:payload});
+      closeModal();
+      toast(existing?"수정했습니다. 다시 승인 대기 상태가 됩니다.":"교육 계획을 등록했습니다. 팀장 승인을 기다려 주세요.",3400);
+      await refresh();
+    }catch(e){ err(e.message); $("#pfSave").disabled=false; }
   };
   recalc();
 }
@@ -119,5 +124,5 @@ try{ const t=localStorage.getItem("teczen_theme"); if(t) document.documentElemen
 
 /* ---------- 시작 ---------- */
 render();
-initDb();
+boot();
 </script>

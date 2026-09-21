@@ -66,6 +66,7 @@ function openModal(html,cls=""){
   $("#modalRoot").innerHTML=`<div class="scrim" id="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`;
   const sc=$("#scrim");
   sc.addEventListener("mousedown",e=>{ if(e.target===sc) closeModal(); });
+  $$("[data-close]",sc).forEach(b=>b.onclick=closeModal);   // 모든 모달의 닫기·취소 버튼
   document.addEventListener("keydown",escClose);
   const f=sc.querySelector("input,select,textarea,button");
   if(f) setTimeout(()=>f.focus(),40);
@@ -75,8 +76,7 @@ function escClose(e){ if(e.key==="Escape") closeModal(); }
 
 /* 교육계획 추가 · 수정 */
 function planForm(existing){
-  const sc=scopeOf(ME);
-  const editable = sc.kind==="member" ? [ME.dept] : sc.teams;
+  const editable = scopeOf().teams;
   const r = existing || {jobType:"관리직",dept:ME.dept,emp:ME.emp,name:ME.name,grade:ME.grade,
                          category:"직무전문",org:"",course:"",start:"",end:"",place:"",hours:"",cost:""};
   const teamMates = PEOPLE.filter(p=>editable.includes(p.dept)).sort((a,b)=>a.dept.localeCompare(b.dept)||a.name.localeCompare(b.name));

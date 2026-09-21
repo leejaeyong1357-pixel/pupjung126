@@ -3,10 +3,10 @@
 function render(){
   const app=$("#app");
   if(!ME){ app.innerHTML=""; app.appendChild($("#tpl-login").content.cloneNode(true)); bindLogin(); return; }
-  const sc=scopeOf(ME), vis=visibleRows(), rows=filtered(vis);
-  const pend=vis.filter(r=>r.status==="pending" && canApprove(ME,r.dept)).length;
+  const sc=scopeOf(), vis=visibleRows(), rows=filtered(vis);
+  const pend=vis.filter(r=>r.status==="pending" && canApprove(r)).length;
   app.innerHTML = topbar(sc,pend) + `<div class="shell"><main>${
-      VIEW==="admin" ? adminView(vis) : planView(sc,vis,rows)
+      VIEW==="admin" && isAdmin() ? adminView(vis) : planView(sc,vis,rows)
     }</main><aside class="rail">${guideRail()}</aside></div>`;
   bindAll();
 }
@@ -16,8 +16,8 @@ function topbar(sc,pend){
               : sc.kind==="sil"   ? ME.dept+" 총괄"
               : sc.kind==="lead"  ? ME.dept+" 팀장" : ME.dept;
   const tabs=[["team", sc.kind==="member"?"우리 팀 교육계획":"소속 교육계획",0]];
-  if(canApprove(ME,ME.dept)||sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
-  if(isAdmin(ME)) tabs.push(["admin","전체 현황",0]);
+  if(sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
+  if(isAdmin()) tabs.push(["admin","전체 현황",0]);
   return `<header class="topbar"><div class="topbar-in">
     <div class="brand"><img src="${LOGO}" alt="TECZEN"><span class="sep"></span><span class="app">교육계획</span></div>
     <nav class="mainnav">${tabs.map(([k,t,n])=>
@@ -30,14 +30,14 @@ function topbar(sc,pend){
       </div>
       <button class="iconbtn" id="logoutBtn">${IC.out}<span>로그아웃</span></button>
     </div>
-  </div>${DBOK?"":`<div class="banner">공유 저장소에 연결하는 중입니다. 연결되기 전에 등록한 내용은 저장되지 않습니다.</div>`}</header>`;
+  </div>${OFFLINE?`<div class="banner">서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</div>`:""}</header>`;
 }
 
 function planView(sc,vis,rows){
   const mine=vis.filter(r=>r.createdBy===ME.emp).length;
   const people=new Set(vis.map(r=>r.emp)).size;
   const scopeName = sc.kind==="admin" ? "전사" : sc.kind==="sil" ? ME.dept : ME.dept;
-  const canAppr = vis.some(r=>canApprove(ME,r.dept));
+  const canAppr = vis.some(r=>canApprove(r));
   const tabs=[["all","전체",vis.length],["mine","내가 등록한 계획",mine],
               ["pending","승인 대기",vis.filter(r=>r.status==="pending").length],
               ["approved","승인 확정",vis.filter(r=>r.status==="approved").length],
@@ -115,9 +115,9 @@ function planTable(rows,vis){
       <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
       <td class="ctr">${statusCell(r)}</td>
       <td><div class="rowacts">
-        ${canApprove(ME,r.dept)&&r.status!=="approved"?`<button class="ibtn" data-ok="${r.id}" title="승인">승인</button>`:""}
-        ${canApprove(ME,r.dept)&&r.status!=="rejected"?`<button class="ibtn danger" data-no="${r.id}" title="반려">반려</button>`:""}
-        ${canEditRow(ME,r)?`<button class="ibtn" data-edit="${r.id}" title="수정">수정</button>
+        ${canApprove(r)&&r.status!=="approved"?`<button class="ibtn" data-ok="${r.id}" title="승인">승인</button>`:""}
+        ${canApprove(r)&&r.status!=="rejected"?`<button class="ibtn danger" data-no="${r.id}" title="반려">반려</button>`:""}
+        ${canEditRow(r)?`<button class="ibtn" data-edit="${r.id}" title="수정">수정</button>
                             <button class="ibtn danger" data-del="${r.id}" title="삭제">삭제</button>`:""}
       </div></td></tr>`).join("")}
     </tbody><tfoot><tr>

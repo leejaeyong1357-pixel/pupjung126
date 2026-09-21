@@ -1,3 +1,10 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
 <title>사외직무교육 계획 취합</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
@@ -264,6 +271,8 @@ button.chip:hover{filter:brightness(.96)}
   font-size:12.5px;padding:9px 24px;text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+<link rel="icon" href="/favicon.png">
+<script src="/org.js"></script>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 <div id="modalRoot"></div>
@@ -295,7 +304,6 @@ button.chip:hover{filter:brightness(.96)}
   </div>
 </template>
 <script>
-const DATA={"R":[["82210618","성영진","재경팀","팀장","M5","팀장"],["82211379","예해수","재경팀","책임매니저","M4","팀원"],["82211493","김동은","재경팀","매니저","M2","팀원"],["82211616","김혜원","재경팀","매니저","M2","팀원"],["82211617","천예빈","재경팀","매니저","M2","팀원"],["82211090","정건우","재경팀","책임매니저","M5","팀원"],["82210350","김충환","사업기획팀","팀장","M5","팀장"],["82210136","김동욱","사업기획팀","책임매니저","M4","팀원"],["82210330","김진모","사업기획팀","책임매니저","M4","팀원"],["82211494","정지운","사업기획팀","매니저","M2","팀원"],["82210347","김철우","사업기획팀","책임매니저","M5","팀원"],["82210949","이정훈","사업기획팀","책임매니저","M5","팀원"],["82211602","이다영","사업기획팀","매니저","M1","팀원"],["82210345","김창현","사업기획팀","책임매니저","M4","팀원"],["82211238","최경식","경영지원실","상무","상무C","실장"],["82210465","박동중","미래성장팀","팀장","M5","팀장"],["82211253","최선화","미래성장팀","매니저","M1","팀원"],["82210141","김동진","미래성장팀","책임매니저","M4","팀원"],["82210152","김묘환","미래성장팀","책임매니저","M5","팀원"],["82210225","김승권","미래성장팀","책임매니저","M4","팀원"],["82210362","김태철","미래성장팀","책임매니저","M5","팀원"],["82210458","박규태","미래성장팀","책임매니저","M4","팀원"],["82210857","이상욱","미래성장팀","책임매니저","M4","팀원"],["82211614","홍승우","미래성장팀","매니저","M3","팀원"],["82211489","이재용","미래성장팀","매니저","M2","팀원"],["82211490","정영건","미래성장팀","매니저","M2","팀원"],["82211488","장윤재","미래성장팀","매니저","M3","팀원"],["82211380","임우찬","미래성장팀","매니저","M3","팀원"],["82211049","장송이","미래성장팀","매니저","M2","팀원"],["82210120","김대일","미래성장팀","책임매니저","M5","팀원"],["82211076","전세준","비즈니스솔루션팀","팀장","M5","팀장"],["82210318","김주형","비즈니스솔루션팀","책임매니저","M4","팀원"],["82210499","박연우","비즈니스솔루션팀","책임매니저","M4","팀원"],["82210629","손기인","비즈니스솔루션팀","책임매니저","M5","팀원"],["82210718","여상일","비즈니스솔루션팀","책임매니저","M4","팀원"],["82210959","이주형","비즈니스솔루션팀","책임매니저","M5","팀원"],["82211009","이효원","비즈니스솔루션팀","책임매니저","M4","팀원"],["82211615","김혜리","비즈니스솔루션팀","매니저","M2","팀원"],["82211580","양아현","비즈니스솔루션팀","매니저","M1","팀원"],["82211553","고빛나","비즈니스솔루션팀","매니저","M1","팀원"],["82211492","김소진","비즈니스솔루션팀","매니저","M2","팀원"],["82211482","이동훈","비즈니스솔루션팀","매니저","M2","팀원"],["82211472","류태곤","비즈니스솔루션팀","매니저","M3","팀원"],["82211473","박운하","비즈니스솔루션팀","매니저","M2","팀원"],["82211474","소종진","비즈니스솔루션팀","매니저","M3","팀원"],["82210030","강태훈","비즈니스솔루션팀","매니저","M2","팀원"],["82210122","김대호","비즈니스솔루션팀","매니저","M2","팀원"],["82210167","김민호","비즈니스솔루션팀","매니저","M3","팀원"],["82210363","김태협","비즈니스솔루션팀","매니저","M2","팀원"],["82210473","박병준","비즈니스솔루션팀","매니저","M3","팀원"],["82210486","박성호","비즈니스솔루션팀","매니저","M2","팀원"],["82210564","배규환","비즈니스솔루션팀","매니저","M3","팀원"],["82210611","서준현","비즈니스솔루션팀","매니저","M2","팀원"],["82210691","안재현","비즈니스솔루션팀","매니저","M2","팀원"],["82210722","여휘수","비즈니스솔루션팀","매니저","M2","팀원"],["82210928","이장희","비즈니스솔루션팀","매니저","M2","팀원"],["82211017","임보라","비즈니스솔루션팀","매니저","M1","팀원"],["82211258","최승연","비즈니스솔루션팀","매니저","M2","팀원"],["82211291","최현주","비즈니스솔루션팀","매니저","M1","팀원"],["82211420","김창우","비즈니스솔루션팀","책임매니저","M5","팀원"],["82210893","이실만","PT생산실","실장","M5","실장"],["82210031","강태흠","PT생산1팀","팀장","M5","팀장"],["82211023","임세진","PT생산1팀","매니저","M3","팀원"],["82210380","김현진","PT생산1팀","책임매니저","M5","팀원"],["82210482","박성언","PT생산1팀","책임매니저","M5","팀원"],["82210530","박종훈","PT생산1팀","책임매니저","M5","팀원"],["82210824","이경양","PT생산1팀","책임매니저","M5","팀원"],["82210889","이승태","PT생산1팀","책임매니저","M5","팀원"],["82210906","이용원","PT생산1팀","책임매니저","M5","팀원"],["82210947","이정재","PT생산1팀","책임매니저","M5","팀원"],["82210972","이진우","PT생산1팀","책임매니저","M4","팀원"],["82211053","장우혁","PT생산1팀","책임매니저","M5","팀원"],["82211601","정은진","PT생산1팀","매니저","M1","팀원"],["82210492","박수빈","PT생산1팀","매니저","M2","팀원"],["82210738","오지훈","PT생산1팀","매니저","M2","팀원"],["82210116","김대룡","PT생산1팀","책임매니저","M5","팀원"],["82210385","김호민","PT생산1팀_서산파견","책임매니저","M4","팀원"],["82210025","강정훈","PT생산2팀","팀장","M5","팀장"],["82210231","김양훈","PT생산2팀","책임매니저","M4","팀원"],["82210359","김태욱","PT생산2팀","책임매니저","M4","팀원"],["82210425","류흥연","PT생산2팀","책임매니저","M5","팀원"],["82210701","양선미","PT생산2팀","매니저","M1","팀원"],["82210862","이상홍","PT생산2팀","책임매니저","M5","팀원"],["82211245","최동식","PT생산2팀","책임매니저","M4","팀원"],["82210624","성진욱","PT생산2팀","매니저","M3","팀원"],["82210469","박민규","PT생산2팀","책임매니저","M4","팀원"],["82210073","권성근","PT생산관리팀","팀장","M5","팀장"],["82210093","김건화","PT생산관리팀","책임매니저","M5","팀원"],["82210396","나경택","PT생산관리팀","책임매니저","M5","팀원"],["82210567","배민호","PT생산관리팀","책임매니저","M4","팀원"],["82210792","윤석현","PT생산관리팀","책임매니저","M5","팀원"],["82210804","윤인철","PT생산관리팀","책임매니저","M5","팀원"],["82210813","윤혁진","PT생산관리팀","매니저","M2","팀원"],["82211234","천욱","PT생산관리팀","책임매니저","M4","팀원"],["82211304","하순호","PT생산관리팀","책임매니저","M4","팀원"],["82210248","김영환","PT생산관리팀","매니저","M3","팀원"],["82210292","김정용","PT생산관리팀","매니저","M3","팀원"],["82210372","김한수","PT생산관리팀","매니저","M2","팀원"],["82210600","서백만","PT생산관리팀","매니저","M1","팀원"],["82211028","임윤철","PT생산관리팀","책임매니저","M4","팀원"],["82210379","김현석","엔진생산1팀","팀장","M5","팀장"],["82210940","이재호","엔진생산1팀","매니저","M3","팀원"],["82210424","류환곤","엔진생산1팀","책임매니저","M5","팀원"],["82210810","윤진구","엔진생산2팀","팀장","M5","팀장"],["82210113","김남현","엔진생산2팀","책임매니저","M5","팀원"],["82210413","노승선","엔진생산2팀","책임매니저","M5","팀원"],["82210923","이용재","엔진생산2팀","책임매니저","M5","팀원"],["82291025","황나영","엔진생산2팀","매니저","파견직","파견직"],["82210997","이현우","엔진생산2팀","매니저","M3","팀원"],["82211504","박근호","엔진생산2팀","매니저","M2","팀원"],["82210329","김진겸","엔진생산2팀","매니저","M2","팀원"],["82210481","박석훈","엔진생산2팀","매니저","M2","팀원"],["82210795","윤성현","엔진생산2팀","매니저","M2","팀원"],["82210963","이준상","엔진생산2팀","매니저","M3","팀원"],["82211497","안준모","엔진생산2팀","매니저","M2","팀원"],["82210104","김금석","엔진생산3팀","팀장","M5","팀장"],["82210361","김태진","엔진생산3팀","매니저","M2","팀원"],["82251001","이한솔","엔진생산3팀","매니저","M1","팀원"],["82210789","윤기원","엔진생산3팀","책임매니저","M4","팀원"],["82210138","김동은","엔진생산관리팀","팀장","M5","팀장"],["82211074","전성균","엔진생산관리팀","매니저","M3","팀원"],["82210445","민동규","엔진생산관리팀","책임매니저","M5","팀원"],["82210462","박노준","엔진생산관리팀","책임매니저","M4","팀원"],["82210554","박태호","엔진생산관리팀","책임매니저","M5","팀원"],["82251000","이새롬","엔진생산관리팀","매니저","M1","팀원"],["82211496","강명준","엔진생산관리팀","매니저","M2","팀원"],["82211501","박수형","엔진생산관리팀","매니저","M2","팀원"],["82211502","윤채영","엔진생산관리팀","매니저","M2","팀원"],["82211503","김수민","엔진생산관리팀","매니저","M2","팀원"],["82211470","김기민","엔진생산관리팀","매니저","M3","팀원"],["82210057","공희원","엔진생산관리팀","매니저","M1","팀원"],["82210130","김동민","엔진생산관리팀","매니저","M3","팀원"],["82210374","김혁수","엔진생산관리팀","매니저","M2","팀원"],["82210448","민정만","엔진생산관리팀","매니저","M3","팀원"],["82210659","신국현","엔진생산관리팀","매니저","M3","팀원"],["82211007","이황복","엔진생산관리팀","매니저","M1","팀원"],["82210038","고경태","엔진생산관리팀","책임매니저","M5","팀원"],["82210077","권영갑","엔진생산실","실장","M5","실장"],["82210370","김학남","엔진보전팀","책임매니저","M4","팀원"],["82211201","조진웅","엔진보전팀","책임매니저","M5","팀원"],["82211278","최종욱","엔진보전팀","책임매니저","M5","팀원"],["82210881","이승도","엔진보전팀","매니저","M3","팀원"],["82210084","권혁주","엔진보전팀","매니저","M3","팀원"],["82210545","박찬일","엔진보전팀","매니저","M2","팀원"],["82210675","신현우","엔진보전팀","매니저","M2","팀원"],["82211477","김헌희","엔진보전팀","매니저","M2","팀원"],["82210075","권승재","품질관리실","실장","M5","실장"],["82210399","나승길","PT품질관리팀","팀장","M5","팀장"],["82210626","손경철","PT품질관리팀","매니저","M3","팀원"],["82210013","강민호","PT품질관리팀","책임매니저","M4","팀원"],["82210110","김기현","PT품질관리팀","책임매니저","M5","팀원"],["82210145","김동환","PT품질관리팀","책임매니저","M4","팀원"],["82210408","남형석","PT품질관리팀","책임매니저","M4","팀원"],["82210479","박상현","PT품질관리팀","책임매니저","M4","팀원"],["82210496","박승환","PT품질관리팀","책임매니저","M5","팀원"],["82210516","박재현","PT품질관리팀","책임매니저","M4","팀원"],["82210528","박종승","PT품질관리팀","책임매니저","M5","팀원"],["82210801","윤영주","PT품질관리팀","책임매니저","M5","팀원"],["82210956","이종호","PT품질관리팀","책임매니저","M4","팀원"],["82211011","이훈필","PT품질관리팀","책임매니저","M5","팀원"],["82211603","유현주","PT품질관리팀","매니저","M1","팀원"],["82210033","강현수","PT품질관리팀","매니저","M3","팀원"],["82210195","김선우","PT품질관리팀","매니저","M3","팀원"],["82211421","김동우","PT품질관리팀","책임매니저","M5","팀원"],["82210882","이승민","엔진품질관리1팀","팀장","M5","팀장"],["82210023","강재현","엔진품질관리1팀","책임매니저","M5","팀원"],["82210560","박홍룡","엔진품질관리1팀","책임매니저","M5","팀원"],["82210733","오승현","엔진품질관리1팀","책임매니저","M4","팀원"],["82211112","정수관","엔진품질관리1팀","책임매니저","M5","팀원"],["82211261","최영기","엔진품질관리1팀","매니저","M3","팀원"],["82211618","오세정","엔진품질관리1팀","매니저","M2","팀원"],["82211498","이동영","엔진품질관리1팀","매니저","M2","팀원"],["82211471","김태원","엔진품질관리1팀","매니저","M2","팀원"],["82210745","우경호","엔진품질관리1팀","매니저","M2","팀원"],["82210939","이재호","엔진품질관리1팀","매니저","M3","팀원"],["82211294","최홍철","엔진품질관리1팀","책임매니저","M5","팀원"],["82210625","소병두","엔진품질관리2팀","팀장","M5","팀장"],["82210710","엄경현","엔진품질관리2팀","책임매니저","M4","팀원"],["82210799","윤안수","엔진품질관리2팀","책임매니저","M4","팀원"],["82210809","윤지민","엔진품질관리2팀","책임매니저","M5","팀원"],["82211114","정순양","엔진품질관리2팀","책임매니저","M5","팀원"],["82210913","이웅석","엔진품질관리2팀","매니저","M2","팀원"],["82211193","조우숭","엔진품질관리2팀","책임매니저","M5","팀원"],["82211499","이형선","엔진품질관리2팀","매니저","M2","팀원"],["82211500","이규태","엔진품질관리2팀","매니저","M2","팀원"],["82210557","박현철","엔진품질관리2팀","매니저","M2","팀원"]],"ORG":{"경영지원실":["재경팀","사업기획팀","미래성장팀","비즈니스솔루션팀"],"PT생산실":["PT생산1팀","PT생산1팀_서산파견","PT생산2팀","PT생산관리팀"],"엔진생산실":["엔진생산1팀","엔진생산2팀","엔진생산3팀","엔진생산관리팀","엔진보전팀"],"품질관리실":["PT품질관리팀","엔진품질관리1팀","엔진품질관리2팀"]},"FB":{"PT생산1팀_서산파견":"PT생산1팀","엔진보전팀":"엔진생산실"},"ADMINS":["82211489","82210465"]};
 /* ============================================================
    TECZEN · 2027년 사외직무교육 계획 취합
    ============================================================ */
@@ -308,15 +316,8 @@ const STATUS = {
   rejected: {label:"반려",     cls:"c-no"},
 };
 
-/* ---------- 조직 ---------- */
-const ORG = DATA.ORG;                        // 실 -> [팀]
-const TEAM_OF_SIL = {};                      // 팀 -> 실
-Object.entries(ORG).forEach(([sil,teams])=>{ TEAM_OF_SIL[sil]=sil; teams.forEach(t=>TEAM_OF_SIL[t]=sil); });
-const PEOPLE = DATA.R.map(([emp,name,dept,position,grade,role])=>({emp,name,dept,position,grade,role}));
-const BY_EMP = new Map(PEOPLE.map(p=>[p.emp,p]));
-const TEAMS = [...new Set(PEOPLE.map(p=>p.dept))].sort();
-const LEAD_OF = {};                          // 부서 -> 팀장/실장
-PEOPLE.forEach(p=>{ if(p.role==="팀장"||p.role==="실장") LEAD_OF[p.dept]=p; });
+/* ---------- 서버에서 받는 값 ---------- */
+let ORG={}, PEOPLE=[], BY_EMP=new Map(), TEAMS=[], SCOPE={teams:[],kind:"none"}, IS_ADMIN=false;
 
 const $  = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
@@ -334,83 +335,64 @@ function daysBetween(a,b){
 }
 
 /* ---------- 권한 ----------
-   팀원  : 본인 소속 팀
-   팀장  : 본인 팀 + 승인/반려
-   실장  : 산하 전체 팀 (승인/반려)
-   관리자: 전 조직 + 집계 + 엑셀                                   */
-function scopeOf(me){
-  if(!me) return {teams:[],kind:"none"};
-  if(DATA.ADMINS.includes(me.emp)) return {teams:TEAMS.slice(),kind:"admin"};
-  if(me.role==="실장"){
-    const sil=me.dept;
-    return {teams:[sil,...(ORG[sil]||[])].filter(t=>TEAMS.includes(t)),kind:"sil",sil};
-  }
-  if(me.role==="팀장"){
-    const extra=Object.entries(DATA.FB).filter(([,to])=>to===me.dept).map(([t])=>t);
-    return {teams:[me.dept,...extra],kind:"lead"};
-  }
-  return {teams:[me.dept],kind:"member"};
-}
-const isAdmin = me => DATA.ADMINS.includes(me.emp);
-/* 이 사람이 해당 부서 건을 결재할 수 있는가 */
-function canApprove(me,dept){
-  if(!me) return false;
-  if(isAdmin(me)) return true;
-  const target = DATA.FB[dept] || dept;
-  if(me.role==="팀장" && (target===me.dept || dept===me.dept)) return true;
-  if(me.role==="실장" && (TEAM_OF_SIL[target]===me.dept || TEAM_OF_SIL[dept]===me.dept)) return true;
-  return false;
-}
-const canEditRow = (me,r) => !!me && (r.createdBy===me.emp || isAdmin(me));
+   화면에 무엇을 보여줄지만 결정합니다.
+   실제 허용 여부는 서버가 매 요청마다 다시 판단하며,
+   각 행의 _edit / _appr 플래그도 서버가 붙여서 내려줍니다.        */
+const scopeOf = () => SCOPE;
+const isAdmin = () => IS_ADMIN;
+const canApprove = row => !!row && row._appr === true;
+const canEditRow = row => !!row && row._edit === true;
 
 /* ---------- 상태 ---------- */
-const LS="teczen_edu_plan_2027";
-let ME=null, DB=null, DL=null, ROWS=[], READY=false, DBOK=false;
+let ME=null, ROWS=[], BOOTED=false, OFFLINE=false;
 let VIEW="team", SUB="all", Q="", FTEAM="", FCAT="";
 
-function loadMe(){ try{const r=localStorage.getItem(LS); if(r){const e=BY_EMP.get(JSON.parse(r).emp); if(e) return e;}}catch(e){} return null; }
-function saveMe(p){ try{ p?localStorage.setItem(LS,JSON.stringify({emp:p.emp})):localStorage.removeItem(LS);}catch(e){} }
-ME=loadMe();
-
-/* ---------- db ---------- */
-async function initDb(){
-  try{ DB = await claude.use("db"); }catch(e){ DB=null; }
-  try{ DL = await claude.use("downloads"); }catch(e){ DL=null; }
-  if(!DB){ READY=true; render(); return; }
-  DB.collection("plans").onSnapshot(
-    snap=>{ ROWS = snap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.year===YEAR);
-            DBOK=true; READY=true; render(); },
-    err=>{ DBOK=false; READY=true; render();
-           toast(err.code==="revoked" ? "접근 권한이 해제되었습니다. 새로고침해 주세요."
-                                      : "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",5000); }
-  );
-}
-async function saveRow(row){
-  if(!DB){ toast("저장 공간에 연결되지 않아 등록할 수 없습니다."); return false; }
-  try{ await DB.doc("plans/"+row.id).set(row); return true; }
-  catch(e){
-    toast(e.code==="quota_exceeded" ? "저장 한도가 가득 찼습니다. 관리자에게 알려주세요."
-        : e.code==="invalid_argument" ? "이 계정에는 등록 권한이 없습니다."
-        : "저장하지 못했습니다. 다시 시도해 주세요.",4500);
-    return false;
+/* ---------- 서버 통신 ---------- */
+async function apiCall(path, opts={}){
+  let res;
+  try{
+    res = await fetch(path, {credentials:"same-origin",
+      headers:{"Content-Type":"application/json"}, ...opts,
+      body: opts.body ? JSON.stringify(opts.body) : undefined});
+  }catch(e){
+    OFFLINE=true;
+    throw new Error("서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인해 주세요.");
   }
+  OFFLINE=false;
+  let data={};
+  try{ data = await res.json(); }catch(e){}
+  if(!res.ok){
+    if(res.status===401 && ME){ ME=null; render(); }
+    throw new Error(data.error || "처리하지 못했습니다. 다시 시도해 주세요.");
+  }
+  return data;
 }
-async function patchRow(id,patch){
-  if(!DB) return false;
-  try{ await DB.doc("plans/"+id).update(patch); return true; }
-  catch(e){ toast("변경하지 못했습니다. 다시 시도해 주세요.",4000); return false; }
+function applyBootstrap(d){
+  if(!d || !d.me){ ME=null; ROWS=[]; return; }
+  ME=d.me; ORG=d.org||{}; TEAMS=d.allTeams||[]; SCOPE=d.scope||{teams:[],kind:"member"};
+  IS_ADMIN=!!d.isAdmin; PEOPLE=d.roster||[]; BY_EMP=new Map(PEOPLE.map(p=>[p.emp,p]));
+  ROWS=d.plans||[];
 }
-async function removeRow(id){
-  if(!DB) return false;
-  try{ await DB.doc("plans/"+id).delete(); return true; }
-  catch(e){ toast("삭제하지 못했습니다. 다시 시도해 주세요.",4000); return false; }
+async function boot(){
+  try{ applyBootstrap(await apiCall("/api/bootstrap")); }
+  catch(e){ toast(e.message,5000); }
+  BOOTED=true; render();
 }
+async function refresh(){
+  try{ const d=await apiCall("/api/plans"); ROWS=d.plans||[]; render(); }
+  catch(e){ /* 주기 갱신 실패는 조용히 넘어갑니다 */ }
+}
+/* 다른 사람이 등록한 내용을 주기적으로 받아옵니다.
+   화면이 가려져 있거나 입력창이 열려 있으면 건너뜁니다. */
+setInterval(()=>{
+  if(!ME || document.hidden || $("#modalRoot").firstChild) return;
+  refresh();
+}, 20000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden && ME) refresh(); });
 
 /* ---------- 조회 대상 ---------- */
-function visibleRows(){
-  const sc=scopeOf(ME), set=new Set(sc.teams);
-  return ROWS.filter(r=>set.has(r.dept));
-}
+/* 서버가 조회 범위를 걸러서 내려주므로 그대로 씁니다. */
+const visibleRows = () => ROWS;
 function filtered(rows){
   let out=rows;
   if(SUB==="mine")     out=out.filter(r=>r.createdBy===ME.emp);
@@ -456,10 +438,10 @@ const GUIDE = [
 function render(){
   const app=$("#app");
   if(!ME){ app.innerHTML=""; app.appendChild($("#tpl-login").content.cloneNode(true)); bindLogin(); return; }
-  const sc=scopeOf(ME), vis=visibleRows(), rows=filtered(vis);
-  const pend=vis.filter(r=>r.status==="pending" && canApprove(ME,r.dept)).length;
+  const sc=scopeOf(), vis=visibleRows(), rows=filtered(vis);
+  const pend=vis.filter(r=>r.status==="pending" && canApprove(r)).length;
   app.innerHTML = topbar(sc,pend) + `<div class="shell"><main>${
-      VIEW==="admin" ? adminView(vis) : planView(sc,vis,rows)
+      VIEW==="admin" && isAdmin() ? adminView(vis) : planView(sc,vis,rows)
     }</main><aside class="rail">${guideRail()}</aside></div>`;
   bindAll();
 }
@@ -469,8 +451,8 @@ function topbar(sc,pend){
               : sc.kind==="sil"   ? ME.dept+" 총괄"
               : sc.kind==="lead"  ? ME.dept+" 팀장" : ME.dept;
   const tabs=[["team", sc.kind==="member"?"우리 팀 교육계획":"소속 교육계획",0]];
-  if(canApprove(ME,ME.dept)||sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
-  if(isAdmin(ME)) tabs.push(["admin","전체 현황",0]);
+  if(sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
+  if(isAdmin()) tabs.push(["admin","전체 현황",0]);
   return `<header class="topbar"><div class="topbar-in">
     <div class="brand"><img src="${LOGO}" alt="TECZEN"><span class="sep"></span><span class="app">교육계획</span></div>
     <nav class="mainnav">${tabs.map(([k,t,n])=>
@@ -483,14 +465,14 @@ function topbar(sc,pend){
       </div>
       <button class="iconbtn" id="logoutBtn">${IC.out}<span>로그아웃</span></button>
     </div>
-  </div>${DBOK?"":`<div class="banner">공유 저장소에 연결하는 중입니다. 연결되기 전에 등록한 내용은 저장되지 않습니다.</div>`}</header>`;
+  </div>${OFFLINE?`<div class="banner">서버에 연결하지 못했습니다. 서버가 켜져 있는지 확인한 뒤 새로고침해 주세요.</div>`:""}</header>`;
 }
 
 function planView(sc,vis,rows){
   const mine=vis.filter(r=>r.createdBy===ME.emp).length;
   const people=new Set(vis.map(r=>r.emp)).size;
   const scopeName = sc.kind==="admin" ? "전사" : sc.kind==="sil" ? ME.dept : ME.dept;
-  const canAppr = vis.some(r=>canApprove(ME,r.dept));
+  const canAppr = vis.some(r=>canApprove(r));
   const tabs=[["all","전체",vis.length],["mine","내가 등록한 계획",mine],
               ["pending","승인 대기",vis.filter(r=>r.status==="pending").length],
               ["approved","승인 확정",vis.filter(r=>r.status==="approved").length],
@@ -568,9 +550,9 @@ function planTable(rows,vis){
       <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
       <td class="ctr">${statusCell(r)}</td>
       <td><div class="rowacts">
-        ${canApprove(ME,r.dept)&&r.status!=="approved"?`<button class="ibtn" data-ok="${r.id}" title="승인">승인</button>`:""}
-        ${canApprove(ME,r.dept)&&r.status!=="rejected"?`<button class="ibtn danger" data-no="${r.id}" title="반려">반려</button>`:""}
-        ${canEditRow(ME,r)?`<button class="ibtn" data-edit="${r.id}" title="수정">수정</button>
+        ${canApprove(r)&&r.status!=="approved"?`<button class="ibtn" data-ok="${r.id}" title="승인">승인</button>`:""}
+        ${canApprove(r)&&r.status!=="rejected"?`<button class="ibtn danger" data-no="${r.id}" title="반려">반려</button>`:""}
+        ${canEditRow(r)?`<button class="ibtn" data-edit="${r.id}" title="수정">수정</button>
                             <button class="ibtn danger" data-del="${r.id}" title="삭제">삭제</button>`:""}
       </div></td></tr>`).join("")}
     </tbody><tfoot><tr>
@@ -658,6 +640,7 @@ function openModal(html,cls=""){
   $("#modalRoot").innerHTML=`<div class="scrim" id="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`;
   const sc=$("#scrim");
   sc.addEventListener("mousedown",e=>{ if(e.target===sc) closeModal(); });
+  $$("[data-close]",sc).forEach(b=>b.onclick=closeModal);   // 모든 모달의 닫기·취소 버튼
   document.addEventListener("keydown",escClose);
   const f=sc.querySelector("input,select,textarea,button");
   if(f) setTimeout(()=>f.focus(),40);
@@ -667,8 +650,7 @@ function escClose(e){ if(e.key==="Escape") closeModal(); }
 
 /* 교육계획 추가 · 수정 */
 function planForm(existing){
-  const sc=scopeOf(ME);
-  const editable = sc.kind==="member" ? [ME.dept] : sc.teams;
+  const editable = scopeOf().teams;
   const r = existing || {jobType:"관리직",dept:ME.dept,emp:ME.emp,name:ME.name,grade:ME.grade,
                          category:"직무전문",org:"",course:"",start:"",end:"",place:"",hours:"",cost:""};
   const teamMates = PEOPLE.filter(p=>editable.includes(p.dept)).sort((a,b)=>a.dept.localeCompare(b.dept)||a.name.localeCompare(b.name));
@@ -781,9 +763,10 @@ function rejectModal(row){
     const v=$("#rjReason").value.trim();
     if(!v){ $("#rjErr").innerHTML=`<div class="loginerr">반려 사유를 입력해 주세요.</div>`; return; }
     $("#rjSave").disabled=true;
-    const ok=await patchRow(row.id,{status:"rejected",rejectReason:v,
-      decidedBy:ME.name,decidedByEmp:ME.emp,decidedAt:new Date().toISOString()});
-    if(ok){ closeModal(); toast("반려 처리했습니다."); } else $("#rjSave").disabled=false;
+    try{
+      await apiCall("/api/plans/"+row.id+"/reject",{method:"POST",body:{reason:v}});
+      closeModal(); toast("반려 처리했습니다."); await refresh();
+    }catch(e){ $("#rjErr").innerHTML=`<div class="loginerr">${esc(e.message)}</div>`; $("#rjSave").disabled=false; }
   };
 }
 function reasonModal(row){
@@ -793,7 +776,7 @@ function reasonModal(row){
   <div class="modal-b"><div class="rejbox">${esc(row.rejectReason||"사유가 입력되지 않았습니다.")}
     <div class="who">${esc(row.decidedBy||"")} · ${esc((row.decidedAt||"").slice(0,10))}</div></div>
     <p class="hint" style="margin-top:12px">사유에 맞게 고친 뒤 <b>수정</b>하면 다시 승인 대기 상태가 됩니다.</p></div>
-  <div class="modal-f">${canEditRow(ME,row)?`<button class="btn" id="fixBtn" type="button">수정하기</button>`:""}
+  <div class="modal-f">${canEditRow(row)?`<button class="btn" id="fixBtn" type="button">수정하기</button>`:""}
     <button class="btn ghost" data-close type="button">닫기</button></div>`,"narrow");
   const f=$("#fixBtn"); if(f) f.onclick=()=>{ closeModal(); planForm(row); };
 }
@@ -868,29 +851,35 @@ async function exportXlsx(){
       rs.filter(r=>r.status==="pending").length,rs.filter(r=>r.status==="rejected").length,sum(rs,"hours"),sum(rs,"cost")]);}));
   const blob=xlsxBlob([{name:"교육계획",rows:plans},{name:"실별 집계",rows:silRows},{name:"팀별 집계",rows:teamRows}]);
   const filename=`${YEAR}년_사외직무교육계획_${new Date().toISOString().slice(0,10).replace(/-/g,"")}.xlsx`;
-  if(!DL){ toast("이 화면에서는 파일 저장을 사용할 수 없습니다."); return; }
-  try{ await DL.save({filename,data:blob}); toast("엑셀 파일을 저장했습니다."); }
-  catch(e){ if(e.code!=="declined") toast("파일을 저장하지 못했습니다. 다시 시도해 주세요.",4000); }
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1000);
+  toast("엑셀 파일을 내려받았습니다.");
 }
 
 /* ---------- 이벤트 ---------- */
 function bindLogin(){
-  $("#loginForm").addEventListener("submit",e=>{
+  $("#loginForm").addEventListener("submit",async e=>{
     e.preventDefault();
+    const btn=$("#loginForm button[type=submit]");
     const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
-    const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${m}</div>`; };
+    const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; btn.disabled=false; };
     if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
-    const p=BY_EMP.get(emp);
-    if(!p) return err("사번 "+emp+" 을(를) 명단에서 찾을 수 없습니다. 사번을 다시 확인해 주세요.");
-    if(p.name!==name) return err("사번과 성명이 일치하지 않습니다. 다시 확인해 주세요.");
-    ME=p; saveMe(p); VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
-    toast(p.name+"님, 환영합니다. "+p.dept+"으로 등록되었습니다.");
+    btn.disabled=true;
+    try{
+      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp}}));
+      VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
+      toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
+    }catch(ex){ err(ex.message); }
   });
 }
 function bindAll(){
   $$(".mainnav button").forEach(b=>b.onclick=()=>{VIEW=b.dataset.view;SUB="all";Q="";render();});
   $$("[data-sub]").forEach(b=>b.onclick=()=>{SUB=b.dataset.sub;render();});
-  const lo=$("#logoutBtn"); if(lo) lo.onclick=()=>{ME=null;saveMe(null);render();};
+  const lo=$("#logoutBtn"); if(lo) lo.onclick=async()=>{
+    try{ await apiCall("/api/logout",{method:"POST"}); }catch(e){}
+    ME=null; ROWS=[]; render();
+  };
   const th=$("#themeBtn"); if(th) th.onclick=toggleTheme;
   const gt=$("#guideToggle"); if(gt) gt.onclick=()=>{
     const m=localStorage.getItem("teczen_guide_min")==="1";
@@ -915,20 +904,23 @@ function bindAll(){
     confirmModal("교육 계획 승인",
       `<b>${esc(r.name)}</b>님의 <b>${esc(r.course)}</b> 계획을 승인합니다.<br>승인하면 등록자에게 승인 확정으로 표시됩니다.`,
       "승인 확정", async()=>{
-        const ok=await patchRow(r.id,{status:"approved",rejectReason:"",
-          decidedBy:ME.name,decidedByEmp:ME.emp,decidedAt:new Date().toISOString()});
-        if(ok) toast("승인 확정했습니다.");
+        try{ await apiCall("/api/plans/"+r.id+"/approve",{method:"POST"});
+             toast("승인 확정했습니다."); await refresh(); }
+        catch(e){ toast(e.message,4000); }
       });
   });
   $$("[data-del]").forEach(b=>b.onclick=()=>{
     const r=byId(b.dataset.del);
     confirmModal("교육 계획 삭제",
       `<b>${esc(r.course)}</b> 계획을 삭제합니다.<br>삭제하면 되돌릴 수 없습니다.`,
-      "삭제", async()=>{ if(await removeRow(r.id)) toast("삭제했습니다."); }, true);
+      "삭제", async()=>{
+        try{ await apiCall("/api/plans/"+r.id,{method:"DELETE"});
+             toast("삭제했습니다."); await refresh(); }
+        catch(e){ toast(e.message,4000); }
+      }, true);
   });
 }
 function bindPlanForm(existing){
-  $$("[data-close]").forEach(b=>b.onclick=closeModal);
   const seg=$("#jobSeg"); let job=existing?existing.jobType:"관리직";
   $$("#jobSeg button").forEach(b=>b.onclick=()=>{
     job=b.dataset.job;
@@ -964,19 +956,16 @@ function bindPlanForm(existing){
     const cost =Number(g("#pfCost").replace(/[^\d]/g,""));
     if(!(hours>0)) return err("교육시간을 시간 단위 숫자로 입력해 주세요.");
     if(!isFinite(cost)||cost<0) return err("교육비를 원 단위 숫자로 입력해 주세요. 비용이 없으면 0을 적습니다.");
-    const now=new Date().toISOString();
-    const row={ id: existing?existing.id:uid(), year:YEAR, jobType:job,
-      emp:person.emp, name:person.name, dept:person.dept, grade:person.grade,
-      category:$("#pfCat").value, org, course, start, end, days:daysBetween(start,end),
-      place, hours, cost, status:"pending", rejectReason:"",
-      decidedBy:"", decidedByEmp:"", decidedAt:"",
-      createdBy: existing?existing.createdBy:ME.emp,
-      createdByName: existing?existing.createdByName:ME.name,
-      createdAt: existing?existing.createdAt:now, updatedAt:now };
+    const payload={ jobType:job, emp:person.emp, name:person.name, dept:person.dept, grade:person.grade,
+      category:$("#pfCat").value, org, course, start, end, place, hours, cost };
     $("#pfSave").disabled=true;
-    const ok=await saveRow(row);
-    if(ok){ closeModal(); toast(existing?"수정했습니다. 다시 승인 대기 상태가 됩니다.":"교육 계획을 등록했습니다. 팀장 승인을 기다려 주세요.",3400); }
-    else $("#pfSave").disabled=false;
+    try{
+      if(existing) await apiCall("/api/plans/"+existing.id,{method:"PUT",body:payload});
+      else         await apiCall("/api/plans",{method:"POST",body:payload});
+      closeModal();
+      toast(existing?"수정했습니다. 다시 승인 대기 상태가 됩니다.":"교육 계획을 등록했습니다. 팀장 승인을 기다려 주세요.",3400);
+      await refresh();
+    }catch(e){ err(e.message); $("#pfSave").disabled=false; }
   };
   recalc();
 }
@@ -993,5 +982,8 @@ try{ const t=localStorage.getItem("teczen_theme"); if(t) document.documentElemen
 
 /* ---------- 시작 ---------- */
 render();
-initDb();
+boot();
 </script>
+
+</body>
+</html>

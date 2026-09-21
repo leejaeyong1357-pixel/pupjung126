@@ -54,9 +54,10 @@ function rejectModal(row){
     const v=$("#rjReason").value.trim();
     if(!v){ $("#rjErr").innerHTML=`<div class="loginerr">반려 사유를 입력해 주세요.</div>`; return; }
     $("#rjSave").disabled=true;
-    const ok=await patchRow(row.id,{status:"rejected",rejectReason:v,
-      decidedBy:ME.name,decidedByEmp:ME.emp,decidedAt:new Date().toISOString()});
-    if(ok){ closeModal(); toast("반려 처리했습니다."); } else $("#rjSave").disabled=false;
+    try{
+      await apiCall("/api/plans/"+row.id+"/reject",{method:"POST",body:{reason:v}});
+      closeModal(); toast("반려 처리했습니다."); await refresh();
+    }catch(e){ $("#rjErr").innerHTML=`<div class="loginerr">${esc(e.message)}</div>`; $("#rjSave").disabled=false; }
   };
 }
 function reasonModal(row){
@@ -66,7 +67,7 @@ function reasonModal(row){
   <div class="modal-b"><div class="rejbox">${esc(row.rejectReason||"사유가 입력되지 않았습니다.")}
     <div class="who">${esc(row.decidedBy||"")} · ${esc((row.decidedAt||"").slice(0,10))}</div></div>
     <p class="hint" style="margin-top:12px">사유에 맞게 고친 뒤 <b>수정</b>하면 다시 승인 대기 상태가 됩니다.</p></div>
-  <div class="modal-f">${canEditRow(ME,row)?`<button class="btn" id="fixBtn" type="button">수정하기</button>`:""}
+  <div class="modal-f">${canEditRow(row)?`<button class="btn" id="fixBtn" type="button">수정하기</button>`:""}
     <button class="btn ghost" data-close type="button">닫기</button></div>`,"narrow");
   const f=$("#fixBtn"); if(f) f.onclick=()=>{ closeModal(); planForm(row); };
 }
@@ -141,7 +142,8 @@ async function exportXlsx(){
       rs.filter(r=>r.status==="pending").length,rs.filter(r=>r.status==="rejected").length,sum(rs,"hours"),sum(rs,"cost")]);}));
   const blob=xlsxBlob([{name:"교육계획",rows:plans},{name:"실별 집계",rows:silRows},{name:"팀별 집계",rows:teamRows}]);
   const filename=`${YEAR}년_사외직무교육계획_${new Date().toISOString().slice(0,10).replace(/-/g,"")}.xlsx`;
-  if(!DL){ toast("이 화면에서는 파일 저장을 사용할 수 없습니다."); return; }
-  try{ await DL.save({filename,data:blob}); toast("엑셀 파일을 저장했습니다."); }
-  catch(e){ if(e.code!=="declined") toast("파일을 저장하지 못했습니다. 다시 시도해 주세요.",4000); }
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1000);
+  toast("엑셀 파일을 내려받았습니다.");
 }
