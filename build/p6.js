@@ -109,8 +109,8 @@ function planForm(existing){
     </div>
     <div id="prdPick" ${r.jobType==="생산직"?"":"hidden"}>
       <div class="frow c3">
-        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="예) 82210588"></div>
-        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="예) 조효근"></div>
+        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="예) 82210000"></div>
+        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="예) 홍길동"></div>
         <div><label for="pfGrade">직급</label><input id="pfGrade" value="${esc(r.jobType==="생산직"?(r.grade||""):"")}" placeholder="예) 조장"></div>
       </div>
       <div class="frow c1"><div><label for="pfDept">부서</label>

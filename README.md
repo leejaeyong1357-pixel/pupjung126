@@ -42,6 +42,7 @@ macOS·Linux 는 `PORT=712 node server.js`.
 | `data/roster.json` | 관리직 186명 명단 |
 | `data/plans.json` | 등록된 교육계획 (실행 중 생성) |
 | `public/login-bg.jpg` | 로그인 화면 배경 사진 |
+| `public/hero.jpg` | 메인 상단 배너 사진 |
 | `data/guide-image.*` | 사외교육 신청 가이드라인 이미지 (관리자가 화면에서 등록) |
 | `public/logo.png` `logo-white.png` | 로고 (일반 / 사진 위용 흰색) |
 | `build/` | 화면 소스 조각과 빌드 스크립트 |

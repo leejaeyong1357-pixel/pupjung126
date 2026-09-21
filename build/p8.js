@@ -25,10 +25,11 @@ function bindAll(){
   };
   const th=$("#themeBtn"); if(th) th.onclick=toggleTheme;
   const gt=$("#guideToggle"); if(gt) gt.onclick=()=>{
-    const m=localStorage.getItem("teczen_guide_min")==="1";
-    try{ localStorage.setItem("teczen_guide_min",m?"0":"1"); }catch(e){}
+    const open=localStorage.getItem("teczen_guide_open")==="1";
+    try{ localStorage.setItem("teczen_guide_open",open?"0":"1"); }catch(e){}
     render();
   };
+  const hb2=$("#homeBtn2"); if(hb2) hb2.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
   [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
   const hb=$("#homeBtn"); if(hb) hb.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
   const gb=$("#guideBtn"); if(gb) gb.onclick=guidelineModal;
