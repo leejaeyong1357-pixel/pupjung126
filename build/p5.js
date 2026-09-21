@@ -59,8 +59,6 @@ function planView(sc,vis,rows){
               ["approved","승인 확정",vis.filter(r=>r.status==="approved").length],
               ["rejected","반려",vis.filter(r=>r.status==="rejected").length]];
   return `
-  <nav class="crumb"><button id="homeBtn2">교육계획</button><span>/</span><b>${esc(scopeName)} 교육계획</b></nav>
-
   <section class="hero">
     <div class="hero-in">
       <div class="hero-meta">${deadlineChip()}</div>

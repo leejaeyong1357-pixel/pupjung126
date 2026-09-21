@@ -29,7 +29,6 @@ function bindAll(){
     try{ localStorage.setItem("teczen_guide_open",open?"0":"1"); }catch(e){}
     render();
   };
-  const hb2=$("#homeBtn2"); if(hb2) hb2.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
   [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
   const hb=$("#homeBtn"); if(hb) hb.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
   const gb=$("#guideBtn"); if(gb) gb.onclick=guidelineModal;

@@ -97,11 +97,6 @@ input[type=date]{font-family:var(--num)}
 .shell{max-width:1440px;margin:0 auto;padding:22px 24px 40px;min-width:0}
 @media (max-width:900px){.shell{padding:16px 16px 30px}}
 
-.crumb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-3);margin-bottom:14px}
-.crumb button{color:var(--ink-3);padding:2px 0;border-radius:4px}
-.crumb button:hover{color:var(--blue);text-decoration:underline}
-.crumb b{color:var(--ink-2);font-weight:600}
-
 /* 히어로 — 왼쪽 연한 파랑에서 오른쪽 사진으로 이어집니다.
    사진 왼쪽 끝이 #E4F0FD 라 배경색과 경계 없이 붙습니다. */
 .hero{position:relative;border-radius:14px;overflow:hidden;margin-bottom:18px;
@@ -652,8 +647,6 @@ function planView(sc,vis,rows){
               ["approved","승인 확정",vis.filter(r=>r.status==="approved").length],
               ["rejected","반려",vis.filter(r=>r.status==="rejected").length]];
   return `
-  <nav class="crumb"><button id="homeBtn2">교육계획</button><span>/</span><b>${esc(scopeName)} 교육계획</b></nav>
-
   <section class="hero">
     <div class="hero-in">
       <div class="hero-meta">${deadlineChip()}</div>
@@ -812,11 +805,10 @@ function adminView(vis){
   const maxCost=Math.max(1,...bySil.map(b=>sum(b.rows,"cost")));
   return `
   <div class="pagehead">
-    <div><div class="eyebrow"><span class="dot"></span>전체 관리자</div>
+    <div>${deadlineChip()}
       <h1><span class="num">${YEAR}</span>년 전사 교육계획 현황</h1>
       <p>실별 · 팀별 등록 현황과 예상 교육비를 한눈에 확인하고 엑셀로 내려받을 수 있습니다.</p></div>
-    <div class="acts"><button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
-      <button class="btn" id="xlsxBtn">${IC.down} 엑셀 다운로드</button></div>
+    <div class="acts"><button class="btn" id="xlsxBtn">${IC.down} 엑셀 다운로드</button></div>
   </div>
   <div class="kpis">
     <div class="kpi"><div class="lab">전사 교육계획</div><div class="val">${total}<small>건</small></div>
@@ -1147,7 +1139,6 @@ function bindAll(){
     try{ localStorage.setItem("teczen_guide_open",open?"0":"1"); }catch(e){}
     render();
   };
-  const hb2=$("#homeBtn2"); if(hb2) hb2.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
   [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
   const hb=$("#homeBtn"); if(hb) hb.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
   const gb=$("#guideBtn"); if(gb) gb.onclick=guidelineModal;

@@ -12,11 +12,10 @@ function adminView(vis){
   const maxCost=Math.max(1,...bySil.map(b=>sum(b.rows,"cost")));
   return `
   <div class="pagehead">
-    <div><div class="eyebrow"><span class="dot"></span>전체 관리자</div>
+    <div>${deadlineChip()}
       <h1><span class="num">${YEAR}</span>년 전사 교육계획 현황</h1>
       <p>실별 · 팀별 등록 현황과 예상 교육비를 한눈에 확인하고 엑셀로 내려받을 수 있습니다.</p></div>
-    <div class="acts"><button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
-      <button class="btn" id="xlsxBtn">${IC.down} 엑셀 다운로드</button></div>
+    <div class="acts"><button class="btn" id="xlsxBtn">${IC.down} 엑셀 다운로드</button></div>
   </div>
   <div class="kpis">
     <div class="kpi"><div class="lab">전사 교육계획</div><div class="val">${total}<small>건</small></div>
