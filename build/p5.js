@@ -2,6 +2,7 @@
 /* ---------- 렌더 ---------- */
 function render(){
   const app=$("#app");
+  document.body.classList.toggle("login-mode", !ME);
   if(!ME){ app.innerHTML=""; app.appendChild($("#tpl-login").content.cloneNode(true)); bindLogin(); return; }
   const sc=scopeOf(), vis=visibleRows(), rows=filtered(vis);
   const pend=vis.filter(r=>r.status==="pending" && canApprove(r)).length;
