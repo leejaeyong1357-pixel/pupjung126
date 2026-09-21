@@ -204,7 +204,6 @@ function guideRail(){
       `<div class="gitem${w?" warn":""}"><h4><span class="n">${i+1}</span>${esc(t)}</h4><p>${d}</p>
        ${bad?`<div class="badlist"><span class="badlab">신청 불가</span>${
          bad.map(x=>`<span class="badchip">${esc(x)}</span>`).join("")}</div>`:""}</div>`).join("")}
-      <button class="btn ghost guide-cta" id="guideBtn">${IC.book} 사외교육 신청 가이드라인</button>
     </div>`}
   </div>`;
 }
