@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /* 테크젠 사외직무교육 계획 취합 — 로컬 서버
  *
- *   node server.js            기본 3000 포트
- *   PORT=8080 node server.js  포트 변경
+ *   node server.js                     기본 6574 포트
+ *   set PORT=6575 && node server.js    포트 변경 (Windows)
+ *   PORT=6575 node server.js           포트 변경 (macOS / Linux)
  *
  * 외부 패키지를 쓰지 않습니다. Node 18 이상이면 그대로 실행됩니다.
  * 데이터는 data/plans.json 한 파일에 저장되므로 그 파일만 복사하면 백업이 됩니다.
@@ -22,7 +23,7 @@ const DATA = path.join(ROOT, "data");
 const PLANS_FILE = path.join(DATA, "plans.json");
 const ROSTER_FILE = path.join(DATA, "roster.json");
 const SECRET_FILE = path.join(DATA, ".secret");
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT) || 6574;
 const YEAR = 2027;
 
 /* ---------- 저장소 ---------- */
@@ -301,7 +302,7 @@ server.listen(PORT, "0.0.0.0", () => {
 server.on("error", err => {
   if (err.code === "EADDRINUSE") {
     console.error(`\n  [오류] ${PORT} 포트를 이미 다른 프로그램이 쓰고 있습니다.`);
-    console.error(`         다른 포트로 실행하세요:  PORT=3001 node server.js\n`);
+    console.error(`         다른 포트로 실행하세요:  set PORT=${PORT + 1} && node server.js\n`);
   } else console.error("\n  [오류]", err.message, "\n");
   process.exit(1);
 });
