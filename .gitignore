@@ -3,3 +3,4 @@ data/plans.json
 data/plans.json.tmp
 data/.secret
 *.log
+shots/
