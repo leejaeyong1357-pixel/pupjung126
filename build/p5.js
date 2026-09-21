@@ -6,9 +6,10 @@ function render(){
   if(!ME){ app.innerHTML=""; app.appendChild($("#tpl-login").content.cloneNode(true)); bindLogin(); return; }
   const sc=scopeOf(), vis=visibleRows(), rows=filtered(vis);
   const pend=vis.filter(r=>r.status==="pending" && canApprove(r)).length;
-  app.innerHTML = topbar(sc,pend) + `<div class="shell">${
-      VIEW==="admin" && isAdmin() ? adminView(vis) + pageFoot() : planView(sc,vis,rows)
-    }</div>`;
+  app.innerHTML = topbar(sc,pend) + (VIEW==="admin" && isAdmin()
+    ? `<div class="shell">${adminView(vis)}${pageFoot()}</div>`
+    : `<div class="shell"><div class="grid2"><main>${planView(sc,vis,rows)}</main>` +
+      `<aside class="rail">${guideRail()}</aside></div>${pageFoot()}</div>`);
   bindAll();
 }
 
@@ -81,8 +82,6 @@ function planView(sc,vis,rows){
       <div class="sub">${YEAR}년 ${esc(scopeName)} 합계</div></div>
   </div>
 
-  ${guideStrip()}
-
   <div class="card">
     <div class="card-h"><h2>${esc(scopeName)} 교육계획<span class="count">${rows.length}</span></h2>
       <div class="right"><span class="scopenote">${IC.shield}${esc(scopeNote)}</span></div></div>
@@ -99,9 +98,7 @@ function planView(sc,vis,rows){
     </div>
     ${planTable(rows,vis)}
     <div class="card-foot">${IC.info} 교육 참여 전 소속 팀장의 승인이 필요합니다.</div>
-  </div>
-
-  ${pageFoot()}`;
+  </div>`;
 }
 
 function pageFoot(){
@@ -183,25 +180,17 @@ function planTable(rows,vis){
     </tr></tfoot></table></div>`;
 }
 
-/* 접었다 펼치는 가로 안내 띠. 펼치면 4개 항목과 가이드라인 버튼이 나옵니다. */
-function guideStrip(){
-  const open = localStorage.getItem("teczen_guide_open")==="1";
-  return `<div class="gstrip${open?" open":""}">
-    <div class="gs-head">
-      <span class="gs-ico">${IC.info}</span>
-      <b>교육계획 등록 전 확인해 주세요.</b>
-      <span class="gs-sep"></span>
-      <span class="gs-list">${GUIDE.map(([t])=>esc(t)).join(" · ")}</span>
-      <button class="gs-toggle" id="guideToggle">${open?"안내 접기":"등록 안내 보기"}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
-    </div>
-    ${open?`<div class="gs-body">
-      <div class="gs-items">${GUIDE.map(([t,d,w,bad],i)=>
-        `<div class="gitem${w?" warn":""}"><h4><span class="n">${i+1}</span>${esc(t)}</h4><p>${d}</p>
-         ${bad?`<div class="badlist"><span class="badlab">신청 불가</span>${
-           bad.map(x=>`<span class="badchip">${esc(x)}</span>`).join("")}</div>`:""}</div>`).join("")}</div>
+/* 스크롤을 따라다니는 우측 안내 배너. ㅡ 로 최소화됩니다. */
+function guideRail(){
+  const min = localStorage.getItem("teczen_guide_min")==="1";
+  return `<div class="guide">
+    <div class="guide-h">${IC.info}<h3>${YEAR}년 계획 등록 안내</h3>
+      <button id="guideToggle" title="${min?"펼치기":"최소화"}" aria-label="${min?"안내 펼치기":"안내 접기"}">${min?"+":"\u2212"}</button></div>
+    ${min?"":`<div class="guide-b">${GUIDE.map(([t,d,w,bad],i)=>
+      `<div class="gitem${w?" warn":""}"><h4><span class="n">${i+1}</span>${esc(t)}</h4><p>${d}</p>
+       ${bad?`<div class="badlist"><span class="badlab">신청 불가</span>${
+         bad.map(x=>`<span class="badchip">${esc(x)}</span>`).join("")}</div>`:""}</div>`).join("")}
       <button class="btn ghost guide-cta" id="guideBtn">${IC.book} 사외교육 신청 가이드라인</button>
-    </div>`:""}
+    </div>`}
   </div>`;
 }
-

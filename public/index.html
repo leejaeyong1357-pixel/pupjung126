@@ -95,6 +95,9 @@ input[type=date]{font-family:var(--num)}
 
 /* ---------- layout ---------- */
 .shell{max-width:1440px;margin:0 auto;padding:22px 24px 40px;min-width:0}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:22px;align-items:start}
+.grid2>main{min-width:0}
+@media (max-width:1180px){.grid2{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){.shell{padding:16px 16px 30px}}
 
 /* 히어로 — 왼쪽 연한 파랑에서 오른쪽 사진으로 이어집니다.
@@ -218,6 +221,7 @@ button.chip:hover{filter:brightness(.96)}
 /* ---------- right rail ---------- */
 .rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}
 @media (max-width:1180px){.rail{position:static}}
+@media (max-width:1180px){.rail{position:static}}
 .guide{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-m);overflow:hidden}
 .guide-h{display:flex;align-items:center;gap:9px;padding:13px 15px;background:var(--navy);color:#fff}
 :root[data-theme="dark"] .guide-h{background:#16243A}
@@ -233,29 +237,12 @@ button.chip:hover{filter:brightness(.96)}
   background:var(--blue-soft);border-radius:4px;padding:1px 5px;flex-shrink:0}
 .gitem p{margin:0;font-size:12.3px;color:var(--ink-2);line-height:1.65}
 .gitem.warn h4 .n{color:var(--no);background:var(--no-soft)}
-.guide-cta{width:100%;margin-top:14px;padding:11px;font-size:12.8px;justify-content:center}
-/* 접었다 펼치는 안내 띠 */
-.gstrip{background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:10px;margin-bottom:18px;overflow:hidden}
-.gs-head{display:flex;align-items:center;gap:11px;padding:11px 15px;flex-wrap:wrap}
-.gs-ico{color:var(--blue);display:flex;flex-shrink:0}
-.gs-head b{font-size:13px;color:var(--ink)}
-.gs-sep{width:1px;height:13px;background:var(--blue-line)}
-.gs-list{font-size:12.5px;color:var(--ink-2)}
-.gs-toggle{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:12.5px;
-  font-weight:700;color:var(--blue);padding:5px 9px;border-radius:7px;white-space:nowrap}
-.gs-toggle:hover{background:rgba(26,106,212,.1)}
-.gs-toggle svg{width:14px;height:14px;transition:transform .18s}
-.gstrip.open .gs-toggle svg{transform:rotate(180deg)}
-.gs-body{padding:4px 15px 15px;border-top:1px solid var(--blue-line)}
-.gs-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:2px 24px;align-items:start}
-.badlist{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-top:8px}
+.badlist{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px}
 .badlab{font-size:10.5px;font-weight:800;letter-spacing:.03em;color:var(--no);
   background:var(--no-soft);border:1px solid var(--no-line);border-radius:4px;padding:2px 6px}
 .badchip{font-size:11.5px;color:var(--no);background:var(--no-soft);border:1px solid var(--no-line);
   border-radius:5px;padding:2px 7px;text-decoration:line-through;text-decoration-thickness:1px}
-.guide-cta{margin-top:12px;padding:10px 16px;font-size:12.8px}
-@media (max-width:640px){.gs-list,.gs-sep{display:none}}
-
+.guide-cta{width:100%;margin-top:14px;padding:11px;font-size:12.8px;justify-content:center}
 /* 페이지 푸터 */
 .pagefoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:18px;
   border-top:1px solid var(--line);font-size:12px;color:var(--ink-3)}
@@ -602,9 +589,10 @@ function render(){
   if(!ME){ app.innerHTML=""; app.appendChild($("#tpl-login").content.cloneNode(true)); bindLogin(); return; }
   const sc=scopeOf(), vis=visibleRows(), rows=filtered(vis);
   const pend=vis.filter(r=>r.status==="pending" && canApprove(r)).length;
-  app.innerHTML = topbar(sc,pend) + `<div class="shell">${
-      VIEW==="admin" && isAdmin() ? adminView(vis) + pageFoot() : planView(sc,vis,rows)
-    }</div>`;
+  app.innerHTML = topbar(sc,pend) + (VIEW==="admin" && isAdmin()
+    ? `<div class="shell">${adminView(vis)}${pageFoot()}</div>`
+    : `<div class="shell"><div class="grid2"><main>${planView(sc,vis,rows)}</main>` +
+      `<aside class="rail">${guideRail()}</aside></div>${pageFoot()}</div>`);
   bindAll();
 }
 
@@ -677,8 +665,6 @@ function planView(sc,vis,rows){
       <div class="sub">${YEAR}년 ${esc(scopeName)} 합계</div></div>
   </div>
 
-  ${guideStrip()}
-
   <div class="card">
     <div class="card-h"><h2>${esc(scopeName)} 교육계획<span class="count">${rows.length}</span></h2>
       <div class="right"><span class="scopenote">${IC.shield}${esc(scopeNote)}</span></div></div>
@@ -695,9 +681,7 @@ function planView(sc,vis,rows){
     </div>
     ${planTable(rows,vis)}
     <div class="card-foot">${IC.info} 교육 참여 전 소속 팀장의 승인이 필요합니다.</div>
-  </div>
-
-  ${pageFoot()}`;
+  </div>`;
 }
 
 function pageFoot(){
@@ -779,28 +763,20 @@ function planTable(rows,vis){
     </tr></tfoot></table></div>`;
 }
 
-/* 접었다 펼치는 가로 안내 띠. 펼치면 4개 항목과 가이드라인 버튼이 나옵니다. */
-function guideStrip(){
-  const open = localStorage.getItem("teczen_guide_open")==="1";
-  return `<div class="gstrip${open?" open":""}">
-    <div class="gs-head">
-      <span class="gs-ico">${IC.info}</span>
-      <b>교육계획 등록 전 확인해 주세요.</b>
-      <span class="gs-sep"></span>
-      <span class="gs-list">${GUIDE.map(([t])=>esc(t)).join(" · ")}</span>
-      <button class="gs-toggle" id="guideToggle">${open?"안내 접기":"등록 안내 보기"}
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
-    </div>
-    ${open?`<div class="gs-body">
-      <div class="gs-items">${GUIDE.map(([t,d,w,bad],i)=>
-        `<div class="gitem${w?" warn":""}"><h4><span class="n">${i+1}</span>${esc(t)}</h4><p>${d}</p>
-         ${bad?`<div class="badlist"><span class="badlab">신청 불가</span>${
-           bad.map(x=>`<span class="badchip">${esc(x)}</span>`).join("")}</div>`:""}</div>`).join("")}</div>
+/* 스크롤을 따라다니는 우측 안내 배너. ㅡ 로 최소화됩니다. */
+function guideRail(){
+  const min = localStorage.getItem("teczen_guide_min")==="1";
+  return `<div class="guide">
+    <div class="guide-h">${IC.info}<h3>${YEAR}년 계획 등록 안내</h3>
+      <button id="guideToggle" title="${min?"펼치기":"최소화"}" aria-label="${min?"안내 펼치기":"안내 접기"}">${min?"+":"\u2212"}</button></div>
+    ${min?"":`<div class="guide-b">${GUIDE.map(([t,d,w,bad],i)=>
+      `<div class="gitem${w?" warn":""}"><h4><span class="n">${i+1}</span>${esc(t)}</h4><p>${d}</p>
+       ${bad?`<div class="badlist"><span class="badlab">신청 불가</span>${
+         bad.map(x=>`<span class="badchip">${esc(x)}</span>`).join("")}</div>`:""}</div>`).join("")}
       <button class="btn ghost guide-cta" id="guideBtn">${IC.book} 사외교육 신청 가이드라인</button>
-    </div>`:""}
+    </div>`}
   </div>`;
 }
-
 
 /* ---------- 관리자: 실별 · 팀별 집계 ---------- */
 function adminView(vis){
@@ -1145,8 +1121,8 @@ function bindAll(){
   };
   const th=$("#themeBtn"); if(th) th.onclick=toggleTheme;
   const gt=$("#guideToggle"); if(gt) gt.onclick=()=>{
-    const open=localStorage.getItem("teczen_guide_open")==="1";
-    try{ localStorage.setItem("teczen_guide_open",open?"0":"1"); }catch(e){}
+    const min=localStorage.getItem("teczen_guide_min")==="1";
+    try{ localStorage.setItem("teczen_guide_min",min?"0":"1"); }catch(e){}
     render();
   };
   [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
