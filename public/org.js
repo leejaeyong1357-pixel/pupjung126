@@ -24,7 +24,7 @@
 
   /* 취합 마감. 이 날 자정까지 등록·수정·삭제할 수 있습니다.
      마감 뒤에도 팀장 승인·반려는 계속 되고, 관리자는 제한을 받지 않습니다. */
-  const DEADLINE = "2026-10-08";
+  const DEADLINE = "2026-10-06";
   const today = () => {                       // 로컬 시각 기준 YYYY-MM-DD
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
