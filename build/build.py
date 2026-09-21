@@ -1,52 +1,40 @@
 #!/usr/bin/env python3
-"""테크젠 법정의무교육 이수관리 HTML 빌드 스크립트.
+"""조각 파일을 합쳐 배포본 HTML을 만듭니다.
 
-원본 엑셀(학습자명단 시트 2개)에서 명단을 추출해 단일 HTML로 합칩니다.
-    python3 build/build.py "원본.xlsx"
+    python3 build/build.py
 """
-import json, sys, os
-import openpyxl
+import json, os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-OUT  = os.path.join(ROOT, '테크젠_법정의무교육_이수관리.html')
-PARTS = ['part1.html', 'part2.html', 'part3.js', 'part4.js', 'part5.js', 'part6.js']
+OUT = os.path.join(ROOT, "교육계획취합.html")
+PARTS = ["p1.html", "p2.html", "p3.js", "p4.js", "p5.js", "p6.js", "p7.js", "p8.js"]
+
+# 실 -> 산하 팀
+ORG = {
+    "경영지원실": ["재경팀", "사업기획팀", "미래성장팀", "비즈니스솔루션팀"],
+    "PT생산실": ["PT생산1팀", "PT생산1팀_서산파견", "PT생산2팀", "PT생산관리팀"],
+    "엔진생산실": ["엔진생산1팀", "엔진생산2팀", "엔진생산3팀", "엔진생산관리팀", "엔진보전팀"],
+    "품질관리실": ["PT품질관리팀", "엔진품질관리1팀", "엔진품질관리2팀"],
+}
+# 팀장이 없는 부서는 상위 조직이 결재를 대행
+APPROVER_FALLBACK = {"PT생산1팀_서산파견": "PT생산1팀", "엔진보전팀": "엔진생산실"}
+ADMINS = ["82211489", "82210465"]  # 이재용, 박동중
 
 
-def read_sheet(wb, name):
-    """헤더 4행 아래부터 학습자 행을 읽어 사번을 키로 반환."""
-    ws, out = wb[name], {}
-    for r in ws.iter_rows(min_row=5, values_only=True):
-        if r[1] is None:
-            continue
-        out[str(r[2]).strip()] = dict(
-            name=str(r[1]).strip(), emp=str(r[2]).strip(), email=(r[3] or '').strip(),
-            tel=str(r[4] or '').strip(), up=(r[5] or '').strip(),
-            dept=(r[6] or '').strip(), pos=(r[7] or '').strip())
-    return out
+def main():
+    people = json.load(open(os.path.join(HERE, "roster.json"), encoding="utf-8"))
+    rows = [[p["emp"], p["name"], p["dept"], p["position"], p["grade"], p["role"]] for p in people]
+    payload = {"R": rows, "ORG": ORG, "FB": APPROVER_FALLBACK, "ADMINS": ADMINS}
+    data = "const DATA=" + json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + ";\n"
+
+    logo = "data:image/png;base64," + open(os.path.join(HERE, "logo.b64")).read().strip()
+    html = "".join(open(os.path.join(HERE, n), encoding="utf-8").read() for n in PARTS)
+    html = html.replace("<script>\n/* ====", "<script>\n" + data + "/* ====", 1)
+    html = html.replace("__LOGO__", logo)
+    open(OUT, "w", encoding="utf-8").write(html)
+    print(f"{OUT} 생성 완료 — {len(people)}명, {len(html.encode()):,} bytes")
 
 
-def main(xlsx):
-    wb = openpyxl.load_workbook(xlsx, data_only=True)
-    dis = read_sheet(wb, '학습자명단(장애인)')   # 장애인 인식개선 미이수자
-    har = read_sheet(wb, '학습자명단(성희롱)')   # 성희롱 예방교육 미이수자
-
-    merged = {}
-    merged.update(har)
-    merged.update(dis)
-    rows = []
-    for emp, p in merged.items():
-        # h/d = 1 이면 이수, 0 이면 미이수 (미이수자 시트에 있으면 0)
-        rows.append({**p, 'h': 0 if emp in har else 1, 'd': 0 if emp in dis else 1})
-    rows.sort(key=lambda x: (x['up'], x['dept'], x['pos'], x['name']))
-
-    data = json.dumps(rows, ensure_ascii=False, separators=(',', ':'))
-    meta = json.dumps({'src': os.path.basename(xlsx), 'total': len(rows)}, ensure_ascii=False)
-    html = ''.join(open(os.path.join(HERE, n), encoding='utf-8').read() for n in PARTS)
-    html = html.replace('__DATA__', data).replace('__META__', meta)
-    open(OUT, 'w', encoding='utf-8').write(html)
-    print(f'{OUT} 생성 완료 — {len(rows)}명, {len(html.encode()):,} bytes')
-
-
-if __name__ == '__main__':
-    main(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, 'source.xlsx'))
+if __name__ == "__main__":
+    main()

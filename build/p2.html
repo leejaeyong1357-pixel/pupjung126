@@ -1,0 +1,30 @@
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<div id="modalRoot"></div>
+
+<template id="tpl-login">
+  <div class="login">
+    <div class="loginbox">
+      <div class="brandbig"><img src="__LOGO__" alt="TECZEN"></div>
+      <form class="logincard" id="loginForm">
+        <h1><span class="yr">2027년</span> 사외직무교육 계획</h1>
+        <p class="sub">성명과 사번을 입력해 주세요</p>
+        <div id="loginErr"></div>
+        <div class="field">
+          <label for="liName">성명</label>
+          <input id="liName" name="liName" autocomplete="off" placeholder="홍길동" required>
+        </div>
+        <div class="field">
+          <label for="liEmp">사번</label>
+          <input id="liEmp" name="liEmp" class="num" inputmode="numeric" autocomplete="off" placeholder="8221....." required>
+        </div>
+        <button class="btn" type="submit">로그인</button>
+        <div class="loginhint">
+          사번은 8자리 사원번호입니다. 로그인하면 <b>본인 소속 팀</b>으로 자동 등록되며,
+          조회 범위도 소속에 따라 자동으로 정해집니다.<br>
+          명단에 없거나 정보가 다르면 미래성장팀 이재용 매니저에게 문의해 주세요.
+        </div>
+      </form>
+    </div>
+  </div>
+</template>

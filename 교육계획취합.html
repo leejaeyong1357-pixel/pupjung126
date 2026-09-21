@@ -1,0 +1,997 @@
+<title>사외직무교육 계획 취합</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --navy:#0B3C77; --blue:#1A6AD4; --blue-soft:#EAF1FC; --blue-line:#C6DAF6;
+  --ground:#F4F6FA; --panel:#FFFFFF; --panel-2:#FAFBFD; --panel-3:#F1F4F9;
+  --ink:#0E1726; --ink-2:#55647B; --ink-3:#8795A8;
+  --line:#E1E7F0; --line-2:#EDF1F6;
+  --ok:#0C7A52; --ok-soft:#E4F4EC; --ok-line:#B9E2CE;
+  --wait:#A96500; --wait-soft:#FDF2E2; --wait-line:#F0D7AE;
+  --no:#C62828; --no-soft:#FCEBEB; --no-line:#F3C9C9;
+  --shadow-s:0 1px 2px rgba(11,60,119,.06);
+  --shadow-m:0 1px 3px rgba(11,60,119,.07),0 8px 24px rgba(11,60,119,.06);
+  --shadow-l:0 18px 50px rgba(11,60,119,.16);
+  --r:10px; --logo-pad:0px; --logo-bg:transparent;
+  --kr:"Noto Sans KR",-apple-system,BlinkMacSystemFont,"Malgun Gothic",sans-serif;
+  --num:"IBM Plex Sans","Noto Sans KR",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --navy:#5E9BEC; --blue:#4D8FE8; --blue-soft:#15243A; --blue-line:#27446E;
+  --ground:#0C1118; --panel:#141A23; --panel-2:#19202B; --panel-3:#1E2630;
+  --ink:#E8EDF4; --ink-2:#9AAABF; --ink-3:#6E7F96;
+  --line:#252F3C; --line-2:#1F2733;
+  --ok:#43C892; --ok-soft:#0E2A20; --ok-line:#1D4A38;
+  --wait:#E0A84A; --wait-soft:#2B2113; --wait-line:#4A3A1C;
+  --no:#F0736A; --no-soft:#2D1817; --no-line:#4E2624;
+  --shadow-s:0 1px 2px rgba(0,0,0,.4); --shadow-m:0 2px 10px rgba(0,0,0,.45);
+  --shadow-l:0 18px 50px rgba(0,0,0,.6);
+  --logo-pad:5px 9px; --logo-bg:#fff;
+}}
+:root[data-theme="dark"]{
+  --navy:#5E9BEC; --blue:#4D8FE8; --blue-soft:#15243A; --blue-line:#27446E;
+  --ground:#0C1118; --panel:#141A23; --panel-2:#19202B; --panel-3:#1E2630;
+  --ink:#E8EDF4; --ink-2:#9AAABF; --ink-3:#6E7F96;
+  --line:#252F3C; --line-2:#1F2733;
+  --ok:#43C892; --ok-soft:#0E2A20; --ok-line:#1D4A38;
+  --wait:#E0A84A; --wait-soft:#2B2113; --wait-line:#4A3A1C;
+  --no:#F0736A; --no-soft:#2D1817; --no-line:#4E2624;
+  --shadow-s:0 1px 2px rgba(0,0,0,.4); --shadow-m:0 2px 10px rgba(0,0,0,.45);
+  --shadow-l:0 18px 50px rgba(0,0,0,.6);
+  --logo-pad:5px 9px; --logo-bg:#fff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--kr);font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:700;letter-spacing:-.022em;text-wrap:balance}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:var(--kr);font-size:13.5px;color:var(--ink);background:var(--panel);
+  border:1px solid var(--line);border-radius:8px;padding:9px 11px;outline:none;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+input[type=date]{font-family:var(--num)}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.num{font-family:var(--num);font-variant-numeric:tabular-nums}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:60;background:var(--panel);
+  border-bottom:1px solid var(--line);box-shadow:var(--shadow-s)}
+.topbar-in{max-width:1440px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:26px;height:60px}
+@media (max-width:900px){
+  .topbar-in{height:auto;flex-wrap:wrap;gap:10px;padding:10px 16px}
+  .brand{order:1} .topright{order:2;margin-left:auto}
+  .mainnav{order:3;flex:1 0 100%;border-top:1px solid var(--line-2);padding-top:8px}
+  .who .nm,.who .dp{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .iconbtn span{display:none}
+}
+.brand{display:flex;align-items:center;gap:13px;flex-shrink:0}
+.brand img{height:19px;width:auto;display:block;background:var(--logo-bg);padding:var(--logo-pad);border-radius:5px}
+.brand .sep{width:1px;height:17px;background:var(--line)}
+.brand .app{font-size:13.5px;font-weight:700;color:var(--ink-2);letter-spacing:-.01em;white-space:nowrap}
+.mainnav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.mainnav::-webkit-scrollbar{display:none}
+.mainnav button{padding:8px 13px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--ink-2);white-space:nowrap}
+.mainnav button:hover{background:var(--panel-3);color:var(--ink)}
+.mainnav button.on{color:var(--blue);background:var(--blue-soft);font-weight:700}
+.mainnav button .n{margin-left:6px;font-family:var(--num);font-size:11px;background:var(--no);color:#fff;
+  padding:1px 5px;border-radius:9px;font-weight:600;vertical-align:1px}
+.topright{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.yearsel{width:auto;padding:6px 9px;font-size:13px;font-family:var(--num);font-weight:600}
+.who{display:flex;align-items:center;gap:9px;padding-left:12px;border-left:1px solid var(--line)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--blue-soft);color:var(--blue);
+  display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0}
+.who .nm{font-size:13px;font-weight:700;line-height:1.25}
+.who .dp{font-size:11.5px;color:var(--ink-3);line-height:1.25}
+.iconbtn{padding:7px 9px;border-radius:7px;color:var(--ink-3);font-size:12.5px;display:flex;align-items:center;gap:5px}
+.iconbtn:hover{background:var(--panel-3);color:var(--ink)}
+
+/* ---------- layout ---------- */
+.shell{max-width:1440px;margin:0 auto;padding:26px 24px 90px;min-width:0;display:grid;
+  grid-template-columns:minmax(0,1fr) 296px;gap:24px;align-items:start}
+@media (max-width:1180px){.shell{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:900px){.shell{padding:18px 16px 70px}}
+.shell>main{min-width:0}
+.pagehead{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok);
+  background:var(--ok-soft);border:1px solid var(--ok-line);padding:4px 11px;border-radius:20px;margin-bottom:9px}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.pagehead h1{font-size:26px;font-weight:900;letter-spacing:-.035em}
+.pagehead p{margin:5px 0 0;color:var(--ink-2);font-size:13.5px}
+.pagehead .acts{margin-left:auto;display:flex;gap:9px;flex-wrap:wrap}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 17px;border-radius:8px;
+  font-size:13.5px;font-weight:700;background:var(--blue);color:#fff;box-shadow:var(--shadow-s);transition:.14s}
+.btn:hover{filter:brightness(1.07)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--blue);filter:none}
+.btn.sm{padding:7px 12px;font-size:12.5px;border-radius:7px}
+.btn.ok{background:var(--ok)} .btn.no{background:var(--no)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+.note{background:var(--blue-soft);border:1px solid var(--blue-line);border-radius:var(--r);
+  padding:12px 15px;font-size:13px;color:var(--ink);display:flex;gap:10px;align-items:flex-start;margin-bottom:18px}
+.note svg{flex-shrink:0;margin-top:1px}
+
+/* ---------- kpi ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-m);margin-bottom:20px;overflow:hidden}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{padding:17px 20px;border-right:1px solid var(--line-2)}
+.kpi:last-child{border-right:none}
+@media (max-width:760px){.kpi:nth-child(2n){border-right:none}.kpi:nth-child(-n+2){border-bottom:1px solid var(--line-2)}}
+.kpi .lab{font-size:12px;color:var(--ink-2);font-weight:500;letter-spacing:.01em}
+.kpi .val{font-family:var(--num);font-size:27px;font-weight:600;letter-spacing:-.03em;margin-top:3px;line-height:1.15}
+.kpi .val small{font-size:14px;font-weight:500;color:var(--ink-2);margin-left:2px}
+.kpi .sub{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+.kpi.accent .val{color:var(--blue)}
+
+/* ---------- card ---------- */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-m);overflow:hidden}
+.card+.card{margin-top:20px}
+.card-h{padding:15px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line-2)}
+.card-h h2{font-size:15px;display:flex;align-items:center;gap:9px}
+.count{font-family:var(--num);font-size:12px;font-weight:600;background:var(--panel-3);color:var(--ink-2);
+  padding:2px 8px;border-radius:20px}
+.card-h .right{margin-left:auto;display:flex;gap:9px;align-items:center;flex-wrap:wrap;max-width:100%}
+.card-b{padding:18px 20px}
+.subtabs{display:flex;gap:2px;padding:0 20px;border-bottom:1px solid var(--line-2);overflow-x:auto;scrollbar-width:none}
+.subtabs::-webkit-scrollbar{display:none}
+.subtabs button{padding:11px 3px;margin-right:20px;font-size:13.5px;font-weight:500;color:var(--ink-3);
+  border-bottom:2px solid transparent;white-space:nowrap}
+.subtabs button.on{color:var(--ink);border-bottom-color:var(--blue);font-weight:700}
+.subtabs button:hover{color:var(--ink)}
+.searchwrap{position:relative;width:250px;max-width:100%}
+.searchwrap input{padding-left:33px}
+.searchwrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-3)}
+select.filt{width:auto;min-width:120px;font-size:13px;padding:8px 10px}
+
+/* ---------- table ---------- */
+.tw{overflow-x:auto;scrollbar-width:thin}
+.tw::-webkit-scrollbar{height:9px}
+.tw::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
+.tw::-webkit-scrollbar-track{background:var(--panel-2)}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.6px}
+th,td{padding:10px 11px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line-2)}
+thead th{background:var(--panel-2);font-size:11.5px;font-weight:700;color:var(--ink-2);letter-spacing:.01em;
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
+thead th.ctr,td.ctr{text-align:center}
+thead th.rt,td.rt{text-align:right}
+tbody tr:hover{background:var(--panel-2)}
+tbody tr:last-child td{border-bottom:none}
+td.nm{font-weight:700}
+.grp th{background:var(--panel-3);font-weight:700;color:var(--ink);font-size:12px;position:static}
+.emptystate{padding:56px 24px;text-align:center}
+.emptystate .ico{width:46px;height:46px;border-radius:12px;background:var(--panel-3);color:var(--ink-3);
+  display:grid;place-items:center;margin:0 auto 13px}
+.emptystate h3{font-size:14.5px;margin-bottom:5px}
+.emptystate p{color:var(--ink-3);font-size:13px;margin:0 0 15px}
+tfoot td{background:var(--panel-2);font-weight:700;border-top:1px solid var(--line);border-bottom:none;font-size:13px}
+
+/* ---------- chips ---------- */
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:11.5px;
+  font-weight:700;border:1px solid transparent;white-space:nowrap}
+.c-blue{background:var(--blue-soft);color:var(--blue);border-color:var(--blue-line)}
+.c-ok{background:var(--ok-soft);color:var(--ok);border-color:var(--ok-line)}
+.c-wait{background:var(--wait-soft);color:var(--wait);border-color:var(--wait-line)}
+.c-no{background:var(--no-soft);color:var(--no);border-color:var(--no-line)}
+.c-mute{background:var(--panel-3);color:var(--ink-2);border-color:var(--line)}
+button.chip{cursor:pointer}
+button.chip:hover{filter:brightness(.96)}
+.me{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:5px;vertical-align:1px}
+.rowacts{display:flex;gap:5px;justify-content:flex-end}
+.ibtn{padding:5px 8px;border-radius:6px;font-size:12px;color:var(--ink-3);border:1px solid transparent}
+.ibtn:hover{background:var(--panel-3);color:var(--ink);border-color:var(--line)}
+.ibtn.danger:hover{color:var(--no);border-color:var(--no-line);background:var(--no-soft)}
+
+/* ---------- right rail ---------- */
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 76px)}
+@media (max-width:1180px){.rail{position:static}}
+.guide{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-m);overflow:hidden}
+.guide-h{display:flex;align-items:center;gap:9px;padding:13px 15px;background:var(--navy);color:#fff}
+:root[data-theme="dark"] .guide-h{background:#16243A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .guide-h{background:#16243A}}
+.guide-h h3{font-size:13.5px;font-weight:700;flex:1;color:#fff}
+.guide-h button{color:#fff;opacity:.85;padding:3px 7px;border-radius:5px;font-size:15px;line-height:1;font-weight:700}
+.guide-h button:hover{background:rgba(255,255,255,.16);opacity:1}
+.guide-b{padding:6px 15px 15px}
+.gitem{padding:12px 0;border-bottom:1px solid var(--line-2)}
+.gitem:last-child{border-bottom:none;padding-bottom:4px}
+.gitem h4{font-size:12.5px;font-weight:700;display:flex;gap:8px;align-items:baseline;margin-bottom:4px}
+.gitem h4 .n{font-family:var(--num);font-size:11px;color:var(--blue);font-weight:600;
+  background:var(--blue-soft);border-radius:4px;padding:1px 5px;flex-shrink:0}
+.gitem p{margin:0;font-size:12.3px;color:var(--ink-2);line-height:1.65}
+.gitem.warn h4 .n{color:var(--no);background:var(--no-soft)}
+.railfoot{margin-top:13px;font-size:11.5px;color:var(--ink-3);text-align:center;line-height:1.6}
+
+/* ---------- login ---------- */
+.login{min-height:100%;display:grid;place-items:center;padding:40px 16px;background:
+  radial-gradient(1100px 500px at 50% -10%, var(--blue-soft), transparent 70%), var(--ground)}
+.loginbox{width:100%;max-width:400px}
+.loginbox .brandbig{display:flex;justify-content:center;margin-bottom:26px}
+.loginbox .brandbig img{height:26px;background:var(--logo-bg);padding:var(--logo-pad);border-radius:5px}
+.logincard{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-l);padding:28px}
+.logincard h1{font-size:19px;font-weight:900;letter-spacing:-.03em;text-align:center}
+.logincard .yr{font-family:var(--num);color:var(--blue)}
+.logincard .sub{text-align:center;color:var(--ink-2);font-size:13px;margin:7px 0 22px}
+.field{margin-bottom:14px}
+.field label,.flabel{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--ink-2)}
+.frow label{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--ink-2)}
+.field input{padding:11px 13px;font-size:14px}
+.loginerr{background:var(--no-soft);border:1px solid var(--no-line);color:var(--no);border-radius:8px;
+  padding:10px 13px;font-size:12.5px;font-weight:500;margin-bottom:14px}
+.logincard .btn{width:100%;padding:12px;font-size:14px;margin-top:4px}
+.loginhint{margin-top:18px;padding-top:16px;border-top:1px solid var(--line-2);font-size:12px;color:var(--ink-3);line-height:1.7}
+
+/* ---------- modal ---------- */
+.scrim{position:fixed;inset:0;background:rgba(9,19,35,.5);backdrop-filter:blur(3px);z-index:100;
+  display:grid;place-items:center;padding:20px;overflow-y:auto}
+.modal{background:var(--panel);border-radius:14px;box-shadow:var(--shadow-l);width:100%;max-width:700px;
+  border:1px solid var(--line);margin:auto;max-height:calc(100dvh - 40px);display:flex;flex-direction:column}
+.modal.wide{max-width:950px}
+.modal.narrow{max-width:460px}
+.modal-h{padding:19px 22px;border-bottom:1px solid var(--line-2);display:flex;align-items:center;gap:12px}
+.modal-h h2{font-size:16.5px;font-weight:800;letter-spacing:-.025em}
+.modal-h p{margin:3px 0 0;font-size:12.5px;color:var(--ink-3)}
+.modal-h button{margin-left:auto;color:var(--ink-3);font-size:21px;line-height:1;padding:4px 8px;border-radius:7px;align-self:flex-start}
+.modal-h button:hover{background:var(--panel-3);color:var(--ink)}
+.modal-b{padding:20px 22px;overflow-y:auto}
+.modal-f{padding:15px 22px;border-top:1px solid var(--line-2);display:flex;gap:9px;justify-content:flex-end;
+  background:var(--panel-2);border-radius:0 0 14px 14px;flex-wrap:wrap}
+.modal-f .left{margin-right:auto}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
+.frow.c3{grid-template-columns:1fr 1fr 1fr}
+.frow.c1{grid-template-columns:1fr}
+@media (max-width:620px){.frow,.frow.c3{grid-template-columns:1fr}}
+.hint{font-size:11.5px;color:var(--ink-3);margin-top:5px;line-height:1.55}
+.seg{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;padding:9px;font-size:13px;font-weight:600;color:var(--ink-2);background:var(--panel)}
+.seg button.on{background:var(--blue);color:#fff}
+.seg button+button{border-left:1px solid var(--line)}
+.exnote{background:var(--wait-soft);border:1px solid var(--wait-line);border-radius:8px;padding:11px 14px;
+  font-size:12.5px;color:var(--ink);margin-bottom:16px;line-height:1.6}
+.calc{background:var(--panel-3);border-radius:8px;padding:10px 13px;font-size:12.5px;color:var(--ink-2);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.calc b{font-family:var(--num);color:var(--ink);font-size:14px}
+.rejbox{background:var(--no-soft);border:1px solid var(--no-line);border-radius:8px;padding:13px 15px;font-size:13px;line-height:1.7}
+.rejbox .who{font-size:11.5px;color:var(--ink-3);margin-top:7px;border:none;padding:0}
+
+/* ---------- toast ---------- */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(18px);z-index:200;
+  background:var(--ink);color:var(--ground);padding:11px 19px;border-radius:9px;font-size:13px;font-weight:600;
+  opacity:0;transition:.22s;pointer-events:none;box-shadow:var(--shadow-l);max-width:86vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.banner{background:var(--wait-soft);border-bottom:1px solid var(--wait-line);color:var(--ink);
+  font-size:12.5px;padding:9px 24px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<div id="modalRoot"></div>
+
+<template id="tpl-login">
+  <div class="login">
+    <div class="loginbox">
+      <div class="brandbig"><img src="data:image/png;base64,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" alt="TECZEN"></div>
+      <form class="logincard" id="loginForm">
+        <h1><span class="yr">2027년</span> 사외직무교육 계획</h1>
+        <p class="sub">성명과 사번을 입력해 주세요</p>
+        <div id="loginErr"></div>
+        <div class="field">
+          <label for="liName">성명</label>
+          <input id="liName" name="liName" autocomplete="off" placeholder="홍길동" required>
+        </div>
+        <div class="field">
+          <label for="liEmp">사번</label>
+          <input id="liEmp" name="liEmp" class="num" inputmode="numeric" autocomplete="off" placeholder="8221....." required>
+        </div>
+        <button class="btn" type="submit">로그인</button>
+        <div class="loginhint">
+          사번은 8자리 사원번호입니다. 로그인하면 <b>본인 소속 팀</b>으로 자동 등록되며,
+          조회 범위도 소속에 따라 자동으로 정해집니다.<br>
+          명단에 없거나 정보가 다르면 미래성장팀 이재용 매니저에게 문의해 주세요.
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+<script>
+const DATA={"R":[["82210618","성영진","재경팀","팀장","M5","팀장"],["82211379","예해수","재경팀","책임매니저","M4","팀원"],["82211493","김동은","재경팀","매니저","M2","팀원"],["82211616","김혜원","재경팀","매니저","M2","팀원"],["82211617","천예빈","재경팀","매니저","M2","팀원"],["82211090","정건우","재경팀","책임매니저","M5","팀원"],["82210350","김충환","사업기획팀","팀장","M5","팀장"],["82210136","김동욱","사업기획팀","책임매니저","M4","팀원"],["82210330","김진모","사업기획팀","책임매니저","M4","팀원"],["82211494","정지운","사업기획팀","매니저","M2","팀원"],["82210347","김철우","사업기획팀","책임매니저","M5","팀원"],["82210949","이정훈","사업기획팀","책임매니저","M5","팀원"],["82211602","이다영","사업기획팀","매니저","M1","팀원"],["82210345","김창현","사업기획팀","책임매니저","M4","팀원"],["82211238","최경식","경영지원실","상무","상무C","실장"],["82210465","박동중","미래성장팀","팀장","M5","팀장"],["82211253","최선화","미래성장팀","매니저","M1","팀원"],["82210141","김동진","미래성장팀","책임매니저","M4","팀원"],["82210152","김묘환","미래성장팀","책임매니저","M5","팀원"],["82210225","김승권","미래성장팀","책임매니저","M4","팀원"],["82210362","김태철","미래성장팀","책임매니저","M5","팀원"],["82210458","박규태","미래성장팀","책임매니저","M4","팀원"],["82210857","이상욱","미래성장팀","책임매니저","M4","팀원"],["82211614","홍승우","미래성장팀","매니저","M3","팀원"],["82211489","이재용","미래성장팀","매니저","M2","팀원"],["82211490","정영건","미래성장팀","매니저","M2","팀원"],["82211488","장윤재","미래성장팀","매니저","M3","팀원"],["82211380","임우찬","미래성장팀","매니저","M3","팀원"],["82211049","장송이","미래성장팀","매니저","M2","팀원"],["82210120","김대일","미래성장팀","책임매니저","M5","팀원"],["82211076","전세준","비즈니스솔루션팀","팀장","M5","팀장"],["82210318","김주형","비즈니스솔루션팀","책임매니저","M4","팀원"],["82210499","박연우","비즈니스솔루션팀","책임매니저","M4","팀원"],["82210629","손기인","비즈니스솔루션팀","책임매니저","M5","팀원"],["82210718","여상일","비즈니스솔루션팀","책임매니저","M4","팀원"],["82210959","이주형","비즈니스솔루션팀","책임매니저","M5","팀원"],["82211009","이효원","비즈니스솔루션팀","책임매니저","M4","팀원"],["82211615","김혜리","비즈니스솔루션팀","매니저","M2","팀원"],["82211580","양아현","비즈니스솔루션팀","매니저","M1","팀원"],["82211553","고빛나","비즈니스솔루션팀","매니저","M1","팀원"],["82211492","김소진","비즈니스솔루션팀","매니저","M2","팀원"],["82211482","이동훈","비즈니스솔루션팀","매니저","M2","팀원"],["82211472","류태곤","비즈니스솔루션팀","매니저","M3","팀원"],["82211473","박운하","비즈니스솔루션팀","매니저","M2","팀원"],["82211474","소종진","비즈니스솔루션팀","매니저","M3","팀원"],["82210030","강태훈","비즈니스솔루션팀","매니저","M2","팀원"],["82210122","김대호","비즈니스솔루션팀","매니저","M2","팀원"],["82210167","김민호","비즈니스솔루션팀","매니저","M3","팀원"],["82210363","김태협","비즈니스솔루션팀","매니저","M2","팀원"],["82210473","박병준","비즈니스솔루션팀","매니저","M3","팀원"],["82210486","박성호","비즈니스솔루션팀","매니저","M2","팀원"],["82210564","배규환","비즈니스솔루션팀","매니저","M3","팀원"],["82210611","서준현","비즈니스솔루션팀","매니저","M2","팀원"],["82210691","안재현","비즈니스솔루션팀","매니저","M2","팀원"],["82210722","여휘수","비즈니스솔루션팀","매니저","M2","팀원"],["82210928","이장희","비즈니스솔루션팀","매니저","M2","팀원"],["82211017","임보라","비즈니스솔루션팀","매니저","M1","팀원"],["82211258","최승연","비즈니스솔루션팀","매니저","M2","팀원"],["82211291","최현주","비즈니스솔루션팀","매니저","M1","팀원"],["82211420","김창우","비즈니스솔루션팀","책임매니저","M5","팀원"],["82210893","이실만","PT생산실","실장","M5","실장"],["82210031","강태흠","PT생산1팀","팀장","M5","팀장"],["82211023","임세진","PT생산1팀","매니저","M3","팀원"],["82210380","김현진","PT생산1팀","책임매니저","M5","팀원"],["82210482","박성언","PT생산1팀","책임매니저","M5","팀원"],["82210530","박종훈","PT생산1팀","책임매니저","M5","팀원"],["82210824","이경양","PT생산1팀","책임매니저","M5","팀원"],["82210889","이승태","PT생산1팀","책임매니저","M5","팀원"],["82210906","이용원","PT생산1팀","책임매니저","M5","팀원"],["82210947","이정재","PT생산1팀","책임매니저","M5","팀원"],["82210972","이진우","PT생산1팀","책임매니저","M4","팀원"],["82211053","장우혁","PT생산1팀","책임매니저","M5","팀원"],["82211601","정은진","PT생산1팀","매니저","M1","팀원"],["82210492","박수빈","PT생산1팀","매니저","M2","팀원"],["82210738","오지훈","PT생산1팀","매니저","M2","팀원"],["82210116","김대룡","PT생산1팀","책임매니저","M5","팀원"],["82210385","김호민","PT생산1팀_서산파견","책임매니저","M4","팀원"],["82210025","강정훈","PT생산2팀","팀장","M5","팀장"],["82210231","김양훈","PT생산2팀","책임매니저","M4","팀원"],["82210359","김태욱","PT생산2팀","책임매니저","M4","팀원"],["82210425","류흥연","PT생산2팀","책임매니저","M5","팀원"],["82210701","양선미","PT생산2팀","매니저","M1","팀원"],["82210862","이상홍","PT생산2팀","책임매니저","M5","팀원"],["82211245","최동식","PT생산2팀","책임매니저","M4","팀원"],["82210624","성진욱","PT생산2팀","매니저","M3","팀원"],["82210469","박민규","PT생산2팀","책임매니저","M4","팀원"],["82210073","권성근","PT생산관리팀","팀장","M5","팀장"],["82210093","김건화","PT생산관리팀","책임매니저","M5","팀원"],["82210396","나경택","PT생산관리팀","책임매니저","M5","팀원"],["82210567","배민호","PT생산관리팀","책임매니저","M4","팀원"],["82210792","윤석현","PT생산관리팀","책임매니저","M5","팀원"],["82210804","윤인철","PT생산관리팀","책임매니저","M5","팀원"],["82210813","윤혁진","PT생산관리팀","매니저","M2","팀원"],["82211234","천욱","PT생산관리팀","책임매니저","M4","팀원"],["82211304","하순호","PT생산관리팀","책임매니저","M4","팀원"],["82210248","김영환","PT생산관리팀","매니저","M3","팀원"],["82210292","김정용","PT생산관리팀","매니저","M3","팀원"],["82210372","김한수","PT생산관리팀","매니저","M2","팀원"],["82210600","서백만","PT생산관리팀","매니저","M1","팀원"],["82211028","임윤철","PT생산관리팀","책임매니저","M4","팀원"],["82210379","김현석","엔진생산1팀","팀장","M5","팀장"],["82210940","이재호","엔진생산1팀","매니저","M3","팀원"],["82210424","류환곤","엔진생산1팀","책임매니저","M5","팀원"],["82210810","윤진구","엔진생산2팀","팀장","M5","팀장"],["82210113","김남현","엔진생산2팀","책임매니저","M5","팀원"],["82210413","노승선","엔진생산2팀","책임매니저","M5","팀원"],["82210923","이용재","엔진생산2팀","책임매니저","M5","팀원"],["82291025","황나영","엔진생산2팀","매니저","파견직","파견직"],["82210997","이현우","엔진생산2팀","매니저","M3","팀원"],["82211504","박근호","엔진생산2팀","매니저","M2","팀원"],["82210329","김진겸","엔진생산2팀","매니저","M2","팀원"],["82210481","박석훈","엔진생산2팀","매니저","M2","팀원"],["82210795","윤성현","엔진생산2팀","매니저","M2","팀원"],["82210963","이준상","엔진생산2팀","매니저","M3","팀원"],["82211497","안준모","엔진생산2팀","매니저","M2","팀원"],["82210104","김금석","엔진생산3팀","팀장","M5","팀장"],["82210361","김태진","엔진생산3팀","매니저","M2","팀원"],["82251001","이한솔","엔진생산3팀","매니저","M1","팀원"],["82210789","윤기원","엔진생산3팀","책임매니저","M4","팀원"],["82210138","김동은","엔진생산관리팀","팀장","M5","팀장"],["82211074","전성균","엔진생산관리팀","매니저","M3","팀원"],["82210445","민동규","엔진생산관리팀","책임매니저","M5","팀원"],["82210462","박노준","엔진생산관리팀","책임매니저","M4","팀원"],["82210554","박태호","엔진생산관리팀","책임매니저","M5","팀원"],["82251000","이새롬","엔진생산관리팀","매니저","M1","팀원"],["82211496","강명준","엔진생산관리팀","매니저","M2","팀원"],["82211501","박수형","엔진생산관리팀","매니저","M2","팀원"],["82211502","윤채영","엔진생산관리팀","매니저","M2","팀원"],["82211503","김수민","엔진생산관리팀","매니저","M2","팀원"],["82211470","김기민","엔진생산관리팀","매니저","M3","팀원"],["82210057","공희원","엔진생산관리팀","매니저","M1","팀원"],["82210130","김동민","엔진생산관리팀","매니저","M3","팀원"],["82210374","김혁수","엔진생산관리팀","매니저","M2","팀원"],["82210448","민정만","엔진생산관리팀","매니저","M3","팀원"],["82210659","신국현","엔진생산관리팀","매니저","M3","팀원"],["82211007","이황복","엔진생산관리팀","매니저","M1","팀원"],["82210038","고경태","엔진생산관리팀","책임매니저","M5","팀원"],["82210077","권영갑","엔진생산실","실장","M5","실장"],["82210370","김학남","엔진보전팀","책임매니저","M4","팀원"],["82211201","조진웅","엔진보전팀","책임매니저","M5","팀원"],["82211278","최종욱","엔진보전팀","책임매니저","M5","팀원"],["82210881","이승도","엔진보전팀","매니저","M3","팀원"],["82210084","권혁주","엔진보전팀","매니저","M3","팀원"],["82210545","박찬일","엔진보전팀","매니저","M2","팀원"],["82210675","신현우","엔진보전팀","매니저","M2","팀원"],["82211477","김헌희","엔진보전팀","매니저","M2","팀원"],["82210075","권승재","품질관리실","실장","M5","실장"],["82210399","나승길","PT품질관리팀","팀장","M5","팀장"],["82210626","손경철","PT품질관리팀","매니저","M3","팀원"],["82210013","강민호","PT품질관리팀","책임매니저","M4","팀원"],["82210110","김기현","PT품질관리팀","책임매니저","M5","팀원"],["82210145","김동환","PT품질관리팀","책임매니저","M4","팀원"],["82210408","남형석","PT품질관리팀","책임매니저","M4","팀원"],["82210479","박상현","PT품질관리팀","책임매니저","M4","팀원"],["82210496","박승환","PT품질관리팀","책임매니저","M5","팀원"],["82210516","박재현","PT품질관리팀","책임매니저","M4","팀원"],["82210528","박종승","PT품질관리팀","책임매니저","M5","팀원"],["82210801","윤영주","PT품질관리팀","책임매니저","M5","팀원"],["82210956","이종호","PT품질관리팀","책임매니저","M4","팀원"],["82211011","이훈필","PT품질관리팀","책임매니저","M5","팀원"],["82211603","유현주","PT품질관리팀","매니저","M1","팀원"],["82210033","강현수","PT품질관리팀","매니저","M3","팀원"],["82210195","김선우","PT품질관리팀","매니저","M3","팀원"],["82211421","김동우","PT품질관리팀","책임매니저","M5","팀원"],["82210882","이승민","엔진품질관리1팀","팀장","M5","팀장"],["82210023","강재현","엔진품질관리1팀","책임매니저","M5","팀원"],["82210560","박홍룡","엔진품질관리1팀","책임매니저","M5","팀원"],["82210733","오승현","엔진품질관리1팀","책임매니저","M4","팀원"],["82211112","정수관","엔진품질관리1팀","책임매니저","M5","팀원"],["82211261","최영기","엔진품질관리1팀","매니저","M3","팀원"],["82211618","오세정","엔진품질관리1팀","매니저","M2","팀원"],["82211498","이동영","엔진품질관리1팀","매니저","M2","팀원"],["82211471","김태원","엔진품질관리1팀","매니저","M2","팀원"],["82210745","우경호","엔진품질관리1팀","매니저","M2","팀원"],["82210939","이재호","엔진품질관리1팀","매니저","M3","팀원"],["82211294","최홍철","엔진품질관리1팀","책임매니저","M5","팀원"],["82210625","소병두","엔진품질관리2팀","팀장","M5","팀장"],["82210710","엄경현","엔진품질관리2팀","책임매니저","M4","팀원"],["82210799","윤안수","엔진품질관리2팀","책임매니저","M4","팀원"],["82210809","윤지민","엔진품질관리2팀","책임매니저","M5","팀원"],["82211114","정순양","엔진품질관리2팀","책임매니저","M5","팀원"],["82210913","이웅석","엔진품질관리2팀","매니저","M2","팀원"],["82211193","조우숭","엔진품질관리2팀","책임매니저","M5","팀원"],["82211499","이형선","엔진품질관리2팀","매니저","M2","팀원"],["82211500","이규태","엔진품질관리2팀","매니저","M2","팀원"],["82210557","박현철","엔진품질관리2팀","매니저","M2","팀원"]],"ORG":{"경영지원실":["재경팀","사업기획팀","미래성장팀","비즈니스솔루션팀"],"PT생산실":["PT생산1팀","PT생산1팀_서산파견","PT생산2팀","PT생산관리팀"],"엔진생산실":["엔진생산1팀","엔진생산2팀","엔진생산3팀","엔진생산관리팀","엔진보전팀"],"품질관리실":["PT품질관리팀","엔진품질관리1팀","엔진품질관리2팀"]},"FB":{"PT생산1팀_서산파견":"PT생산1팀","엔진보전팀":"엔진생산실"},"ADMINS":["82211489","82210465"]};
+/* ============================================================
+   TECZEN · 2027년 사외직무교육 계획 취합
+   ============================================================ */
+const LOGO = "data:image/png;base64,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";
+const YEAR = 2027;
+const CATEGORIES = ["직무전문","리더십","직무자격","어학","기타"];
+const STATUS = {
+  pending:  {label:"승인 대기", cls:"c-wait"},
+  approved: {label:"승인 확정", cls:"c-ok"},
+  rejected: {label:"반려",     cls:"c-no"},
+};
+
+/* ---------- 조직 ---------- */
+const ORG = DATA.ORG;                        // 실 -> [팀]
+const TEAM_OF_SIL = {};                      // 팀 -> 실
+Object.entries(ORG).forEach(([sil,teams])=>{ TEAM_OF_SIL[sil]=sil; teams.forEach(t=>TEAM_OF_SIL[t]=sil); });
+const PEOPLE = DATA.R.map(([emp,name,dept,position,grade,role])=>({emp,name,dept,position,grade,role}));
+const BY_EMP = new Map(PEOPLE.map(p=>[p.emp,p]));
+const TEAMS = [...new Set(PEOPLE.map(p=>p.dept))].sort();
+const LEAD_OF = {};                          // 부서 -> 팀장/실장
+PEOPLE.forEach(p=>{ if(p.role==="팀장"||p.role==="실장") LEAD_OF[p.dept]=p; });
+
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const won = n => (Number(n)||0).toLocaleString("ko-KR");
+const uid = () => "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function toast(msg,ms=2600){const t=$("#toast");t.textContent=msg;t.classList.add("show");
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),ms);}
+
+/* 교육일수: 시작·종료일 포함 */
+function daysBetween(a,b){
+  if(!a||!b) return 0;
+  const d=(new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000;
+  return d<0?0:Math.round(d)+1;
+}
+
+/* ---------- 권한 ----------
+   팀원  : 본인 소속 팀
+   팀장  : 본인 팀 + 승인/반려
+   실장  : 산하 전체 팀 (승인/반려)
+   관리자: 전 조직 + 집계 + 엑셀                                   */
+function scopeOf(me){
+  if(!me) return {teams:[],kind:"none"};
+  if(DATA.ADMINS.includes(me.emp)) return {teams:TEAMS.slice(),kind:"admin"};
+  if(me.role==="실장"){
+    const sil=me.dept;
+    return {teams:[sil,...(ORG[sil]||[])].filter(t=>TEAMS.includes(t)),kind:"sil",sil};
+  }
+  if(me.role==="팀장"){
+    const extra=Object.entries(DATA.FB).filter(([,to])=>to===me.dept).map(([t])=>t);
+    return {teams:[me.dept,...extra],kind:"lead"};
+  }
+  return {teams:[me.dept],kind:"member"};
+}
+const isAdmin = me => DATA.ADMINS.includes(me.emp);
+/* 이 사람이 해당 부서 건을 결재할 수 있는가 */
+function canApprove(me,dept){
+  if(!me) return false;
+  if(isAdmin(me)) return true;
+  const target = DATA.FB[dept] || dept;
+  if(me.role==="팀장" && (target===me.dept || dept===me.dept)) return true;
+  if(me.role==="실장" && (TEAM_OF_SIL[target]===me.dept || TEAM_OF_SIL[dept]===me.dept)) return true;
+  return false;
+}
+const canEditRow = (me,r) => !!me && (r.createdBy===me.emp || isAdmin(me));
+
+/* ---------- 상태 ---------- */
+const LS="teczen_edu_plan_2027";
+let ME=null, DB=null, DL=null, ROWS=[], READY=false, DBOK=false;
+let VIEW="team", SUB="all", Q="", FTEAM="", FCAT="";
+
+function loadMe(){ try{const r=localStorage.getItem(LS); if(r){const e=BY_EMP.get(JSON.parse(r).emp); if(e) return e;}}catch(e){} return null; }
+function saveMe(p){ try{ p?localStorage.setItem(LS,JSON.stringify({emp:p.emp})):localStorage.removeItem(LS);}catch(e){} }
+ME=loadMe();
+
+/* ---------- db ---------- */
+async function initDb(){
+  try{ DB = await claude.use("db"); }catch(e){ DB=null; }
+  try{ DL = await claude.use("downloads"); }catch(e){ DL=null; }
+  if(!DB){ READY=true; render(); return; }
+  DB.collection("plans").onSnapshot(
+    snap=>{ ROWS = snap.docs.map(d=>({id:d.id,...d.data()})).filter(r=>r.year===YEAR);
+            DBOK=true; READY=true; render(); },
+    err=>{ DBOK=false; READY=true; render();
+           toast(err.code==="revoked" ? "접근 권한이 해제되었습니다. 새로고침해 주세요."
+                                      : "데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",5000); }
+  );
+}
+async function saveRow(row){
+  if(!DB){ toast("저장 공간에 연결되지 않아 등록할 수 없습니다."); return false; }
+  try{ await DB.doc("plans/"+row.id).set(row); return true; }
+  catch(e){
+    toast(e.code==="quota_exceeded" ? "저장 한도가 가득 찼습니다. 관리자에게 알려주세요."
+        : e.code==="invalid_argument" ? "이 계정에는 등록 권한이 없습니다."
+        : "저장하지 못했습니다. 다시 시도해 주세요.",4500);
+    return false;
+  }
+}
+async function patchRow(id,patch){
+  if(!DB) return false;
+  try{ await DB.doc("plans/"+id).update(patch); return true; }
+  catch(e){ toast("변경하지 못했습니다. 다시 시도해 주세요.",4000); return false; }
+}
+async function removeRow(id){
+  if(!DB) return false;
+  try{ await DB.doc("plans/"+id).delete(); return true; }
+  catch(e){ toast("삭제하지 못했습니다. 다시 시도해 주세요.",4000); return false; }
+}
+
+/* ---------- 조회 대상 ---------- */
+function visibleRows(){
+  const sc=scopeOf(ME), set=new Set(sc.teams);
+  return ROWS.filter(r=>set.has(r.dept));
+}
+function filtered(rows){
+  let out=rows;
+  if(SUB==="mine")     out=out.filter(r=>r.createdBy===ME.emp);
+  if(SUB==="pending")  out=out.filter(r=>r.status==="pending");
+  if(SUB==="approved") out=out.filter(r=>r.status==="approved");
+  if(SUB==="rejected") out=out.filter(r=>r.status==="rejected");
+  if(FTEAM) out=out.filter(r=>r.dept===FTEAM);
+  if(FCAT)  out=out.filter(r=>r.category===FCAT);
+  if(Q){ const q=Q.toLowerCase();
+    out=out.filter(r=>[r.name,r.emp,r.course,r.org,r.place,r.dept].some(v=>String(v||"").toLowerCase().includes(q))); }
+  return out.slice().sort((a,b)=>(a.dept||"").localeCompare(b.dept)||String(a.start||"").localeCompare(String(b.start||""))||(a.name||"").localeCompare(b.name));
+}
+const sum = (rows,f) => rows.reduce((a,r)=>a+(Number(r[f])||0),0);
+
+/* 같은 날이면 하루, 아니면 시작 ~ 종료(월-일만) */
+function schedule(r){
+  if(!r.start) return "-";
+  if(r.start===r.end) return esc(r.start);
+  return esc(r.start)+" ~ "+esc(String(r.end||"").slice(5));
+}
+
+/* ---------- 아이콘 ---------- */
+const IC = {
+  search:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
+  plus:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  book:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2Z"/><path d="M9 7h6M9 11h6"/></svg>',
+  down:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5"/><path d="M4 18v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2"/></svg>',
+  out:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 17l5-5-5-5M20 12H9M11 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/></svg>',
+  info:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.2"/></svg>',
+  empty:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>',
+  theme:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg>',
+};
+
+/* ---------- 안내문 ---------- */
+const GUIDE = [
+  ["교육 범위","사외직무교육은 임직원의 직무역량 향상을 목적으로 하는 외부 교육을 의미합니다. 법정의무교육 등 필수교육은 이번 취합 대상에서 제외하며, 각 소속 팀에서 별도로 관리합니다."],
+  ["팀장 사전 승인","모든 사외직무교육은 소속 팀장의 사전 승인을 받아야 합니다. 교육계획 등록만으로 교육 참여가 승인되는 것은 아닙니다."],
+  ["신청 대상","관리직과 생산직을 포함한 전 임직원의 사외직무교육 계획을 본 시스템에 등록해 주시기 바랍니다."],
+  ["사전 등록 원칙","본 시스템에 등록되지 않은 교육은 원칙적으로 참여가 제한됩니다. 차년도에 참여할 예정인 교육은 반드시 취합 기간 내 등록해 주시기 바랍니다.",true],
+];
+
+/* ---------- 렌더 ---------- */
+function render(){
+  const app=$("#app");
+  if(!ME){ app.innerHTML=""; app.appendChild($("#tpl-login").content.cloneNode(true)); bindLogin(); return; }
+  const sc=scopeOf(ME), vis=visibleRows(), rows=filtered(vis);
+  const pend=vis.filter(r=>r.status==="pending" && canApprove(ME,r.dept)).length;
+  app.innerHTML = topbar(sc,pend) + `<div class="shell"><main>${
+      VIEW==="admin" ? adminView(vis) : planView(sc,vis,rows)
+    }</main><aside class="rail">${guideRail()}</aside></div>`;
+  bindAll();
+}
+
+function topbar(sc,pend){
+  const label = sc.kind==="admin" ? "전체 관리자"
+              : sc.kind==="sil"   ? ME.dept+" 총괄"
+              : sc.kind==="lead"  ? ME.dept+" 팀장" : ME.dept;
+  const tabs=[["team", sc.kind==="member"?"우리 팀 교육계획":"소속 교육계획",0]];
+  if(canApprove(ME,ME.dept)||sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
+  if(isAdmin(ME)) tabs.push(["admin","전체 현황",0]);
+  return `<header class="topbar"><div class="topbar-in">
+    <div class="brand"><img src="${LOGO}" alt="TECZEN"><span class="sep"></span><span class="app">교육계획</span></div>
+    <nav class="mainnav">${tabs.map(([k,t,n])=>
+      `<button data-view="${k}" class="${VIEW===k?"on":""}">${esc(t)}${n?`<span class="n">${n}</span>`:""}</button>`).join("")}</nav>
+    <div class="topright">
+      <select class="yearsel" id="yearSel" aria-label="연도"><option>2027년</option></select>
+      <button class="iconbtn" id="themeBtn" title="화면 밝기 전환" aria-label="화면 밝기 전환">${IC.theme}</button>
+      <div class="who"><div class="avatar">${esc(ME.name.slice(0,1))}</div>
+        <div><div class="nm">${esc(ME.name)} ${esc(ME.position)}</div><div class="dp">${esc(label)}</div></div>
+      </div>
+      <button class="iconbtn" id="logoutBtn">${IC.out}<span>로그아웃</span></button>
+    </div>
+  </div>${DBOK?"":`<div class="banner">공유 저장소에 연결하는 중입니다. 연결되기 전에 등록한 내용은 저장되지 않습니다.</div>`}</header>`;
+}
+
+function planView(sc,vis,rows){
+  const mine=vis.filter(r=>r.createdBy===ME.emp).length;
+  const people=new Set(vis.map(r=>r.emp)).size;
+  const scopeName = sc.kind==="admin" ? "전사" : sc.kind==="sil" ? ME.dept : ME.dept;
+  const canAppr = vis.some(r=>canApprove(ME,r.dept));
+  const tabs=[["all","전체",vis.length],["mine","내가 등록한 계획",mine],
+              ["pending","승인 대기",vis.filter(r=>r.status==="pending").length],
+              ["approved","승인 확정",vis.filter(r=>r.status==="approved").length],
+              ["rejected","반려",vis.filter(r=>r.status==="rejected").length]];
+  return `
+  <div class="pagehead">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>계획 취합 중</div>
+      <h1><span class="num">${YEAR}</span>년 사외직무교육 계획</h1>
+      <p>내년에 필요한 교육을 미리 등록하고, 소속 조직의 일정과 비용을 함께 확인하세요.</p>
+    </div>
+    <div class="acts">
+      <button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
+      <button class="btn" id="addBtn">${IC.plus} 교육 계획 추가</button>
+    </div>
+  </div>
+  <div class="note">${IC.info}<div>${
+      sc.kind==="admin" ? "전체 조직의 교육계획을 조회할 수 있어요."
+    : sc.kind==="sil"   ? `<b>${esc(ME.dept)}</b> 산하 전체 팀의 교육계획을 조회할 수 있어요.`
+    : sc.kind==="lead"  ? `<b>${esc(ME.dept)}</b>의 교육계획을 조회할 수 있어요.`
+    : `<b>${esc(ME.dept)}</b>으로 자동 등록되며, 소속 팀의 교육계획만 조회할 수 있어요.`}${
+      canAppr?" 팀원이 등록한 계획은 <b>승인 관리</b>에서 승인하거나 반려할 수 있습니다.":""}</div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="lab">등록된 교육계획</div><div class="val">${vis.length}<small>건</small></div>
+      <div class="sub">내가 등록 ${mine}건</div></div>
+    <div class="kpi"><div class="lab">교육 참여 인원</div><div class="val">${people}<small>명</small></div>
+      <div class="sub">중복 제외</div></div>
+    <div class="kpi"><div class="lab">총 교육시간</div><div class="val">${won(sum(vis,"hours"))}<small>시간</small></div>
+      <div class="sub">교육일수 ${won(sum(vis,"days"))}일</div></div>
+    <div class="kpi accent"><div class="lab">예상 교육비</div><div class="val">${won(sum(vis,"cost"))}<small>원</small></div>
+      <div class="sub">${YEAR}년 ${esc(scopeName)} 합계</div></div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>${sc.kind==="member"?"우리 팀 교육계획":"소속 교육계획"}<span class="count">${rows.length}</span></h2>
+      <div class="right">
+        ${sc.teams.length>1?`<select class="filt" id="fTeam"><option value="">전체 팀</option>${
+          sc.teams.map(t=>`<option ${FTEAM===t?"selected":""}>${esc(t)}</option>`).join("")}</select>`:""}
+        <select class="filt" id="fCat"><option value="">교육구분 전체</option>${
+          CATEGORIES.map(c=>`<option ${FCAT===c?"selected":""}>${esc(c)}</option>`).join("")}</select>
+        <div class="searchwrap">${IC.search}<input id="q" value="${esc(Q)}" placeholder="이름 또는 교육과정 검색" aria-label="검색"></div>
+      </div></div>
+    <div class="subtabs">${tabs.map(([k,t,n])=>
+      `<button data-sub="${k}" class="${SUB===k?"on":""}">${t} <span class="num">${n}</span></button>`).join("")}</div>
+    ${planTable(rows,vis)}
+  </div>`;
+}
+
+function statusCell(r){
+  const s=STATUS[r.status]||STATUS.pending;
+  if(r.status==="rejected")
+    return `<button class="chip c-no" data-rej="${r.id}" title="반려 사유 보기">${s.label} · 사유 보기</button>`;
+  return `<span class="chip ${s.cls}">${s.label}</span>`;
+}
+
+function planTable(rows,vis){
+  if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
+    <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"아직 등록된 교육계획이 없습니다"}</h3>
+    <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 작성 방법은 예시 보기에서 확인할 수 있습니다."}</p>
+    ${vis.length?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
+  return `<div class="tw"><table><thead><tr>
+      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
+      <th>교육구분</th><th>교육기관</th><th>교육과정</th>
+      <th class="ctr">교육일정</th><th class="ctr">일수</th>
+      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
+      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>
+    ${rows.map((r,i)=>`<tr>
+      <td class="ctr num">${i+1}</td>
+      <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>
+      <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade||"-")}</td>
+      <td class="nm">${esc(r.name)}${r.emp===ME.emp?'<span class="me">나</span>':""}</td>
+      <td><span class="chip ${r.category==="리더십"?"c-ok":"c-blue"}">${esc(r.category)}</span></td>
+      <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
+      <td class="ctr num">${schedule(r)}</td>
+      <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+      <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
+      <td class="ctr">${statusCell(r)}</td>
+      <td><div class="rowacts">
+        ${canApprove(ME,r.dept)&&r.status!=="approved"?`<button class="ibtn" data-ok="${r.id}" title="승인">승인</button>`:""}
+        ${canApprove(ME,r.dept)&&r.status!=="rejected"?`<button class="ibtn danger" data-no="${r.id}" title="반려">반려</button>`:""}
+        ${canEditRow(ME,r)?`<button class="ibtn" data-edit="${r.id}" title="수정">수정</button>
+                            <button class="ibtn danger" data-del="${r.id}" title="삭제">삭제</button>`:""}
+      </div></td></tr>`).join("")}
+    </tbody><tfoot><tr>
+      <td colspan="10" class="rt">합계 ${rows.length}건</td>
+      <td class="ctr num">${won(sum(rows,"days"))}일</td><td></td>
+      <td class="rt num">${won(sum(rows,"hours"))}시간</td>
+      <td class="rt num">${won(sum(rows,"cost"))}</td><td colspan="2"></td>
+    </tr></tfoot></table></div>`;
+}
+
+function guideRail(){
+  const min = localStorage.getItem("teczen_guide_min")==="1";
+  return `<div class="guide">
+    <div class="guide-h">${IC.info}<h3>${YEAR}년 계획 등록 안내</h3>
+      <button id="guideToggle" aria-label="${min?"안내 펼치기":"안내 접기"}" title="${min?"펼치기":"최소화"}">${min?"+":"−"}</button></div>
+    ${min?"":`<div class="guide-b">${GUIDE.map(([t,d,w],i)=>
+      `<div class="gitem${w?" warn":""}"><h4><span class="n">${i+1}</span>${esc(t)}</h4><p>${esc(d)}</p></div>`).join("")}</div>`}
+  </div>${min?"":`<p class="railfoot">문의 · 미래성장팀 이재용 매니저</p>`}`;
+}
+
+/* ---------- 관리자: 실별 · 팀별 집계 ---------- */
+function adminView(vis){
+  const sils=Object.keys(ORG);
+  const bySil=sils.map(s=>{
+    const teams=[s,...(ORG[s]||[])].filter(t=>TEAMS.includes(t));
+    const rows=vis.filter(r=>teams.includes(r.dept));
+    return {sil:s,teams,rows,
+      teamRows:teams.map(t=>({team:t,rows:vis.filter(r=>r.dept===t)})).filter(x=>x.rows.length||true)};
+  });
+  const total=vis.length, cost=sum(vis,"cost");
+  const maxCost=Math.max(1,...bySil.map(b=>sum(b.rows,"cost")));
+  return `
+  <div class="pagehead">
+    <div><div class="eyebrow"><span class="dot"></span>전체 관리자</div>
+      <h1><span class="num">${YEAR}</span>년 전사 교육계획 현황</h1>
+      <p>실별 · 팀별 등록 현황과 예상 교육비를 한눈에 확인하고 엑셀로 내려받을 수 있습니다.</p></div>
+    <div class="acts"><button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
+      <button class="btn" id="xlsxBtn">${IC.down} 엑셀 다운로드</button></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="lab">전사 교육계획</div><div class="val">${total}<small>건</small></div>
+      <div class="sub">승인 확정 ${vis.filter(r=>r.status==="approved").length}건 · 대기 ${vis.filter(r=>r.status==="pending").length}건</div></div>
+    <div class="kpi"><div class="lab">교육 참여 인원</div><div class="val">${new Set(vis.map(r=>r.emp)).size}<small>명</small></div>
+      <div class="sub">등록 부서 ${new Set(vis.map(r=>r.dept)).size}곳</div></div>
+    <div class="kpi"><div class="lab">총 교육시간</div><div class="val">${won(sum(vis,"hours"))}<small>시간</small></div>
+      <div class="sub">교육일수 ${won(sum(vis,"days"))}일</div></div>
+    <div class="kpi accent"><div class="lab">예상 교육비</div><div class="val">${won(cost)}<small>원</small></div>
+      <div class="sub">1건 평균 ${won(total?Math.round(cost/total):0)}원</div></div>
+  </div>
+  <div class="card"><div class="card-h"><h2>실별 현황</h2><div class="right">
+      <span class="chip c-mute">막대 = 예상 교육비 비중</span></div></div>
+    <div class="tw"><table><thead><tr><th>실</th><th class="ctr">팀</th><th class="ctr">계획</th>
+      <th class="ctr">인원</th><th class="rt">교육시간</th><th class="rt">예상 교육비</th><th style="width:170px">비중</th></tr></thead>
+      <tbody>${bySil.map(b=>{const c=sum(b.rows,"cost");return `<tr>
+        <td class="nm">${esc(b.sil)}</td><td class="ctr num">${b.teams.length}</td>
+        <td class="ctr num">${b.rows.length}</td><td class="ctr num">${new Set(b.rows.map(r=>r.emp)).size}</td>
+        <td class="rt num">${won(sum(b.rows,"hours"))}</td><td class="rt num">${won(c)}</td>
+        <td><div style="height:8px;background:var(--panel-3);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${(c/maxCost*100).toFixed(1)}%;background:var(--blue);border-radius:4px"></div></div></td>
+        </tr>`;}).join("")}</tbody>
+      <tfoot><tr><td>합계</td><td class="ctr num">${TEAMS.length}</td><td class="ctr num">${total}</td>
+        <td class="ctr num">${new Set(vis.map(r=>r.emp)).size}</td>
+        <td class="rt num">${won(sum(vis,"hours"))}</td><td class="rt num">${won(cost)}</td><td></td></tr></tfoot>
+    </table></div></div>
+  <div class="card"><div class="card-h"><h2>팀별 현황</h2>
+      <div class="right"><span class="chip c-mute">계획이 없는 팀도 함께 표시</span></div></div>
+    <div class="tw"><table><thead><tr><th>실</th><th>팀</th><th class="ctr">계획</th><th class="ctr">인원</th>
+      <th class="ctr">승인 확정</th><th class="ctr">대기</th><th class="ctr">반려</th>
+      <th class="rt">교육시간</th><th class="rt">예상 교육비</th></tr></thead><tbody>
+      ${bySil.map(b=>b.teamRows.map(({team,rows})=>`<tr>
+        <td style="color:var(--ink-3)">${esc(b.sil)}</td><td class="nm">${esc(team)}</td>
+        <td class="ctr num">${rows.length||"-"}</td><td class="ctr num">${new Set(rows.map(r=>r.emp)).size||"-"}</td>
+        <td class="ctr num">${rows.filter(r=>r.status==="approved").length||"-"}</td>
+        <td class="ctr num">${rows.filter(r=>r.status==="pending").length||"-"}</td>
+        <td class="ctr num">${rows.filter(r=>r.status==="rejected").length||"-"}</td>
+        <td class="rt num">${won(sum(rows,"hours"))}</td><td class="rt num">${won(sum(rows,"cost"))}</td></tr>`).join("")).join("")}
+      </tbody></table></div></div>
+  <div class="card"><div class="card-h"><h2>전체 계획 목록</h2><span class="count">${vis.length}</span>
+    <div class="right"><div class="searchwrap">${IC.search}<input id="q" value="${esc(Q)}" placeholder="이름 또는 교육과정 검색" aria-label="검색"></div></div></div>
+    ${planTable(filtered(vis),vis)}</div>`;
+}
+
+/* ---------- 모달 ---------- */
+function openModal(html,cls=""){
+  $("#modalRoot").innerHTML=`<div class="scrim" id="scrim"><div class="modal ${cls}" role="dialog" aria-modal="true">${html}</div></div>`;
+  const sc=$("#scrim");
+  sc.addEventListener("mousedown",e=>{ if(e.target===sc) closeModal(); });
+  document.addEventListener("keydown",escClose);
+  const f=sc.querySelector("input,select,textarea,button");
+  if(f) setTimeout(()=>f.focus(),40);
+}
+function closeModal(){ $("#modalRoot").innerHTML=""; document.removeEventListener("keydown",escClose); }
+function escClose(e){ if(e.key==="Escape") closeModal(); }
+
+/* 교육계획 추가 · 수정 */
+function planForm(existing){
+  const sc=scopeOf(ME);
+  const editable = sc.kind==="member" ? [ME.dept] : sc.teams;
+  const r = existing || {jobType:"관리직",dept:ME.dept,emp:ME.emp,name:ME.name,grade:ME.grade,
+                         category:"직무전문",org:"",course:"",start:"",end:"",place:"",hours:"",cost:""};
+  const teamMates = PEOPLE.filter(p=>editable.includes(p.dept)).sort((a,b)=>a.dept.localeCompare(b.dept)||a.name.localeCompare(b.name));
+  openModal(`
+  <div class="modal-h"><div><h2>${existing?"교육 계획 수정":"교육 계획 추가"}</h2>
+    <p>${YEAR}년에 참여할 사외직무교육을 등록합니다. 등록 후 팀장 승인을 받아야 참여가 확정됩니다.</p></div>
+    <button data-close aria-label="닫기">&times;</button></div>
+  <form class="modal-b" id="planForm">
+    <div class="frow c1"><div>
+      <span class="flabel">구분</span>
+      <div class="seg" id="jobSeg">
+        <button type="button" data-job="관리직" class="${r.jobType==="관리직"?"on":""}">관리직</button>
+        <button type="button" data-job="생산직" class="${r.jobType==="생산직"?"on":""}">생산직 (대리 등록)</button>
+      </div>
+      <p class="hint">생산직 인원의 교육계획은 담당 관리직이 대신 등록합니다.</p>
+    </div></div>
+    <div id="mgrPick" ${r.jobType==="생산직"?"hidden":""}>
+      <div class="frow c1"><div><label for="pfPerson">대상자</label>
+        <select id="pfPerson">${teamMates.map(p=>
+          `<option value="${p.emp}" ${p.emp===r.emp?"selected":""}>${esc(p.name)} · ${esc(p.position)} · ${esc(p.dept)}</option>`).join("")}</select>
+        <p class="hint">소속 조직의 관리직 명단에서 선택합니다.</p></div></div>
+    </div>
+    <div id="prdPick" ${r.jobType==="생산직"?"":"hidden"}>
+      <div class="frow c3">
+        <div><label for="pfEmp">사번</label><input id="pfEmp" class="num" inputmode="numeric" value="${esc(r.jobType==="생산직"?r.emp:"")}" placeholder="82210000"></div>
+        <div><label for="pfName">성명</label><input id="pfName" value="${esc(r.jobType==="생산직"?r.name:"")}" placeholder="홍길동"></div>
+        <div><label for="pfGrade">직급</label><input id="pfGrade" value="${esc(r.jobType==="생산직"?(r.grade||""):"")}" placeholder="기술사원 / 조장 등"></div>
+      </div>
+      <div class="frow c1"><div><label for="pfDept">부서</label>
+        <select id="pfDept">${editable.map(t=>`<option ${t===r.dept?"selected":""}>${esc(t)}</option>`).join("")}</select></div></div>
+    </div>
+    <div class="frow">
+      <div><label for="pfCat">교육구분</label><select id="pfCat">${CATEGORIES.map(c=>
+        `<option ${c===r.category?"selected":""}>${esc(c)}</option>`).join("")}</select></div>
+      <div><label for="pfOrg">교육기관</label><input id="pfOrg" value="${esc(r.org)}" placeholder="한국생산성본부" required></div>
+    </div>
+    <div class="frow c1"><div><label for="pfCourse">교육과정</label>
+      <input id="pfCourse" value="${esc(r.course)}" placeholder="생성형 AI 업무자동화" required></div></div>
+    <div class="frow c3">
+      <div><label for="pfStart">시작일</label><input type="date" id="pfStart" value="${esc(r.start)}" min="${YEAR}-01-01" max="${YEAR}-12-31" required></div>
+      <div><label for="pfEnd">종료일</label><input type="date" id="pfEnd" value="${esc(r.end)}" min="${YEAR}-01-01" max="${YEAR}-12-31" required></div>
+      <div><label for="pfPlace">교육장소</label><input id="pfPlace" value="${esc(r.place)}" placeholder="서울 / 온라인" required></div>
+    </div>
+    <div class="frow">
+      <div><label for="pfHours">교육시간 (시간)</label><input id="pfHours" class="num" inputmode="numeric" value="${esc(r.hours)}" placeholder="16" required></div>
+      <div><label for="pfCost">교육비 (원)</label><input id="pfCost" class="num" inputmode="numeric" value="${esc(r.cost)}" placeholder="480000" required></div>
+    </div>
+    <div class="calc"><span>교육일수는 시작일과 종료일로 자동 계산됩니다</span><span>교육일수 <b id="pfDays">${r.start?daysBetween(r.start,r.end):0}</b>일</span></div>
+    <div id="pfErr" style="margin-top:13px"></div>
+  </form>
+  <div class="modal-f">
+    <button class="btn ghost" data-close type="button">취소</button>
+    <button class="btn" id="pfSave" type="button">${existing?"수정 저장":"등록하기"}</button>
+  </div>`,"");
+  bindPlanForm(existing);
+}
+
+/* ---------- 예시 보기 ---------- */
+const SAMPLE=[
+  ["관리직","82210465","미래성장팀","M5","박동중","직무전문","한국생산성본부","생성형 AI 업무자동화","2027-03-11","2027-03-12",2,"서울",16,480000],
+  ["관리직","82211489","미래성장팀","M2","이재용","리더십","한국능률협회","프로젝트 리더십","2027-05-20","2027-05-21",2,"부산",16,550000],
+  ["생산직","82210588","PT생산1팀","조장","조효근","직무자격","동우열처리","분석기 사용법 및 가스 보정 실습","2027-03-16","2027-03-16",1,"본공장",4,0],
+];
+function exampleModal(){
+  openModal(`
+  <div class="modal-h"><div><h2>작성 예시</h2>
+    <p>아래와 같이 한 줄에 한 건씩 등록합니다. 순번과 교육일수는 자동으로 매겨집니다.</p></div>
+    <button data-close aria-label="닫기">&times;</button></div>
+  <div class="modal-b">
+    <div class="exnote"><b>예시 데이터입니다.</b> 실제 등록 내용이 아니며, 입력 형식을 보여주기 위한 표본입니다.</div>
+    <div class="tw"><table><thead><tr><th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th>
+      <th>직급</th><th>성명</th><th>교육구분</th><th>교육기관</th><th>교육과정</th>
+      <th class="ctr">시작일</th><th class="ctr">종료일</th><th class="ctr">일수</th><th>교육장소</th>
+      <th class="rt">교육시간</th><th class="rt">교육비(원)</th></tr></thead><tbody>
+      ${SAMPLE.map((s,i)=>`<tr><td class="ctr num">${i+1}</td>
+        <td class="ctr"><span class="chip ${s[0]==="생산직"?"c-mute":"c-blue"}">${s[0]}</span></td>
+        <td class="num">${s[1]}</td><td>${s[2]}</td><td class="num">${s[3]}</td><td class="nm">${s[4]}</td>
+        <td><span class="chip ${s[5]==="리더십"?"c-ok":"c-blue"}">${s[5]}</span></td>
+        <td>${s[6]}</td><td>${s[7]}</td><td class="ctr num">${s[8]}</td><td class="ctr num">${s[9]}</td>
+        <td class="ctr num">${s[10]}일</td><td>${s[11]}</td><td class="rt num">${won(s[12])}시간</td>
+        <td class="rt num">${won(s[13])}</td></tr>`).join("")}
+    </tbody></table></div>
+    <div style="margin-top:20px">
+      ${[["교육구분","직무전문 · 리더십 · 직무자격 · 어학 · 기타 중에서 고릅니다."],
+         ["교육기관 · 교육과정","기관명과 과정명을 안내문에 적힌 그대로 입력합니다."],
+         ["교육일정","시작일과 종료일을 고르면 교육일수가 자동으로 계산됩니다. 하루짜리 교육은 두 날짜를 같게 두면 1일이 됩니다."],
+         ["교육시간","수료증에 기재되는 이수 시간입니다. 일수가 아니라 시간 단위로 적습니다."],
+         ["교육비","1인 기준 금액을 원 단위 숫자로만 적습니다. 사내교육처럼 비용이 없으면 0을 입력합니다."],
+         ["생산직 대리 등록","생산직 인원은 담당 관리직이 구분을 생산직으로 바꾼 뒤 사번·성명·직급을 직접 입력합니다."]
+        ].map(([t,d])=>`<div class="gitem"><h4>${t}</h4><p>${d}</p></div>`).join("")}
+    </div>
+  </div>
+  <div class="modal-f"><button class="btn" data-close type="button">확인</button></div>`,"wide");
+}
+
+/* ---------- 반려 ---------- */
+function rejectModal(row){
+  openModal(`
+  <div class="modal-h"><div><h2>교육 계획 반려</h2>
+    <p>${esc(row.name)} · ${esc(row.course)}</p></div><button data-close aria-label="닫기">&times;</button></div>
+  <div class="modal-b">
+    <div class="field"><label for="rjReason">반려 사유</label>
+      <textarea id="rjReason" rows="4" placeholder="예) 동일 과정이 사내교육으로 편성되어 있습니다. 2분기 사내과정으로 신청해 주세요."></textarea>
+      <p class="hint">등록한 사람이 목록에서 사유를 확인할 수 있습니다. 어떻게 고치면 되는지 함께 적어 주세요.</p></div>
+    <div id="rjErr"></div>
+  </div>
+  <div class="modal-f"><button class="btn ghost" data-close type="button">취소</button>
+    <button class="btn no" id="rjSave" type="button">반려 처리</button></div>`,"narrow");
+  $("#rjSave").onclick=async()=>{
+    const v=$("#rjReason").value.trim();
+    if(!v){ $("#rjErr").innerHTML=`<div class="loginerr">반려 사유를 입력해 주세요.</div>`; return; }
+    $("#rjSave").disabled=true;
+    const ok=await patchRow(row.id,{status:"rejected",rejectReason:v,
+      decidedBy:ME.name,decidedByEmp:ME.emp,decidedAt:new Date().toISOString()});
+    if(ok){ closeModal(); toast("반려 처리했습니다."); } else $("#rjSave").disabled=false;
+  };
+}
+function reasonModal(row){
+  openModal(`
+  <div class="modal-h"><div><h2>반려 사유</h2><p>${esc(row.course)}</p></div>
+    <button data-close aria-label="닫기">&times;</button></div>
+  <div class="modal-b"><div class="rejbox">${esc(row.rejectReason||"사유가 입력되지 않았습니다.")}
+    <div class="who">${esc(row.decidedBy||"")} · ${esc((row.decidedAt||"").slice(0,10))}</div></div>
+    <p class="hint" style="margin-top:12px">사유에 맞게 고친 뒤 <b>수정</b>하면 다시 승인 대기 상태가 됩니다.</p></div>
+  <div class="modal-f">${canEditRow(ME,row)?`<button class="btn" id="fixBtn" type="button">수정하기</button>`:""}
+    <button class="btn ghost" data-close type="button">닫기</button></div>`,"narrow");
+  const f=$("#fixBtn"); if(f) f.onclick=()=>{ closeModal(); planForm(row); };
+}
+function confirmModal(title,body,label,onYes,danger){
+  openModal(`<div class="modal-h"><div><h2>${esc(title)}</h2></div><button data-close aria-label="닫기">&times;</button></div>
+  <div class="modal-b"><p style="margin:0;color:var(--ink-2);line-height:1.7">${body}</p></div>
+  <div class="modal-f"><button class="btn ghost" data-close type="button">취소</button>
+    <button class="btn ${danger?"no":""}" id="cfYes" type="button">${esc(label)}</button></div>`,"narrow");
+  $("#cfYes").onclick=async()=>{ $("#cfYes").disabled=true; await onYes(); closeModal(); };
+}
+
+/* ---------- 엑셀 ---------- */
+const CRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;
+  for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+const crc32=b=>{let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;};
+const ENC=new TextEncoder();
+function zipStore(files){
+  const parts=[],cd=[];let off=0;
+  files.forEach(f=>{const name=ENC.encode(f.name),data=f.data,c=crc32(data);
+    const lh=new Uint8Array(30+name.length),dv=new DataView(lh.buffer);
+    dv.setUint32(0,0x04034b50,true);dv.setUint16(4,20,true);dv.setUint16(6,0x0800,true);
+    dv.setUint16(10,0,true);dv.setUint16(12,0x21,true);dv.setUint32(14,c,true);
+    dv.setUint32(18,data.length,true);dv.setUint32(22,data.length,true);
+    dv.setUint16(26,name.length,true);lh.set(name,30);parts.push(lh,data);
+    const ch=new Uint8Array(46+name.length),cv=new DataView(ch.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);
+    cv.setUint16(12,0,true);cv.setUint16(14,0x21,true);cv.setUint32(16,c,true);
+    cv.setUint32(20,data.length,true);cv.setUint32(24,data.length,true);cv.setUint16(28,name.length,true);
+    cv.setUint32(42,off,true);ch.set(name,46);cd.push(ch);off+=lh.length+data.length;});
+  let cdLen=0;cd.forEach(c=>cdLen+=c.length);
+  const end=new Uint8Array(22),ev=new DataView(end.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(8,cd.length,true);ev.setUint16(10,cd.length,true);
+  ev.setUint32(12,cdLen,true);ev.setUint32(16,off,true);
+  return new Blob([...parts,...cd,end],{type:"application/zip"});
+}
+function sheetXml(rows){
+  let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>';
+  rows.forEach((r,ri)=>{x+=`<row r="${ri+1}">`;
+    r.forEach((v,ci)=>{let col="",n=ci;do{col=String.fromCharCode(65+n%26)+col;n=Math.floor(n/26)-1;}while(n>=0);
+      const ref=col+(ri+1), s=ri===0?' s="1"':"";
+      if(typeof v==="number"&&isFinite(v)) x+=`<c r="${ref}"${s}><v>${v}</v></c>`;
+      else x+=`<c r="${ref}" t="inlineStr"${s}><is><t xml:space="preserve">${esc(v??"")}</t></is></c>`;});
+    x+="</row>";});
+  return x+"</sheetData></worksheet>";
+}
+function xlsxBlob(sheets){
+  const f=[],O="http://schemas.openxmlformats.org";
+  f.push({name:"[Content_Types].xml",data:ENC.encode(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="${O}/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")}</Types>`)});
+  f.push({name:"_rels/.rels",data:ENC.encode(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="${O}/package/2006/relationships"><Relationship Id="rId1" Type="${O}/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`)});
+  f.push({name:"xl/workbook.xml",data:ENC.encode(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="${O}/spreadsheetml/2006/main" xmlns:r="${O}/officeDocument/2006/relationships"><sheets>${sheets.map((s,i)=>`<sheet name="${esc(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join("")}</sheets></workbook>`)});
+  f.push({name:"xl/_rels/workbook.xml.rels",data:ENC.encode(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="${O}/package/2006/relationships">${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="${O}/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join("")}<Relationship Id="rId${sheets.length+1}" Type="${O}/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`)});
+  f.push({name:"xl/styles.xml",data:ENC.encode(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="${O}/spreadsheetml/2006/main"><fonts count="2"><font><sz val="11"/><name val="맑은 고딕"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="맑은 고딕"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF0B3C77"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="2"><xf xfId="0"/><xf fontId="1" fillId="2" applyFont="1" applyFill="1" xfId="0"/></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`)});
+  sheets.forEach((s,i)=>f.push({name:`xl/worksheets/sheet${i+1}.xml`,data:ENC.encode(sheetXml(s.rows))}));
+  return zipStore(f);
+}
+async function exportXlsx(){
+  const vis=visibleRows();
+  if(!vis.length){ toast("내려받을 교육계획이 없습니다."); return; }
+  const head=["순번","구분","사번","부서","직급","성명","교육구분","교육기관","교육과정",
+              "시작일","종료일","일수","교육장소","교육시간","교육비(원)","승인상태","반려사유","등록자"];
+  const plans=[head,...filtered(vis).map((r,i)=>[i+1,r.jobType,r.emp,r.dept,r.grade||"",r.name,r.category,r.org,r.course,
+              r.start,r.end,Number(r.days)||0,r.place,Number(r.hours)||0,Number(r.cost)||0,
+              (STATUS[r.status]||STATUS.pending).label,r.rejectReason||"",r.createdByName||""])];
+  const silRows=[["실","팀 수","계획","인원","교육시간","예상 교육비(원)"]];
+  Object.keys(ORG).forEach(s=>{const teams=[s,...(ORG[s]||[])].filter(t=>TEAMS.includes(t));
+    const rs=vis.filter(r=>teams.includes(r.dept));
+    silRows.push([s,teams.length,rs.length,new Set(rs.map(r=>r.emp)).size,sum(rs,"hours"),sum(rs,"cost")]);});
+  const teamRows=[["실","팀","계획","인원","승인 확정","대기","반려","교육시간","예상 교육비(원)"]];
+  Object.entries(ORG).forEach(([s,ts])=>[s,...ts].filter(t=>TEAMS.includes(t)).forEach(t=>{
+    const rs=vis.filter(r=>r.dept===t);
+    teamRows.push([s,t,rs.length,new Set(rs.map(r=>r.emp)).size,rs.filter(r=>r.status==="approved").length,
+      rs.filter(r=>r.status==="pending").length,rs.filter(r=>r.status==="rejected").length,sum(rs,"hours"),sum(rs,"cost")]);}));
+  const blob=xlsxBlob([{name:"교육계획",rows:plans},{name:"실별 집계",rows:silRows},{name:"팀별 집계",rows:teamRows}]);
+  const filename=`${YEAR}년_사외직무교육계획_${new Date().toISOString().slice(0,10).replace(/-/g,"")}.xlsx`;
+  if(!DL){ toast("이 화면에서는 파일 저장을 사용할 수 없습니다."); return; }
+  try{ await DL.save({filename,data:blob}); toast("엑셀 파일을 저장했습니다."); }
+  catch(e){ if(e.code!=="declined") toast("파일을 저장하지 못했습니다. 다시 시도해 주세요.",4000); }
+}
+
+/* ---------- 이벤트 ---------- */
+function bindLogin(){
+  $("#loginForm").addEventListener("submit",e=>{
+    e.preventDefault();
+    const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
+    const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${m}</div>`; };
+    if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
+    const p=BY_EMP.get(emp);
+    if(!p) return err("사번 "+emp+" 을(를) 명단에서 찾을 수 없습니다. 사번을 다시 확인해 주세요.");
+    if(p.name!==name) return err("사번과 성명이 일치하지 않습니다. 다시 확인해 주세요.");
+    ME=p; saveMe(p); VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
+    toast(p.name+"님, 환영합니다. "+p.dept+"으로 등록되었습니다.");
+  });
+}
+function bindAll(){
+  $$(".mainnav button").forEach(b=>b.onclick=()=>{VIEW=b.dataset.view;SUB="all";Q="";render();});
+  $$("[data-sub]").forEach(b=>b.onclick=()=>{SUB=b.dataset.sub;render();});
+  const lo=$("#logoutBtn"); if(lo) lo.onclick=()=>{ME=null;saveMe(null);render();};
+  const th=$("#themeBtn"); if(th) th.onclick=toggleTheme;
+  const gt=$("#guideToggle"); if(gt) gt.onclick=()=>{
+    const m=localStorage.getItem("teczen_guide_min")==="1";
+    try{ localStorage.setItem("teczen_guide_min",m?"0":"1"); }catch(e){}
+    render();
+  };
+  [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
+  const ex=$("#exBtn"); if(ex) ex.onclick=exampleModal;
+  const xb=$("#xlsxBtn"); if(xb) xb.onclick=exportXlsx;
+  const ft=$("#fTeam"); if(ft) ft.onchange=()=>{FTEAM=ft.value;render();};
+  const fc=$("#fCat");  if(fc) fc.onchange=()=>{FCAT=fc.value;render();};
+  const q=$("#q");
+  if(q){ q.oninput=()=>{clearTimeout(window._q);window._q=setTimeout(()=>{
+    Q=q.value.trim(); const at=document.activeElement===q; render();
+    if(at){const n=$("#q"); if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);} }},220);}; }
+  const byId=id=>ROWS.find(r=>r.id===id);
+  $$("[data-edit]").forEach(b=>b.onclick=()=>planForm(byId(b.dataset.edit)));
+  $$("[data-rej]").forEach(b=>b.onclick=()=>reasonModal(byId(b.dataset.rej)));
+  $$("[data-no]").forEach(b=>b.onclick=()=>rejectModal(byId(b.dataset.no)));
+  $$("[data-ok]").forEach(b=>b.onclick=()=>{
+    const r=byId(b.dataset.ok);
+    confirmModal("교육 계획 승인",
+      `<b>${esc(r.name)}</b>님의 <b>${esc(r.course)}</b> 계획을 승인합니다.<br>승인하면 등록자에게 승인 확정으로 표시됩니다.`,
+      "승인 확정", async()=>{
+        const ok=await patchRow(r.id,{status:"approved",rejectReason:"",
+          decidedBy:ME.name,decidedByEmp:ME.emp,decidedAt:new Date().toISOString()});
+        if(ok) toast("승인 확정했습니다.");
+      });
+  });
+  $$("[data-del]").forEach(b=>b.onclick=()=>{
+    const r=byId(b.dataset.del);
+    confirmModal("교육 계획 삭제",
+      `<b>${esc(r.course)}</b> 계획을 삭제합니다.<br>삭제하면 되돌릴 수 없습니다.`,
+      "삭제", async()=>{ if(await removeRow(r.id)) toast("삭제했습니다."); }, true);
+  });
+}
+function bindPlanForm(existing){
+  $$("[data-close]").forEach(b=>b.onclick=closeModal);
+  const seg=$("#jobSeg"); let job=existing?existing.jobType:"관리직";
+  $$("#jobSeg button").forEach(b=>b.onclick=()=>{
+    job=b.dataset.job;
+    $$("#jobSeg button").forEach(x=>x.classList.toggle("on",x.dataset.job===job));
+    $("#mgrPick").hidden = job!=="관리직";
+    $("#prdPick").hidden = job==="관리직";
+  });
+  const recalc=()=>{ $("#pfDays").textContent = daysBetween($("#pfStart").value,$("#pfEnd").value); };
+  $("#pfStart").onchange=()=>{ const s=$("#pfStart").value,e=$("#pfEnd");
+    if(s&&(!e.value||e.value<s)) e.value=s; recalc(); };
+  $("#pfEnd").onchange=recalc;
+  $("#pfSave").onclick=async()=>{
+    const err=m=>{ $("#pfErr").innerHTML=`<div class="loginerr">${m}</div>`; };
+    const g=id=>$(id).value.trim();
+    let person;
+    if(job==="관리직"){
+      person=BY_EMP.get($("#pfPerson").value);
+      if(!person) return err("대상자를 선택해 주세요.");
+      person={emp:person.emp,name:person.name,dept:person.dept,grade:person.grade};
+    }else{
+      const emp=g("#pfEmp").replace(/\D/g,""), name=g("#pfName");
+      if(!emp||!name) return err("생산직 대상자의 사번과 성명을 입력해 주세요.");
+      person={emp,name,dept:$("#pfDept").value,grade:g("#pfGrade")||"생산직"};
+    }
+    const start=g("#pfStart"), end=g("#pfEnd");
+    const org=g("#pfOrg"), course=g("#pfCourse"), place=g("#pfPlace");
+    if(!org||!course||!place) return err("교육기관 · 교육과정 · 교육장소를 모두 입력해 주세요.");
+    if(!start||!end) return err("교육 시작일과 종료일을 모두 선택해 주세요.");
+    if(end<start) return err("종료일이 시작일보다 빠릅니다. 날짜를 다시 확인해 주세요.");
+    if(start.slice(0,4)!=String(YEAR)||end.slice(0,4)!=String(YEAR))
+      return err(`${YEAR}년 교육계획만 등록할 수 있습니다.`);
+    const hours=Number(g("#pfHours").replace(/[^\d.]/g,""));
+    const cost =Number(g("#pfCost").replace(/[^\d]/g,""));
+    if(!(hours>0)) return err("교육시간을 시간 단위 숫자로 입력해 주세요.");
+    if(!isFinite(cost)||cost<0) return err("교육비를 원 단위 숫자로 입력해 주세요. 비용이 없으면 0을 적습니다.");
+    const now=new Date().toISOString();
+    const row={ id: existing?existing.id:uid(), year:YEAR, jobType:job,
+      emp:person.emp, name:person.name, dept:person.dept, grade:person.grade,
+      category:$("#pfCat").value, org, course, start, end, days:daysBetween(start,end),
+      place, hours, cost, status:"pending", rejectReason:"",
+      decidedBy:"", decidedByEmp:"", decidedAt:"",
+      createdBy: existing?existing.createdBy:ME.emp,
+      createdByName: existing?existing.createdByName:ME.name,
+      createdAt: existing?existing.createdAt:now, updatedAt:now };
+    $("#pfSave").disabled=true;
+    const ok=await saveRow(row);
+    if(ok){ closeModal(); toast(existing?"수정했습니다. 다시 승인 대기 상태가 됩니다.":"교육 계획을 등록했습니다. 팀장 승인을 기다려 주세요.",3400); }
+    else $("#pfSave").disabled=false;
+  };
+  recalc();
+}
+
+/* ---------- 테마 ---------- */
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute("data-theme");
+  const next = cur==="dark" ? "light" : cur==="light" ? "" : "dark";
+  next ? document.documentElement.setAttribute("data-theme",next)
+       : document.documentElement.removeAttribute("data-theme");
+  try{ localStorage.setItem("teczen_theme",next); }catch(e){}
+}
+try{ const t=localStorage.getItem("teczen_theme"); if(t) document.documentElement.setAttribute("data-theme",t); }catch(e){}
+
+/* ---------- 시작 ---------- */
+render();
+initDb();
+</script>
