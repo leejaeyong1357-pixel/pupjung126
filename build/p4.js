@@ -29,6 +29,7 @@ function applyBootstrap(d){
 async function boot(){
   try{ applyBootstrap(await apiCall("/api/bootstrap")); }
   catch(e){ toast(e.message,5000); }
+  if(ME) await loadGuideMeta();
   BOOTED=true; render();
 }
 async function refresh(){

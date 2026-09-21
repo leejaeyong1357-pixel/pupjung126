@@ -20,11 +20,12 @@ function topbar(sc,pend){
   if(sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
   if(isAdmin()) tabs.push(["admin","전체 현황",0]);
   return `<header class="topbar"><div class="topbar-in">
-    <div class="brand"><img src="${LOGO}" alt="TECZEN"><span class="sep"></span><span class="app">교육계획</span></div>
+    <button class="brand" id="homeBtn" title="메인 화면으로">
+      <img src="${LOGO}" alt="TECZEN"><span class="sep"></span>
+      <span class="app"><span class="num">27</span>년 사외직무교육 계획</span></button>
     <nav class="mainnav">${tabs.map(([k,t,n])=>
       `<button data-view="${k}" class="${VIEW===k?"on":""}">${esc(t)}${n?`<span class="n">${n}</span>`:""}</button>`).join("")}</nav>
     <div class="topright">
-      <select class="yearsel" id="yearSel" aria-label="연도"><option>2027년</option></select>
       <button class="iconbtn" id="themeBtn" title="화면 밝기 전환" aria-label="화면 밝기 전환">${IC.theme}</button>
       <div class="who"><div class="avatar">${esc(ME.name.slice(0,1))}</div>
         <div><div class="nm">${esc(ME.name)} ${esc(ME.position)}</div><div class="dp">${esc(label)}</div></div>
@@ -61,16 +62,15 @@ function planView(sc,vis,rows){
       <p>내년에 필요한 교육을 미리 등록하고, 소속 조직의 일정과 비용을 함께 확인하세요.</p>
     </div>
     <div class="acts">
-      <button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
+      <button class="btn ghost" id="guideBtn">${IC.book} 사외교육 신청 가이드라인</button>
       <button class="btn" id="addBtn" ${CAN_WRITE?"":"disabled title=\"취합이 마감되었습니다\""}>${IC.plus} 교육 계획 추가</button>
     </div>
   </div>
   <div class="note">${IC.info}<div>${
-      sc.kind==="admin" ? "전체 조직의 교육계획을 조회할 수 있어요."
-    : sc.kind==="sil"   ? `<b>${esc(ME.dept)}</b> 산하 전체 팀의 교육계획을 조회할 수 있어요.`
-    : sc.kind==="lead"  ? `<b>${esc(ME.dept)}</b>의 교육계획을 조회할 수 있어요.`
-    : `<b>${esc(ME.dept)}</b>으로 자동 등록되며, 소속 팀의 교육계획만 조회할 수 있어요.`}${
-      canAppr?" 팀원이 등록한 계획은 <b>승인 관리</b>에서 승인하거나 반려할 수 있습니다.":""}</div></div>
+      sc.kind==="admin" ? "전체 조직의 교육계획을 조회하고, <b>실별 · 팀별 집계</b>를 엑셀로 내려받을 수 있습니다."
+    : sc.kind==="sil"   ? `<b>${esc(ME.dept)}</b> 산하 전체 팀의 교육계획입니다. 팀원들이 등록한 계획을 <b>승인하거나 반려</b>해 주셔야 합니다.`
+    : sc.kind==="lead"  ? `<b>${esc(ME.dept)}</b> 팀원들이 등록한 교육계획을 <b>승인하거나 반려</b>해 주셔야 합니다. 승인해야 교육 참여가 확정됩니다.`
+    : `<b>${esc(ME.dept)}</b>으로 자동 등록되며, 소속 팀의 교육계획만 조회할 수 있어요.`}</div></div>
   <div class="kpis">
     <div class="kpi"><div class="lab">등록된 교육계획</div><div class="val">${vis.length}<small>건</small></div>
       <div class="sub">내가 등록 ${mine}건</div></div>
@@ -103,17 +103,41 @@ function statusCell(r){
   return `<span class="chip ${s.cls}">${s.label}</span>`;
 }
 
+/* 표 맨 위에 흐린 예시 한 줄. 합계에는 들어가지 않습니다. */
+const EX_ROW = {jobType:"관리직",emp:"82211489",dept:"미래성장팀",grade:"M2",name:"이재용",
+  category:"사외교육",org:"한국생산성본부",course:"AX 엔지니어링 교육",
+  start:"2027-01-24",end:"2027-01-26",days:3,place:"서울",hours:24,cost:780000};
+function exampleRow(){
+  const r=EX_ROW;
+  return `<tr class="exrow" title="작성 예시입니다. 실제 등록된 계획이 아닙니다.">
+    <td class="ctr"><span class="exbadge">예시</span></td>
+    <td class="ctr"><span class="chip c-mute">${esc(r.jobType)}</span></td>
+    <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade)}</td>
+    <td class="nm">${esc(r.name)}</td>
+    <td><span class="chip c-mute">${esc(r.category)}</span></td>
+    <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
+    <td class="ctr num">${esc(r.start)} ~ ${esc(r.end.slice(5))}</td>
+    <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+    <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
+    <td class="ctr"><span class="chip c-mute">승인 대기</span></td><td></td></tr>`;
+}
 function planTable(rows,vis){
   if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
     <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"아직 등록된 교육계획이 없습니다"}</h3>
-    <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 작성 방법은 예시 보기에서 확인할 수 있습니다."}</p>
-    ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
+    <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 아래 흐린 줄이 작성 예시입니다."}</p>
+    ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>
+    <div class="tw"><table><thead><tr>
+      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
+      <th>교육구분</th><th>교육기관</th><th>교육과정</th><th class="ctr">교육일정</th><th class="ctr">일수</th>
+      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
+      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>${exampleRow()}</tbody></table></div>`;
   return `<div class="tw"><table><thead><tr>
       <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
       <th>교육구분</th><th>교육기관</th><th>교육과정</th>
       <th class="ctr">교육일정</th><th class="ctr">일수</th>
       <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
       <th class="ctr">승인상태</th><th></th></tr></thead><tbody>
+    ${exampleRow()}
     ${rows.map((r,i)=>`<tr>
       <td class="ctr num">${i+1}</td>
       <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>

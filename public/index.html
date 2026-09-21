@@ -71,7 +71,9 @@ input[type=date]{font-family:var(--num)}
   .who .nm,.who .dp{max-width:34vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .iconbtn span{display:none}
 }
-.brand{display:flex;align-items:center;gap:13px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:13px;flex-shrink:0;padding:6px 9px;margin-left:-9px;
+  border-radius:8px;cursor:pointer;transition:.14s}
+.brand:hover{background:var(--panel-3)}
 .brand img{height:19px;width:auto;display:block;background:var(--logo-bg);padding:var(--logo-pad);border-radius:5px}
 .brand .sep{width:1px;height:17px;background:var(--line)}
 .brand .app{font-size:13.5px;font-weight:700;color:var(--ink-2);letter-spacing:-.01em;white-space:nowrap}
@@ -83,7 +85,6 @@ input[type=date]{font-family:var(--num)}
 .mainnav button .n{margin-left:6px;font-family:var(--num);font-size:11px;background:var(--no);color:#fff;
   padding:1px 5px;border-radius:9px;font-weight:600;vertical-align:1px}
 .topright{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.yearsel{width:auto;padding:6px 9px;font-size:13px;font-family:var(--num);font-weight:600}
 .who{display:flex;align-items:center;gap:9px;padding-left:12px;border-left:1px solid var(--line)}
 .avatar{width:32px;height:32px;border-radius:50%;background:var(--blue-soft);color:var(--blue);
   display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0}
@@ -170,6 +171,14 @@ thead th.rt,td.rt{text-align:right}
 tbody tr:hover{background:var(--panel-2)}
 tbody tr:last-child td{border-bottom:none}
 td.nm{font-weight:700}
+/* 표 맨 위 흐린 예시 줄 */
+tbody tr.exrow td{color:var(--ink-3);background:repeating-linear-gradient(135deg,
+  var(--panel-2) 0 9px, var(--panel-3) 9px 18px);opacity:.92}
+tbody tr.exrow:hover td{background:var(--panel-3)}
+tbody tr.exrow td.nm{font-weight:600;color:var(--ink-3)}
+tbody tr.exrow .chip{background:transparent;border-style:dashed;color:var(--ink-3);border-color:var(--line)}
+.exbadge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.04em;color:var(--ink-3);
+  border:1px dashed var(--ink-3);border-radius:4px;padding:1px 5px}
 .grp th{background:var(--panel-3);font-weight:700;color:var(--ink);font-size:12px;position:static}
 .emptystate{padding:56px 24px;text-align:center}
 .emptystate .ico{width:46px;height:46px;border-radius:12px;background:var(--panel-3);color:var(--ink-3);
@@ -303,6 +312,12 @@ body.login-mode{background:var(--panel)}
 .calc{background:var(--panel-3);border-radius:8px;padding:10px 13px;font-size:12.5px;color:var(--ink-2);
   display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .calc b{font-family:var(--num);color:var(--ink);font-size:14px}
+.guideimg{width:100%;height:auto;border-radius:10px;border:1px solid var(--line);display:block}
+.guidedrop{border:1.5px dashed var(--line);border-radius:10px;padding:26px 20px;text-align:center;
+  background:var(--panel-2);cursor:pointer;transition:.14s}
+.guidedrop:hover{border-color:var(--blue);background:var(--blue-soft)}
+.guidedrop b{display:block;font-size:13.5px;margin-bottom:5px}
+.guidedrop span{font-size:12px;color:var(--ink-3)}
 .rejbox{background:var(--no-soft);border:1px solid var(--no-line);border-radius:8px;padding:13px 15px;font-size:13px;line-height:1.7}
 .rejbox .who{font-size:11.5px;color:var(--ink-3);margin-top:7px;border:none;padding:0}
 
@@ -454,6 +469,7 @@ function applyBootstrap(d){
 async function boot(){
   try{ applyBootstrap(await apiCall("/api/bootstrap")); }
   catch(e){ toast(e.message,5000); }
+  if(ME) await loadGuideMeta();
   BOOTED=true; render();
 }
 async function refresh(){
@@ -545,11 +561,12 @@ function topbar(sc,pend){
   if(sc.kind!=="member") tabs.push(["appr","승인 관리",pend]);
   if(isAdmin()) tabs.push(["admin","전체 현황",0]);
   return `<header class="topbar"><div class="topbar-in">
-    <div class="brand"><img src="${LOGO}" alt="TECZEN"><span class="sep"></span><span class="app">교육계획</span></div>
+    <button class="brand" id="homeBtn" title="메인 화면으로">
+      <img src="${LOGO}" alt="TECZEN"><span class="sep"></span>
+      <span class="app"><span class="num">27</span>년 사외직무교육 계획</span></button>
     <nav class="mainnav">${tabs.map(([k,t,n])=>
       `<button data-view="${k}" class="${VIEW===k?"on":""}">${esc(t)}${n?`<span class="n">${n}</span>`:""}</button>`).join("")}</nav>
     <div class="topright">
-      <select class="yearsel" id="yearSel" aria-label="연도"><option>2027년</option></select>
       <button class="iconbtn" id="themeBtn" title="화면 밝기 전환" aria-label="화면 밝기 전환">${IC.theme}</button>
       <div class="who"><div class="avatar">${esc(ME.name.slice(0,1))}</div>
         <div><div class="nm">${esc(ME.name)} ${esc(ME.position)}</div><div class="dp">${esc(label)}</div></div>
@@ -586,16 +603,15 @@ function planView(sc,vis,rows){
       <p>내년에 필요한 교육을 미리 등록하고, 소속 조직의 일정과 비용을 함께 확인하세요.</p>
     </div>
     <div class="acts">
-      <button class="btn ghost" id="exBtn">${IC.book} 예시 보기</button>
+      <button class="btn ghost" id="guideBtn">${IC.book} 사외교육 신청 가이드라인</button>
       <button class="btn" id="addBtn" ${CAN_WRITE?"":"disabled title=\"취합이 마감되었습니다\""}>${IC.plus} 교육 계획 추가</button>
     </div>
   </div>
   <div class="note">${IC.info}<div>${
-      sc.kind==="admin" ? "전체 조직의 교육계획을 조회할 수 있어요."
-    : sc.kind==="sil"   ? `<b>${esc(ME.dept)}</b> 산하 전체 팀의 교육계획을 조회할 수 있어요.`
-    : sc.kind==="lead"  ? `<b>${esc(ME.dept)}</b>의 교육계획을 조회할 수 있어요.`
-    : `<b>${esc(ME.dept)}</b>으로 자동 등록되며, 소속 팀의 교육계획만 조회할 수 있어요.`}${
-      canAppr?" 팀원이 등록한 계획은 <b>승인 관리</b>에서 승인하거나 반려할 수 있습니다.":""}</div></div>
+      sc.kind==="admin" ? "전체 조직의 교육계획을 조회하고, <b>실별 · 팀별 집계</b>를 엑셀로 내려받을 수 있습니다."
+    : sc.kind==="sil"   ? `<b>${esc(ME.dept)}</b> 산하 전체 팀의 교육계획입니다. 팀원들이 등록한 계획을 <b>승인하거나 반려</b>해 주셔야 합니다.`
+    : sc.kind==="lead"  ? `<b>${esc(ME.dept)}</b> 팀원들이 등록한 교육계획을 <b>승인하거나 반려</b>해 주셔야 합니다. 승인해야 교육 참여가 확정됩니다.`
+    : `<b>${esc(ME.dept)}</b>으로 자동 등록되며, 소속 팀의 교육계획만 조회할 수 있어요.`}</div></div>
   <div class="kpis">
     <div class="kpi"><div class="lab">등록된 교육계획</div><div class="val">${vis.length}<small>건</small></div>
       <div class="sub">내가 등록 ${mine}건</div></div>
@@ -628,17 +644,41 @@ function statusCell(r){
   return `<span class="chip ${s.cls}">${s.label}</span>`;
 }
 
+/* 표 맨 위에 흐린 예시 한 줄. 합계에는 들어가지 않습니다. */
+const EX_ROW = {jobType:"관리직",emp:"82211489",dept:"미래성장팀",grade:"M2",name:"이재용",
+  category:"사외교육",org:"한국생산성본부",course:"AX 엔지니어링 교육",
+  start:"2027-01-24",end:"2027-01-26",days:3,place:"서울",hours:24,cost:780000};
+function exampleRow(){
+  const r=EX_ROW;
+  return `<tr class="exrow" title="작성 예시입니다. 실제 등록된 계획이 아닙니다.">
+    <td class="ctr"><span class="exbadge">예시</span></td>
+    <td class="ctr"><span class="chip c-mute">${esc(r.jobType)}</span></td>
+    <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade)}</td>
+    <td class="nm">${esc(r.name)}</td>
+    <td><span class="chip c-mute">${esc(r.category)}</span></td>
+    <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
+    <td class="ctr num">${esc(r.start)} ~ ${esc(r.end.slice(5))}</td>
+    <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+    <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
+    <td class="ctr"><span class="chip c-mute">승인 대기</span></td><td></td></tr>`;
+}
 function planTable(rows,vis){
   if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
     <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"아직 등록된 교육계획이 없습니다"}</h3>
-    <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 작성 방법은 예시 보기에서 확인할 수 있습니다."}</p>
-    ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>`;
+    <p>${vis.length?"필터나 검색어를 바꿔 보세요.":"내년에 참여할 교육을 미리 등록해 주세요. 아래 흐린 줄이 작성 예시입니다."}</p>
+    ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>
+    <div class="tw"><table><thead><tr>
+      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
+      <th>교육구분</th><th>교육기관</th><th>교육과정</th><th class="ctr">교육일정</th><th class="ctr">일수</th>
+      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
+      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>${exampleRow()}</tbody></table></div>`;
   return `<div class="tw"><table><thead><tr>
       <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
       <th>교육구분</th><th>교육기관</th><th>교육과정</th>
       <th class="ctr">교육일정</th><th class="ctr">일수</th>
       <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
       <th class="ctr">승인상태</th><th></th></tr></thead><tbody>
+    ${exampleRow()}
     ${rows.map((r,i)=>`<tr>
       <td class="ctr num">${i+1}</td>
       <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>
@@ -821,46 +861,64 @@ function planForm(existing){
 }
 
 /* ---------- 예시 보기 ---------- */
-const SAMPLE=[
-  ["관리직","82211489","미래성장팀","매니저","이재용","사외교육","한국생산성본부","AX 엔지니어링 교육","2027-01-24","2027-01-26",3,"서울",24,780000],
-  ["관리직","82210465","미래성장팀","팀장","박동중","사외교육","한국능률협회","프로젝트 리더십","2027-05-20","2027-05-21",2,"부산",16,550000],
-  ["생산직","82210588","PT생산1팀","조장","조효근","사내교육","동우열처리","분석기 사용법 및 가스 보정 실습","2027-03-16","2027-03-16",1,"본공장",4,0],
-];
-function exampleModal(){
+/* ---------- 사외교육 신청 가이드라인 ---------- */
+let GUIDE_URL = "";      // 등록돼 있으면 이미지 주소, 없으면 빈 문자열
+
+async function loadGuideMeta(){
+  try{ const d=await apiCall("/api/guide-image/meta"); GUIDE_URL = d.exists ? "/api/guide-image?v="+d.updatedAt : ""; }
+  catch(e){ GUIDE_URL=""; }
+}
+function guidelineModal(){
+  const admin=isAdmin();
   openModal(`
-  <div class="modal-h"><div><h2>작성 예시</h2>
-    <p>아래와 같이 한 줄에 한 건씩 등록합니다. 순번과 교육일수는 자동으로 매겨집니다.</p></div>
+  <div class="modal-h"><div><h2>사외교육 신청 가이드라인</h2>
+    <p>교육계획을 등록하기 전에 확인해 주세요.</p></div>
     <button data-close aria-label="닫기">&times;</button></div>
-  <div class="modal-b">
-    <div class="exnote"><b>예시 데이터입니다.</b> 실제 등록 내용이 아니며, 입력 형식을 보여주기 위한 표본입니다.</div>
-    <p style="margin:0 0 14px;font-size:13px;color:var(--ink-2);line-height:1.8">
-      첫 줄을 말로 풀면 이렇습니다.<br>
-      <b style="color:var(--ink)">사번 82211489, 미래성장팀 매니저 이재용, 사외교육.
-      기관은 한국생산성본부, 과정은 AX 엔지니어링 교육.
-      2027년 1월 24일부터 26일까지 3일간, 서울에서 24시간, 비용 780,000원.</b></p>
-    <div class="tw"><table><thead><tr><th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th>
-      <th>직급</th><th>성명</th><th>교육구분</th><th>교육기관</th><th>교육과정</th>
-      <th class="ctr">시작일</th><th class="ctr">종료일</th><th class="ctr">일수</th><th>교육장소</th>
-      <th class="rt">교육시간</th><th class="rt">교육비(원)</th></tr></thead><tbody>
-      ${SAMPLE.map((s,i)=>`<tr><td class="ctr num">${i+1}</td>
-        <td class="ctr"><span class="chip ${s[0]==="생산직"?"c-mute":"c-blue"}">${s[0]}</span></td>
-        <td class="num">${s[1]}</td><td>${s[2]}</td><td class="num">${s[3]}</td><td class="nm">${s[4]}</td>
-        <td><span class="chip ${s[5]==="사내교육"?"c-mute":"c-blue"}">${s[5]}</span></td>
-        <td>${s[6]}</td><td>${s[7]}</td><td class="ctr num">${s[8]}</td><td class="ctr num">${s[9]}</td>
-        <td class="ctr num">${s[10]}일</td><td>${s[11]}</td><td class="rt num">${won(s[12])}시간</td>
-        <td class="rt num">${won(s[13])}</td></tr>`).join("")}
-    </tbody></table></div>
-    <div style="margin-top:20px">
-      ${[["교육구분","사외교육 또는 사내교육 중에서 고릅니다."],
-         ["교육기관 · 교육과정","기관명과 과정명을 안내문에 적힌 그대로 입력합니다."],
-         ["교육일정","시작일과 종료일을 고르면 교육일수가 자동으로 계산됩니다. 예를 들어 2027-01-24 ~ 2027-01-26 이면 3일입니다. 하루짜리 교육은 두 날짜를 같게 둡니다."],
-         ["교육시간","수료증에 기재되는 이수 시간입니다. 일수가 아니라 시간 단위로 적습니다."],
-         ["교육비","1인 기준 금액을 원 단위 숫자로만 적습니다. 사내교육처럼 비용이 없으면 0을 입력합니다."],
-         ["생산직 대리 등록","생산직 인원은 담당 관리직이 구분을 생산직으로 바꾼 뒤 사번·성명·직급을 직접 입력합니다."]
-        ].map(([t,d])=>`<div class="gitem"><h4>${t}</h4><p>${d}</p></div>`).join("")}
-    </div>
+  <div class="modal-b" id="guideBody">
+    ${GUIDE_URL
+      ? `<img class="guideimg" src="${esc(GUIDE_URL)}" alt="사외교육 신청 가이드라인">`
+      : admin
+        ? `<div class="guidedrop" id="guideUpload"><b>가이드라인 이미지를 등록해 주세요</b>
+             <span>클릭해서 이미지를 고르면 모든 직원에게 바로 보입니다 · PNG · JPG (10MB 이하)</span></div>`
+        : `<div class="emptystate" style="padding:38px 20px"><div class="ico">${IC.book}</div>
+             <h3>아직 등록된 가이드라인이 없습니다</h3>
+             <p>미래성장팀 이재용 매니저에게 문의해 주세요.</p></div>`}
+    <input type="file" id="guideFile" accept="image/png,image/jpeg,image/webp" hidden>
   </div>
-  <div class="modal-f"><button class="btn" data-close type="button">확인</button></div>`,"wide");
+  <div class="modal-f">
+    ${admin?`<button class="btn ghost sm left" id="guideUpload2" type="button">${GUIDE_URL?"이미지 교체":"이미지 등록"}</button>`:""}
+    ${admin&&GUIDE_URL?`<button class="btn ghost sm" id="guideDel" type="button">삭제</button>`:""}
+    <button class="btn" data-close type="button">확인</button>
+  </div>`,"wide");
+  const up=()=>$("#guideFile").click();
+  const u1=$("#guideUpload"), u2=$("#guideUpload2");
+  if(u1) u1.onclick=up;
+  if(u2) u2.onclick=up;
+  $("#guideFile").onchange=uploadGuide;
+  const del=$("#guideDel"); if(del) del.onclick=deleteGuide;
+}
+async function uploadGuide(e){
+  const f=e.target.files && e.target.files[0];
+  if(!f) return;
+  if(f.size > 10*1024*1024){ toast("10MB 이하 이미지만 등록할 수 있습니다.",4000); e.target.value=""; return; }
+  $("#guideBody").innerHTML = `<div class="emptystate" style="padding:38px"><h3>올리는 중입니다…</h3></div>`;
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      await apiCall("/api/guide-image",{method:"POST",body:{name:f.name,data:reader.result}});
+      await loadGuideMeta(); closeModal(); guidelineModal(); toast("가이드라인 이미지를 등록했습니다.");
+    }catch(err){ toast(err.message,4500); closeModal(); guidelineModal(); }
+  };
+  reader.onerror=()=>{ toast("이미지를 읽지 못했습니다.",4000); closeModal(); guidelineModal(); };
+  reader.readAsDataURL(f);
+}
+function deleteGuide(){
+  confirmModal("가이드라인 삭제","등록된 가이드라인 이미지를 삭제합니다.<br>직원들에게는 더 이상 보이지 않습니다.",
+    "삭제", async()=>{
+      try{ await apiCall("/api/guide-image",{method:"DELETE"}); await loadGuideMeta();
+           toast("삭제했습니다."); }
+      catch(e){ toast(e.message,4000); }
+    }, true);
 }
 
 /* ---------- 반려 ---------- */
@@ -985,6 +1043,7 @@ function bindLogin(){
     btn.disabled=true;
     try{
       applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp}}));
+      await loadGuideMeta();
       VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
       toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
     }catch(ex){ err(ex.message); }
@@ -1004,7 +1063,11 @@ function bindAll(){
     render();
   };
   [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
-  const ex=$("#exBtn"); if(ex) ex.onclick=exampleModal;
+  const hb=$("#homeBtn"); if(hb) hb.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
+  const gb=$("#guideBtn"); if(gb) gb.onclick=guidelineModal;
+  const gu=$("#guideUpload"); if(gu) gu.onclick=()=>$("#guideFile").click();
+  const gf=$("#guideFile"); if(gf) gf.onchange=uploadGuide;
+  const gd=$("#guideDel"); if(gd) gd.onclick=deleteGuide;
   const xb=$("#xlsxBtn"); if(xb) xb.onclick=exportXlsx;
   const ft=$("#fTeam"); if(ft) ft.onchange=()=>{FTEAM=ft.value;render();};
   const fc=$("#fCat");  if(fc) fc.onchange=()=>{FCAT=fc.value;render();};

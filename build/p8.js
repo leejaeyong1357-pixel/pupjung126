@@ -10,6 +10,7 @@ function bindLogin(){
     btn.disabled=true;
     try{
       applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp}}));
+      await loadGuideMeta();
       VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
       toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
     }catch(ex){ err(ex.message); }
@@ -29,7 +30,11 @@ function bindAll(){
     render();
   };
   [["#addBtn"],["#addBtn2"]].forEach(([s])=>{const b=$(s); if(b) b.onclick=()=>planForm(null);});
-  const ex=$("#exBtn"); if(ex) ex.onclick=exampleModal;
+  const hb=$("#homeBtn"); if(hb) hb.onclick=()=>{VIEW="team";SUB="all";Q="";render();};
+  const gb=$("#guideBtn"); if(gb) gb.onclick=guidelineModal;
+  const gu=$("#guideUpload"); if(gu) gu.onclick=()=>$("#guideFile").click();
+  const gf=$("#guideFile"); if(gf) gf.onchange=uploadGuide;
+  const gd=$("#guideDel"); if(gd) gd.onclick=deleteGuide;
   const xb=$("#xlsxBtn"); if(xb) xb.onclick=exportXlsx;
   const ft=$("#fTeam"); if(ft) ft.onchange=()=>{FTEAM=ft.value;render();};
   const fc=$("#fCat");  if(fc) fc.onchange=()=>{FCAT=fc.value;render();};

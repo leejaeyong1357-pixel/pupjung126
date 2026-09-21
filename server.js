@@ -23,6 +23,7 @@ const DATA = path.join(ROOT, "data");
 const PLANS_FILE = path.join(DATA, "plans.json");
 const ROSTER_FILE = path.join(DATA, "roster.json");
 const SECRET_FILE = path.join(DATA, ".secret");
+const GUIDE_META = path.join(DATA, "guide-image.json");
 const PORT = Number(process.env.PORT) || 711;
 const YEAR = 2027;
 
@@ -80,6 +81,12 @@ const send = (res, code, body, headers = {}) => {
 const json = (res, code, obj, headers = {}) =>
   send(res, code, JSON.stringify(obj), { "Content-Type": "application/json; charset=utf-8", ...headers });
 const fail = (res, code, message) => json(res, code, { error: message });
+
+/* 가이드라인 이미지 — 관리자가 올리고 전 직원이 본다. data/ 에 파일로 보관. */
+const GUIDE_TYPES = { "image/png": ".png", "image/jpeg": ".jpg", "image/webp": ".webp" };
+function guideMeta() {
+  try { return JSON.parse(fs.readFileSync(GUIDE_META, "utf8")); } catch { return null; }
+}
 
 function readBody(req, limit = 256 * 1024) {
   return new Promise((resolve, reject) => {
@@ -194,7 +201,46 @@ async function api(req, res, url, me) {
   if (p === "/api/bootstrap" && req.method === "GET")
     return json(res, 200, me ? bootstrap(me) : { me: null, year: YEAR });
 
+  if (p === "/api/guide-image" && req.method === "GET") {
+    const g = guideMeta();
+    if (!g) return fail(res, 404, "등록된 가이드라인이 없습니다.");
+    try {
+      const buf = await fsp.readFile(path.join(DATA, g.file));
+      return send(res, 200, buf, { "Content-Type": g.type, "Cache-Control": "no-cache" });
+    } catch { return fail(res, 404, "등록된 가이드라인이 없습니다."); }
+  }
+
   if (!me) return fail(res, 401, "로그인이 필요합니다.");
+
+  if (p === "/api/guide-image/meta" && req.method === "GET") {
+    const g = guideMeta();
+    return json(res, 200, { exists: !!g, updatedAt: g ? g.updatedAt : "" });
+  }
+  if (p === "/api/guide-image" && req.method === "POST") {
+    if (!ORGLIB.isAdmin(me)) return fail(res, 403, "관리자만 등록할 수 있습니다.");
+    const b = await readBody(req, 14 * 1024 * 1024);          // data URL 은 원본보다 약 1.37배
+    const m = /^data:([\w/+.-]+);base64,(.+)$/.exec(String(b.data || ""));
+    if (!m) return fail(res, 400, "이미지를 읽지 못했습니다. 다시 선택해 주세요.");
+    const ext = GUIDE_TYPES[m[1]];
+    if (!ext) return fail(res, 400, "PNG · JPG · WEBP 이미지만 등록할 수 있습니다.");
+    const buf = Buffer.from(m[2], "base64");
+    if (!buf.length) return fail(res, 400, "빈 이미지입니다.");
+    if (buf.length > 10 * 1024 * 1024) return fail(res, 400, "10MB 이하 이미지만 등록할 수 있습니다.");
+    const g = guideMeta();
+    if (g && g.file !== "guide-image" + ext)
+      await fsp.unlink(path.join(DATA, g.file)).catch(() => {});   // 확장자가 바뀌면 옛 파일 정리
+    await fsp.writeFile(path.join(DATA, "guide-image" + ext), buf);
+    await fsp.writeFile(GUIDE_META, JSON.stringify(
+      { file: "guide-image" + ext, type: m[1], updatedAt: new Date().toISOString(), by: me.name }), "utf8");
+    return json(res, 200, { ok: true });
+  }
+  if (p === "/api/guide-image" && req.method === "DELETE") {
+    if (!ORGLIB.isAdmin(me)) return fail(res, 403, "관리자만 삭제할 수 있습니다.");
+    const g = guideMeta();
+    if (g) await fsp.unlink(path.join(DATA, g.file)).catch(() => {});
+    await fsp.unlink(GUIDE_META).catch(() => {});
+    return json(res, 200, { ok: true });
+  }
 
   if (p === "/api/plans" && req.method === "GET")
     return json(res, 200, { plans: visibleFor(me) });

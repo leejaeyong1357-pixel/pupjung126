@@ -1,45 +1,63 @@
 
 /* ---------- 예시 보기 ---------- */
-const SAMPLE=[
-  ["관리직","82211489","미래성장팀","매니저","이재용","사외교육","한국생산성본부","AX 엔지니어링 교육","2027-01-24","2027-01-26",3,"서울",24,780000],
-  ["관리직","82210465","미래성장팀","팀장","박동중","사외교육","한국능률협회","프로젝트 리더십","2027-05-20","2027-05-21",2,"부산",16,550000],
-  ["생산직","82210588","PT생산1팀","조장","조효근","사내교육","동우열처리","분석기 사용법 및 가스 보정 실습","2027-03-16","2027-03-16",1,"본공장",4,0],
-];
-function exampleModal(){
+/* ---------- 사외교육 신청 가이드라인 ---------- */
+let GUIDE_URL = "";      // 등록돼 있으면 이미지 주소, 없으면 빈 문자열
+
+async function loadGuideMeta(){
+  try{ const d=await apiCall("/api/guide-image/meta"); GUIDE_URL = d.exists ? "/api/guide-image?v="+d.updatedAt : ""; }
+  catch(e){ GUIDE_URL=""; }
+}
+function guidelineModal(){
+  const admin=isAdmin();
   openModal(`
-  <div class="modal-h"><div><h2>작성 예시</h2>
-    <p>아래와 같이 한 줄에 한 건씩 등록합니다. 순번과 교육일수는 자동으로 매겨집니다.</p></div>
+  <div class="modal-h"><div><h2>사외교육 신청 가이드라인</h2>
+    <p>교육계획을 등록하기 전에 확인해 주세요.</p></div>
     <button data-close aria-label="닫기">&times;</button></div>
-  <div class="modal-b">
-    <div class="exnote"><b>예시 데이터입니다.</b> 실제 등록 내용이 아니며, 입력 형식을 보여주기 위한 표본입니다.</div>
-    <p style="margin:0 0 14px;font-size:13px;color:var(--ink-2);line-height:1.8">
-      첫 줄을 말로 풀면 이렇습니다.<br>
-      <b style="color:var(--ink)">사번 82211489, 미래성장팀 매니저 이재용, 사외교육.
-      기관은 한국생산성본부, 과정은 AX 엔지니어링 교육.
-      2027년 1월 24일부터 26일까지 3일간, 서울에서 24시간, 비용 780,000원.</b></p>
-    <div class="tw"><table><thead><tr><th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th>
-      <th>직급</th><th>성명</th><th>교육구분</th><th>교육기관</th><th>교육과정</th>
-      <th class="ctr">시작일</th><th class="ctr">종료일</th><th class="ctr">일수</th><th>교육장소</th>
-      <th class="rt">교육시간</th><th class="rt">교육비(원)</th></tr></thead><tbody>
-      ${SAMPLE.map((s,i)=>`<tr><td class="ctr num">${i+1}</td>
-        <td class="ctr"><span class="chip ${s[0]==="생산직"?"c-mute":"c-blue"}">${s[0]}</span></td>
-        <td class="num">${s[1]}</td><td>${s[2]}</td><td class="num">${s[3]}</td><td class="nm">${s[4]}</td>
-        <td><span class="chip ${s[5]==="사내교육"?"c-mute":"c-blue"}">${s[5]}</span></td>
-        <td>${s[6]}</td><td>${s[7]}</td><td class="ctr num">${s[8]}</td><td class="ctr num">${s[9]}</td>
-        <td class="ctr num">${s[10]}일</td><td>${s[11]}</td><td class="rt num">${won(s[12])}시간</td>
-        <td class="rt num">${won(s[13])}</td></tr>`).join("")}
-    </tbody></table></div>
-    <div style="margin-top:20px">
-      ${[["교육구분","사외교육 또는 사내교육 중에서 고릅니다."],
-         ["교육기관 · 교육과정","기관명과 과정명을 안내문에 적힌 그대로 입력합니다."],
-         ["교육일정","시작일과 종료일을 고르면 교육일수가 자동으로 계산됩니다. 예를 들어 2027-01-24 ~ 2027-01-26 이면 3일입니다. 하루짜리 교육은 두 날짜를 같게 둡니다."],
-         ["교육시간","수료증에 기재되는 이수 시간입니다. 일수가 아니라 시간 단위로 적습니다."],
-         ["교육비","1인 기준 금액을 원 단위 숫자로만 적습니다. 사내교육처럼 비용이 없으면 0을 입력합니다."],
-         ["생산직 대리 등록","생산직 인원은 담당 관리직이 구분을 생산직으로 바꾼 뒤 사번·성명·직급을 직접 입력합니다."]
-        ].map(([t,d])=>`<div class="gitem"><h4>${t}</h4><p>${d}</p></div>`).join("")}
-    </div>
+  <div class="modal-b" id="guideBody">
+    ${GUIDE_URL
+      ? `<img class="guideimg" src="${esc(GUIDE_URL)}" alt="사외교육 신청 가이드라인">`
+      : admin
+        ? `<div class="guidedrop" id="guideUpload"><b>가이드라인 이미지를 등록해 주세요</b>
+             <span>클릭해서 이미지를 고르면 모든 직원에게 바로 보입니다 · PNG · JPG (10MB 이하)</span></div>`
+        : `<div class="emptystate" style="padding:38px 20px"><div class="ico">${IC.book}</div>
+             <h3>아직 등록된 가이드라인이 없습니다</h3>
+             <p>미래성장팀 이재용 매니저에게 문의해 주세요.</p></div>`}
+    <input type="file" id="guideFile" accept="image/png,image/jpeg,image/webp" hidden>
   </div>
-  <div class="modal-f"><button class="btn" data-close type="button">확인</button></div>`,"wide");
+  <div class="modal-f">
+    ${admin?`<button class="btn ghost sm left" id="guideUpload2" type="button">${GUIDE_URL?"이미지 교체":"이미지 등록"}</button>`:""}
+    ${admin&&GUIDE_URL?`<button class="btn ghost sm" id="guideDel" type="button">삭제</button>`:""}
+    <button class="btn" data-close type="button">확인</button>
+  </div>`,"wide");
+  const up=()=>$("#guideFile").click();
+  const u1=$("#guideUpload"), u2=$("#guideUpload2");
+  if(u1) u1.onclick=up;
+  if(u2) u2.onclick=up;
+  $("#guideFile").onchange=uploadGuide;
+  const del=$("#guideDel"); if(del) del.onclick=deleteGuide;
+}
+async function uploadGuide(e){
+  const f=e.target.files && e.target.files[0];
+  if(!f) return;
+  if(f.size > 10*1024*1024){ toast("10MB 이하 이미지만 등록할 수 있습니다.",4000); e.target.value=""; return; }
+  $("#guideBody").innerHTML = `<div class="emptystate" style="padding:38px"><h3>올리는 중입니다…</h3></div>`;
+  const reader=new FileReader();
+  reader.onload=async()=>{
+    try{
+      await apiCall("/api/guide-image",{method:"POST",body:{name:f.name,data:reader.result}});
+      await loadGuideMeta(); closeModal(); guidelineModal(); toast("가이드라인 이미지를 등록했습니다.");
+    }catch(err){ toast(err.message,4500); closeModal(); guidelineModal(); }
+  };
+  reader.onerror=()=>{ toast("이미지를 읽지 못했습니다.",4000); closeModal(); guidelineModal(); };
+  reader.readAsDataURL(f);
+}
+function deleteGuide(){
+  confirmModal("가이드라인 삭제","등록된 가이드라인 이미지를 삭제합니다.<br>직원들에게는 더 이상 보이지 않습니다.",
+    "삭제", async()=>{
+      try{ await apiCall("/api/guide-image",{method:"DELETE"}); await loadGuideMeta();
+           toast("삭제했습니다."); }
+      catch(e){ toast(e.message,4000); }
+    }, true);
 }
 
 /* ---------- 반려 ---------- */

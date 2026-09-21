@@ -42,6 +42,7 @@ macOS·Linux 는 `PORT=712 node server.js`.
 | `data/roster.json` | 관리직 186명 명단 |
 | `data/plans.json` | 등록된 교육계획 (실행 중 생성) |
 | `public/login-bg.jpg` | 로그인 화면 배경 사진 |
+| `data/guide-image.*` | 사외교육 신청 가이드라인 이미지 (관리자가 화면에서 등록) |
 | `public/logo.png` `logo-white.png` | 로고 (일반 / 사진 위용 흰색) |
 | `build/` | 화면 소스 조각과 빌드 스크립트 |
 | `start.bat` `start.sh` | 실행 파일 |
@@ -80,6 +81,14 @@ macOS·Linux 는 `PORT=712 node server.js`.
 PT생산1팀_서산파견 → PT생산1팀 팀장, 엔진보전팀 → 엔진생산실장.
 
 조직이 바뀌면 `public/org.js` 의 `ORG` 를 고칩니다. 서버와 화면에 동시에 반영됩니다.
+
+## 사외교육 신청 가이드라인
+
+상단 **사외교육 신청 가이드라인** 버튼을 누르면 이미지가 팝업으로 뜹니다.
+
+**관리자만** 이미지를 등록·교체·삭제할 수 있습니다. 팝업 안에서 바로 올리면 되고,
+올리는 즉시 전 직원에게 보입니다. PNG · JPG · WEBP, 10MB 이하.
+파일은 `data/` 에 저장되므로 백업할 때 함께 챙기시면 됩니다.
 
 ## 취합 마감
 
