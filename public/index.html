@@ -177,8 +177,37 @@ select.filt{width:auto;min-width:120px;font-size:13px;padding:8px 10px}
 .tw::-webkit-scrollbar{height:9px}
 .tw::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
 .tw::-webkit-scrollbar-track{background:var(--panel-2)}
-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.6px}
-th,td{padding:10px 11px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line-2)}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.6px;table-layout:auto}
+th,td{padding:9px 9px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line-2)}
+/* 긴 글자는 줄임표로 접고, 마우스를 올리면 전체가 보입니다(title). */
+.c-org,.c-course,.c-place,.c-dept{overflow:hidden;text-overflow:ellipsis}
+th.c-org,td.c-org{max-width:120px}
+th.c-course,td.c-course{max-width:190px}
+th.c-place,td.c-place{max-width:78px}
+th.c-dept,td.c-dept{max-width:104px}
+.w-no{width:40px}.w-job{width:62px}.w-emp{width:78px}.w-gr{width:44px}.w-nm{width:74px}
+.w-cat{width:72px}.w-sch{width:124px}.w-day{width:44px}.w-hr{width:62px}.w-cost{width:76px}
+.w-st{width:82px}.w-act{width:1%}
+/* 사번·부서가 더 붙는 관리자·실장 화면은 한 단계 더 좁게 */
+table.tight th,table.tight td{padding:8px 6px;font-size:12.1px}
+table.tight th.c-course,table.tight td.c-course{max-width:146px}
+table.tight th.c-org,table.tight td.c-org{max-width:98px}
+table.tight th.c-place,table.tight td.c-place{max-width:62px}
+table.tight th.c-dept,table.tight td.c-dept{max-width:90px}
+table.tight .w-emp{width:70px}
+@media (max-width:1400px){
+  th,td{padding:8px 7px;font-size:12.2px}
+  th.c-course,td.c-course{max-width:150px}
+  th.c-org,td.c-org{max-width:104px}
+  table.tight th.c-course,table.tight td.c-course{max-width:120px}
+  table.tight th.c-org,table.tight td.c-org{max-width:84px}
+  table.tight th.c-dept,table.tight td.c-dept{max-width:76px}
+  table.tight th.c-place,table.tight td.c-place{max-width:54px}
+  table.tight .w-emp{width:64px}
+  table.tight th,table.tight td{padding:8px 4px}
+  table.tight .w-cat{width:66px}
+  table.tight .w-job{width:56px}
+}
 thead th{background:var(--panel-2);font-size:11.5px;font-weight:700;color:var(--ink-2);letter-spacing:.01em;
   border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
 thead th.ctr,td.ctr{text-align:center}
@@ -213,8 +242,8 @@ tfoot td{background:var(--panel-2);font-weight:700;border-top:1px solid var(--li
 button.chip{cursor:pointer}
 button.chip:hover{filter:brightness(.96)}
 .me{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:5px;vertical-align:1px}
-.rowacts{display:flex;gap:5px;justify-content:flex-end}
-.ibtn{padding:5px 8px;border-radius:6px;font-size:12px;color:var(--ink-3);border:1px solid transparent}
+.rowacts{display:flex;gap:3px;justify-content:flex-end}
+.ibtn{padding:4px 6px;border-radius:6px;font-size:11.5px;color:var(--ink-3);border:1px solid transparent;white-space:nowrap}
 .ibtn:hover{background:var(--panel-3);color:var(--ink);border-color:var(--line)}
 .ibtn.danger:hover{color:var(--no);border-color:var(--no-line);background:var(--no-soft)}
 
@@ -240,8 +269,8 @@ button.chip:hover{filter:brightness(.96)}
 .badlist{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px}
 .badlab{font-size:10.5px;font-weight:800;letter-spacing:.03em;color:var(--no);
   background:var(--no-soft);border:1px solid var(--no-line);border-radius:4px;padding:2px 6px}
-.badchip{font-size:11.5px;color:var(--no);background:var(--no-soft);border:1px solid var(--no-line);
-  border-radius:5px;padding:2px 7px;text-decoration:line-through;text-decoration-thickness:1px}
+.badchip{font-size:11.5px;font-weight:600;color:var(--no);background:var(--no-soft);
+  border:1px solid var(--no-line);border-radius:5px;padding:2px 7px}
 .guide-cta{width:100%;margin-top:14px;padding:11px;font-size:12.8px;justify-content:center}
 /* 페이지 푸터 */
 .pagefoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:18px;
@@ -553,8 +582,9 @@ const fmtDeadline = () => {
 /* 같은 날이면 하루, 아니면 시작 ~ 종료(월-일만) */
 function schedule(r){
   if(!r.start) return "-";
-  if(r.start===r.end) return esc(r.start);
-  return esc(r.start)+" ~ "+esc(String(r.end||"").slice(5));
+  const st=String(r.start).slice(2);                  // 2027-01-24 -> 27-01-24
+  if(r.start===r.end) return esc(st);
+  return esc(st)+" ~ "+esc(String(r.end||"").slice(5));
 }
 
 /* ---------- 아이콘 ---------- */
@@ -711,42 +741,56 @@ function exampleRows(){
   return EX_ROWS.map(r=>`<tr class="exrow" title="작성 예시입니다. 실제 등록된 계획이 아닙니다.">
     <td class="ctr"><span class="exbadge">예시</span></td>
     <td class="ctr"><span class="chip c-mute">${esc(r.jobType)}</span></td>
-    <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade)}</td>
-    <td class="nm">${esc(r.name)}</td>
-    <td><span class="chip c-mute">${esc(r.category)}</span></td>
-    <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
-    <td class="ctr num">${esc(r.start)} ~ ${esc(r.end.slice(5))}</td>
-    <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+    ${showEmp()?`<td class="num">${esc(r.emp)}</td>`:""}
+    ${showDept()?`<td class="c-dept">${esc(r.dept)}</td>`:""}
+    <td class="ctr num">${esc(r.grade)}</td><td class="nm">${esc(r.name)}</td>
+    <td class="ctr"><span class="chip c-mute">${esc(r.category)}</span></td>
+    <td class="c-org">${esc(r.org)}</td><td class="c-course">${esc(r.course)}</td>
+    <td class="ctr num">${schedule(r)}</td><td class="ctr num">${r.days}일</td>
+    <td class="c-place">${esc(r.place)}</td>
     <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
     <td class="ctr"><span class="chip c-mute">승인 대기</span></td><td></td></tr>`).join("");
 }
+
+/* 한 화면에 들어오도록 역할별로 필요 없는 칸은 감춥니다.
+   사번은 관리자만, 부서는 여러 팀을 보는 사람만 봅니다. */
+const showEmp  = () => isAdmin();
+const showDept = () => scopeOf().teams.length > 1;
+
+function tableHead(){
+  return `<tr>
+    <th class="ctr w-no">순번</th><th class="ctr w-job">구분</th>
+    ${showEmp()?'<th class="w-emp">사번</th>':""}
+    ${showDept()?'<th class="w-dept">부서</th>':""}
+    <th class="ctr w-gr">직급</th><th class="w-nm">성명</th>
+    <th class="ctr w-cat">교육구분</th><th class="c-org">교육기관</th><th class="c-course">교육과정</th>
+    <th class="ctr w-sch">교육일정</th><th class="ctr w-day">일수</th><th class="w-place">교육장소</th>
+    <th class="rt w-hr">교육시간</th><th class="rt w-cost">교육비</th>
+    <th class="ctr w-st">승인상태</th><th class="w-act"></th></tr>`;
+}
+
 function planTable(rows,vis){
   if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
     <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"첫 교육계획을 등록해 보세요"}</h3>
     <p>${vis.length?"필터나 검색어를 바꿔 보세요."
       :"교육과정과 예상 비용을 등록하면<br>연간 일정과 예산을 한눈에 확인할 수 있어요.<br><span class=\"exlead\">아래 흐린 줄이 작성 예시입니다.</span>"}</p>
     ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>
-    <div class="tw"><table><thead><tr>
-      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
-      <th>교육구분</th><th>교육기관</th><th>교육과정</th><th class="ctr">교육일정</th><th class="ctr">일수</th>
-      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
-      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>${exampleRows()}</tbody></table></div>`;
-  return `<div class="tw"><table><thead><tr>
-      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
-      <th>교육구분</th><th>교육기관</th><th>교육과정</th>
-      <th class="ctr">교육일정</th><th class="ctr">일수</th>
-      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
-      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>
+    <div class="tw"><table class="${showEmp()||showDept()?"tight":""}"><thead>${tableHead()}</thead><tbody>${exampleRows()}</tbody></table></div>`;
+  return `<div class="tw"><table class="${showEmp()||showDept()?"tight":""}"><thead>${tableHead()}</thead><tbody>
     ${exampleRows()}
     ${rows.map((r,i)=>`<tr>
       <td class="ctr num">${i+1}</td>
       <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>
-      <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade||"-")}</td>
+      ${showEmp()?`<td class="num">${esc(r.emp)}</td>`:""}
+      ${showDept()?`<td class="c-dept" title="${esc(r.dept)}">${esc(r.dept)}</td>`:""}
+      <td class="ctr num">${esc(r.grade||"-")}</td>
       <td class="nm">${esc(r.name)}${r.emp===ME.emp?'<span class="me">나</span>':""}</td>
-      <td><span class="chip ${r.category==="사내교육"?"c-mute":"c-blue"}">${esc(r.category)}</span></td>
-      <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
+      <td class="ctr"><span class="chip ${r.category==="사내교육"?"c-mute":"c-blue"}">${esc(r.category)}</span></td>
+      <td class="c-org" title="${esc(r.org)}">${esc(r.org)}</td>
+      <td class="c-course" title="${esc(r.course)}">${esc(r.course)}</td>
       <td class="ctr num">${schedule(r)}</td>
-      <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+      <td class="ctr num">${r.days}일</td>
+      <td class="c-place" title="${esc(r.place)}">${esc(r.place)}</td>
       <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
       <td class="ctr">${statusCell(r)}</td>
       <td><div class="rowacts">
@@ -756,7 +800,7 @@ function planTable(rows,vis){
                             <button class="ibtn danger" data-del="${r.id}" title="삭제">삭제</button>`:""}
       </div></td></tr>`).join("")}
     </tbody><tfoot><tr>
-      <td colspan="10" class="rt">합계 ${rows.length}건</td>
+      <td colspan="${7+(showEmp()?1:0)+(showDept()?1:0)}" class="rt">합계 ${rows.length}건</td>
       <td class="ctr num">${won(sum(rows,"days"))}일</td><td></td>
       <td class="rt num">${won(sum(rows,"hours"))}시간</td>
       <td class="rt num">${won(sum(rows,"cost"))}</td><td colspan="2"></td>

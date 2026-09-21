@@ -170,8 +170,37 @@ select.filt{width:auto;min-width:120px;font-size:13px;padding:8px 10px}
 .tw::-webkit-scrollbar{height:9px}
 .tw::-webkit-scrollbar-thumb{background:var(--line);border-radius:5px}
 .tw::-webkit-scrollbar-track{background:var(--panel-2)}
-table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.6px}
-th,td{padding:10px 11px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line-2)}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.6px;table-layout:auto}
+th,td{padding:9px 9px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line-2)}
+/* 긴 글자는 줄임표로 접고, 마우스를 올리면 전체가 보입니다(title). */
+.c-org,.c-course,.c-place,.c-dept{overflow:hidden;text-overflow:ellipsis}
+th.c-org,td.c-org{max-width:120px}
+th.c-course,td.c-course{max-width:190px}
+th.c-place,td.c-place{max-width:78px}
+th.c-dept,td.c-dept{max-width:104px}
+.w-no{width:40px}.w-job{width:62px}.w-emp{width:78px}.w-gr{width:44px}.w-nm{width:74px}
+.w-cat{width:72px}.w-sch{width:124px}.w-day{width:44px}.w-hr{width:62px}.w-cost{width:76px}
+.w-st{width:82px}.w-act{width:1%}
+/* 사번·부서가 더 붙는 관리자·실장 화면은 한 단계 더 좁게 */
+table.tight th,table.tight td{padding:8px 6px;font-size:12.1px}
+table.tight th.c-course,table.tight td.c-course{max-width:146px}
+table.tight th.c-org,table.tight td.c-org{max-width:98px}
+table.tight th.c-place,table.tight td.c-place{max-width:62px}
+table.tight th.c-dept,table.tight td.c-dept{max-width:90px}
+table.tight .w-emp{width:70px}
+@media (max-width:1400px){
+  th,td{padding:8px 7px;font-size:12.2px}
+  th.c-course,td.c-course{max-width:150px}
+  th.c-org,td.c-org{max-width:104px}
+  table.tight th.c-course,table.tight td.c-course{max-width:120px}
+  table.tight th.c-org,table.tight td.c-org{max-width:84px}
+  table.tight th.c-dept,table.tight td.c-dept{max-width:76px}
+  table.tight th.c-place,table.tight td.c-place{max-width:54px}
+  table.tight .w-emp{width:64px}
+  table.tight th,table.tight td{padding:8px 4px}
+  table.tight .w-cat{width:66px}
+  table.tight .w-job{width:56px}
+}
 thead th{background:var(--panel-2);font-size:11.5px;font-weight:700;color:var(--ink-2);letter-spacing:.01em;
   border-bottom:1px solid var(--line);position:sticky;top:0;z-index:1}
 thead th.ctr,td.ctr{text-align:center}
@@ -206,8 +235,8 @@ tfoot td{background:var(--panel-2);font-weight:700;border-top:1px solid var(--li
 button.chip{cursor:pointer}
 button.chip:hover{filter:brightness(.96)}
 .me{background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:5px;vertical-align:1px}
-.rowacts{display:flex;gap:5px;justify-content:flex-end}
-.ibtn{padding:5px 8px;border-radius:6px;font-size:12px;color:var(--ink-3);border:1px solid transparent}
+.rowacts{display:flex;gap:3px;justify-content:flex-end}
+.ibtn{padding:4px 6px;border-radius:6px;font-size:11.5px;color:var(--ink-3);border:1px solid transparent;white-space:nowrap}
 .ibtn:hover{background:var(--panel-3);color:var(--ink);border-color:var(--line)}
 .ibtn.danger:hover{color:var(--no);border-color:var(--no-line);background:var(--no-soft)}
 
@@ -233,8 +262,8 @@ button.chip:hover{filter:brightness(.96)}
 .badlist{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:8px}
 .badlab{font-size:10.5px;font-weight:800;letter-spacing:.03em;color:var(--no);
   background:var(--no-soft);border:1px solid var(--no-line);border-radius:4px;padding:2px 6px}
-.badchip{font-size:11.5px;color:var(--no);background:var(--no-soft);border:1px solid var(--no-line);
-  border-radius:5px;padding:2px 7px;text-decoration:line-through;text-decoration-thickness:1px}
+.badchip{font-size:11.5px;font-weight:600;color:var(--no);background:var(--no-soft);
+  border:1px solid var(--no-line);border-radius:5px;padding:2px 7px}
 .guide-cta{width:100%;margin-top:14px;padding:11px;font-size:12.8px;justify-content:center}
 /* 페이지 푸터 */
 .pagefoot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:26px;padding-top:18px;

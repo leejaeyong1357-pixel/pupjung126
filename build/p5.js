@@ -128,42 +128,56 @@ function exampleRows(){
   return EX_ROWS.map(r=>`<tr class="exrow" title="작성 예시입니다. 실제 등록된 계획이 아닙니다.">
     <td class="ctr"><span class="exbadge">예시</span></td>
     <td class="ctr"><span class="chip c-mute">${esc(r.jobType)}</span></td>
-    <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade)}</td>
-    <td class="nm">${esc(r.name)}</td>
-    <td><span class="chip c-mute">${esc(r.category)}</span></td>
-    <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
-    <td class="ctr num">${esc(r.start)} ~ ${esc(r.end.slice(5))}</td>
-    <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+    ${showEmp()?`<td class="num">${esc(r.emp)}</td>`:""}
+    ${showDept()?`<td class="c-dept">${esc(r.dept)}</td>`:""}
+    <td class="ctr num">${esc(r.grade)}</td><td class="nm">${esc(r.name)}</td>
+    <td class="ctr"><span class="chip c-mute">${esc(r.category)}</span></td>
+    <td class="c-org">${esc(r.org)}</td><td class="c-course">${esc(r.course)}</td>
+    <td class="ctr num">${schedule(r)}</td><td class="ctr num">${r.days}일</td>
+    <td class="c-place">${esc(r.place)}</td>
     <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
     <td class="ctr"><span class="chip c-mute">승인 대기</span></td><td></td></tr>`).join("");
 }
+
+/* 한 화면에 들어오도록 역할별로 필요 없는 칸은 감춥니다.
+   사번은 관리자만, 부서는 여러 팀을 보는 사람만 봅니다. */
+const showEmp  = () => isAdmin();
+const showDept = () => scopeOf().teams.length > 1;
+
+function tableHead(){
+  return `<tr>
+    <th class="ctr w-no">순번</th><th class="ctr w-job">구분</th>
+    ${showEmp()?'<th class="w-emp">사번</th>':""}
+    ${showDept()?'<th class="w-dept">부서</th>':""}
+    <th class="ctr w-gr">직급</th><th class="w-nm">성명</th>
+    <th class="ctr w-cat">교육구분</th><th class="c-org">교육기관</th><th class="c-course">교육과정</th>
+    <th class="ctr w-sch">교육일정</th><th class="ctr w-day">일수</th><th class="w-place">교육장소</th>
+    <th class="rt w-hr">교육시간</th><th class="rt w-cost">교육비</th>
+    <th class="ctr w-st">승인상태</th><th class="w-act"></th></tr>`;
+}
+
 function planTable(rows,vis){
   if(!rows.length) return `<div class="emptystate"><div class="ico">${IC.empty}</div>
     <h3>${vis.length?"조건에 맞는 교육계획이 없습니다":"첫 교육계획을 등록해 보세요"}</h3>
     <p>${vis.length?"필터나 검색어를 바꿔 보세요."
       :"교육과정과 예상 비용을 등록하면<br>연간 일정과 예산을 한눈에 확인할 수 있어요.<br><span class=\"exlead\">아래 흐린 줄이 작성 예시입니다.</span>"}</p>
     ${vis.length||!CAN_WRITE?"":`<button class="btn" id="addBtn2">${IC.plus} 교육 계획 추가</button>`}</div>
-    <div class="tw"><table><thead><tr>
-      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
-      <th>교육구분</th><th>교육기관</th><th>교육과정</th><th class="ctr">교육일정</th><th class="ctr">일수</th>
-      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
-      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>${exampleRows()}</tbody></table></div>`;
-  return `<div class="tw"><table><thead><tr>
-      <th class="ctr">순번</th><th class="ctr">구분</th><th>사번</th><th>부서</th><th>직급</th><th>성명</th>
-      <th>교육구분</th><th>교육기관</th><th>교육과정</th>
-      <th class="ctr">교육일정</th><th class="ctr">일수</th>
-      <th>교육장소</th><th class="rt">교육시간</th><th class="rt">교육비(원)</th>
-      <th class="ctr">승인상태</th><th></th></tr></thead><tbody>
+    <div class="tw"><table class="${showEmp()||showDept()?"tight":""}"><thead>${tableHead()}</thead><tbody>${exampleRows()}</tbody></table></div>`;
+  return `<div class="tw"><table class="${showEmp()||showDept()?"tight":""}"><thead>${tableHead()}</thead><tbody>
     ${exampleRows()}
     ${rows.map((r,i)=>`<tr>
       <td class="ctr num">${i+1}</td>
       <td class="ctr"><span class="chip ${r.jobType==="생산직"?"c-mute":"c-blue"}">${esc(r.jobType)}</span></td>
-      <td class="num">${esc(r.emp)}</td><td>${esc(r.dept)}</td><td class="num">${esc(r.grade||"-")}</td>
+      ${showEmp()?`<td class="num">${esc(r.emp)}</td>`:""}
+      ${showDept()?`<td class="c-dept" title="${esc(r.dept)}">${esc(r.dept)}</td>`:""}
+      <td class="ctr num">${esc(r.grade||"-")}</td>
       <td class="nm">${esc(r.name)}${r.emp===ME.emp?'<span class="me">나</span>':""}</td>
-      <td><span class="chip ${r.category==="사내교육"?"c-mute":"c-blue"}">${esc(r.category)}</span></td>
-      <td>${esc(r.org)}</td><td>${esc(r.course)}</td>
+      <td class="ctr"><span class="chip ${r.category==="사내교육"?"c-mute":"c-blue"}">${esc(r.category)}</span></td>
+      <td class="c-org" title="${esc(r.org)}">${esc(r.org)}</td>
+      <td class="c-course" title="${esc(r.course)}">${esc(r.course)}</td>
       <td class="ctr num">${schedule(r)}</td>
-      <td class="ctr num">${r.days}일</td><td>${esc(r.place)}</td>
+      <td class="ctr num">${r.days}일</td>
+      <td class="c-place" title="${esc(r.place)}">${esc(r.place)}</td>
       <td class="rt num">${won(r.hours)}시간</td><td class="rt num">${won(r.cost)}</td>
       <td class="ctr">${statusCell(r)}</td>
       <td><div class="rowacts">
@@ -173,7 +187,7 @@ function planTable(rows,vis){
                             <button class="ibtn danger" data-del="${r.id}" title="삭제">삭제</button>`:""}
       </div></td></tr>`).join("")}
     </tbody><tfoot><tr>
-      <td colspan="10" class="rt">합계 ${rows.length}건</td>
+      <td colspan="${7+(showEmp()?1:0)+(showDept()?1:0)}" class="rt">합계 ${rows.length}건</td>
       <td class="ctr num">${won(sum(rows,"days"))}일</td><td></td>
       <td class="rt num">${won(sum(rows,"hours"))}시간</td>
       <td class="rt num">${won(sum(rows,"cost"))}</td><td colspan="2"></td>

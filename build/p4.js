@@ -76,8 +76,9 @@ const fmtDeadline = () => {
 /* 같은 날이면 하루, 아니면 시작 ~ 종료(월-일만) */
 function schedule(r){
   if(!r.start) return "-";
-  if(r.start===r.end) return esc(r.start);
-  return esc(r.start)+" ~ "+esc(String(r.end||"").slice(5));
+  const st=String(r.start).slice(2);                  // 2027-01-24 -> 27-01-24
+  if(r.start===r.end) return esc(st);
+  return esc(st)+" ~ "+esc(String(r.end||"").slice(5));
 }
 
 /* ---------- 아이콘 ---------- */
