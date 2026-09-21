@@ -5,11 +5,13 @@ function bindLogin(){
     e.preventDefault();
     const btn=$("#loginForm button[type=submit]");
     const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
+    const birth=$("#liBirth").value.trim().replace(/\D/g,"");
     const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; btn.disabled=false; };
     if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
+    if(birth&&birth.length!==6) return err("주민번호 앞 6자리를 여섯 자리로 입력해 주세요.");
     btn.disabled=true;
     try{
-      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp}}));
+      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp,birth}}));
       await loadGuideMeta();
       VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
       toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");

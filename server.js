@@ -56,6 +56,12 @@ catch {
   SECRET = crypto.randomBytes(32).toString("hex");
   fs.writeFileSync(SECRET_FILE, SECRET, { mode: 0o600 });
 }
+/* 자릿수까지 새어 나가지 않게 상수 시간으로 비교합니다. */
+function safeEq(a, b) {
+  const x = Buffer.from(String(a), "utf8"), y = Buffer.from(String(b), "utf8");
+  if (x.length !== y.length) return false;
+  return crypto.timingSafeEqual(x, y);
+}
 const sign = emp => crypto.createHmac("sha256", SECRET).update(String(emp)).digest("base64url");
 const makeToken = emp => `${Buffer.from(String(emp)).toString("base64url")}.${sign(emp)}`;
 function readToken(token) {
@@ -187,10 +193,17 @@ async function api(req, res, url, me) {
   if (p === "/api/login" && req.method === "POST") {
     const b = await readBody(req);
     const emp = str(b.emp, 20).replace(/\D/g, ""), name = str(b.name, 40);
+    const birth = str(b.birth, 10).replace(/\D/g, "");
     if (!emp || !name) return fail(res, 400, "성명과 사번을 모두 입력해 주세요.");
     const person = BY_EMP.get(emp);
     if (!person) return fail(res, 401, `사번 ${emp} 을(를) 명단에서 찾을 수 없습니다.`);
     if (person.name !== name) return fail(res, 401, "사번과 성명이 일치하지 않습니다.");
+    /* 팀장 · 실장은 승인 · 반려 권한이 있어 주민번호 앞 6자리를 한 번 더 확인합니다.
+       명단(data/roster.json)에 birth 가 적힌 사람에게만 적용됩니다. */
+    if (person.birth) {
+      if (!birth) return fail(res, 401, "팀장 · 실장은 주민번호 앞 6자리도 입력해 주세요.");
+      if (!safeEq(birth, person.birth)) return fail(res, 401, "주민번호 앞 6자리가 일치하지 않습니다.");
+    }
     return json(res, 200, bootstrap(person), {
       "Set-Cookie": `tz=${makeToken(emp)}; Path=/; Max-Age=2592000; HttpOnly; SameSite=Lax`,
     });

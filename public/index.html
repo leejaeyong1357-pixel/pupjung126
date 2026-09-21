@@ -335,6 +335,17 @@ body.login-mode{background:var(--panel)}
 .loginerr{background:var(--no-soft);border:1px solid var(--no-line);color:var(--no);border-radius:9px;
   padding:11px 14px;font-size:12.5px;font-weight:500;margin-bottom:16px;line-height:1.6}
 
+/* 세로가 짧은 노트북(1366×768 등)에서도 스크롤 없이 한 화면에 들어오게 */
+@media (min-width:981px) and (max-height:830px){
+  .login-panel{padding:20px}
+  .form-logo{margin-bottom:16px}
+  .form-sub{margin:8px 0 20px}
+  .login-form .field{margin-bottom:13px}
+  .login-note{margin-top:13px}
+  .login-foot{margin-top:22px;padding-top:18px}
+  .copyright{margin-top:16px}
+}
+
 @media (max-width:980px){
   .login{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:16px;gap:16px;min-height:100dvh}
   .login-art{min-height:170px;padding:20px 22px}
@@ -435,7 +446,15 @@ body.login-mode{background:var(--panel)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.4"/><circle cx="8.6" cy="11" r="1.9"/><path d="M5.6 16.2a3.4 3.4 0 0 1 6 0M14 10h4.2M14 13.6h3"/></svg>
             <input id="liEmp" name="liEmp" class="num" inputmode="numeric" autocomplete="off" placeholder="사원번호를 입력해 주세요" required>
           </div>
-          <p class="field-hint">이름과 사원번호로 로그인할 수 있습니다.</p>
+        </div>
+
+        <div class="field">
+          <label for="liBirth">주민번호 앞 6자리</label>
+          <div class="inp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2.4"/><path d="M8 3.2v3.6M16 3.2v3.6M4 10h16M8.4 14h2.2M13.4 14h2.2M8.4 17h2.2"/></svg>
+            <input id="liBirth" name="liBirth" class="num" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="예) 800101">
+          </div>
+          <p class="field-hint">승인 권한이 있는 팀장 · 실장만 입력합니다. 팀원은 비워 두세요.</p>
         </div>
 
         <button class="btn login-btn" type="submit">로그인
@@ -1145,11 +1164,13 @@ function bindLogin(){
     e.preventDefault();
     const btn=$("#loginForm button[type=submit]");
     const name=$("#liName").value.trim(), emp=$("#liEmp").value.trim().replace(/\D/g,"");
+    const birth=$("#liBirth").value.trim().replace(/\D/g,"");
     const err=m=>{ $("#loginErr").innerHTML=`<div class="loginerr">${esc(m)}</div>`; btn.disabled=false; };
     if(!name||!emp) return err("성명과 사번을 모두 입력해 주세요.");
+    if(birth&&birth.length!==6) return err("주민번호 앞 6자리를 여섯 자리로 입력해 주세요.");
     btn.disabled=true;
     try{
-      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp}}));
+      applyBootstrap(await apiCall("/api/login",{method:"POST",body:{name,emp,birth}}));
       await loadGuideMeta();
       VIEW="team"; SUB="all"; Q=""; FTEAM=""; FCAT=""; render();
       toast(ME.name+"님, 환영합니다. "+ME.dept+"으로 등록되었습니다.");
